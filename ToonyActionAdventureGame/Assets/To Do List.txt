@@ -1,0 +1,16 @@
+// To Do : 
+
+ // MOVEMENT & Animations : 
+
+//Implement Root motion for the movement of the player. 
+//All Movement data must be driven from animation data.
+//Figure out ways to transition into and stuff.
+
+//Particle System : 
+
+//Figure out how to render a trail while the player moves .
+
+
+//Camera : 
+
+//Make a 3D third person camera controller (check out Cinemachine's Camera ) .
