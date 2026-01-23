@@ -1,16 +1,21 @@
 using UnityEngine;
-
+using UnityEngine.Animations;
+using System.Collections.Generic;
 public class AnimatorController : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private Animator animator;
+    private AnimatorController animatorController;
+    List<AnimationClip> clips;
+
+    private void Awake()
     {
-        
+        animator = GetComponent<Animator>();
+        animatorController = GetComponent<AnimatorController>();
+        foreach(var clip in animatorController.clips)
+        {
+            clips.Add(clip);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
 }

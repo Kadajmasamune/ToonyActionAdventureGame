@@ -169,6 +169,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7074064559049434296}
   - component: {fileID: 4393983014321952553}
+  - component: {fileID: 3004935407474535896}
   m_Layer: 0
   m_Name: Bip01_L_Toe0
   m_TagString: Untagged
@@ -206,12 +207,31 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.17188925, y: 0.035634164, z: 0.08973901}
   m_Center: {x: 0.03299777, y: 0.029491667, z: 0.0049940837}
+--- !u!114 &3004935407474535896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1176716097964325274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62cf8f8aa80ad2440b09394bedf66335, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerRunningTrail
+  _SplashFX: {fileID: 3323387954473017891, guid: 0b912e9003fba894faa88cf964a6fb8a,
+    type: 3}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  duration: 1
+  rayDistance: 0.16
 --- !u!1 &1478043485711242838
 GameObject:
   m_ObjectHideFlags: 0
@@ -517,7 +537,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 16
@@ -1112,6 +1132,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8911624671171060773}
   - component: {fileID: 3334638409455500504}
+  - component: {fileID: 3706183734804760267}
   m_Layer: 0
   m_Name: Bip01_R_Toe0
   m_TagString: Untagged
@@ -1149,12 +1170,31 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.199234, y: 0.0316601, z: 0.12666748}
   m_Center: {x: 0.019442856, y: 0.035040304, z: -0.015207268}
+--- !u!114 &3706183734804760267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6865801885774417338}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62cf8f8aa80ad2440b09394bedf66335, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerRunningTrail
+  _SplashFX: {fileID: 3323387954473017891, guid: 0b912e9003fba894faa88cf964a6fb8a,
+    type: 3}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  duration: 1
+  rayDistance: 0.16
 --- !u!1 &6942921866031663690
 GameObject:
   m_ObjectHideFlags: 0
