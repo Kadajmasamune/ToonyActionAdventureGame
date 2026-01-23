@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerRunningTrail : MonoBehaviour
 {
+    
     [SerializeField] private GameObject _SplashFX;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float rayDistance = 0.10f;
