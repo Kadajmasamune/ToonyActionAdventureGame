@@ -1,0 +1,12 @@
+		Game Design. 
+
+Player Moveset : 
+	
+	Idle
+	Ninja Sprint 
+	Slide Attack
+	Slash Attack 1, 2
+	Combo Attack 1x
+	Lunge Attack
+	Jump Attack
+	Jump
