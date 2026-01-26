@@ -1,9 +1,11 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
     [Header("Target")]
     [SerializeField] private Transform target;
+    [SerializeField] private Transform LockOnTarget;
 
     [Header("Orbit")]
     [SerializeField] private float radius = 2.5f;
@@ -18,20 +20,24 @@ public class CameraController : MonoBehaviour
     [SerializeField] private LayerMask collisionMask;
     [SerializeField] private float collisionPadding = 0.2f;
 
-    [Header("Smoothing")]
-    [SerializeField] private float positionSmoothTime = 0.08f;
-    [SerializeField] private float rotationSmoothTime = 0.05f;
+    [Header("Damping (response time in seconds)")]
+    [SerializeField] private float positionResponse = 0.08f;
+    [SerializeField] private float rotationResponse = 0.05f;
 
-    private float yaw;
-    private float pitch;
+    private float yaw, pitch;
+    private float yawVel, pitchVel;
 
     private Vector3 positionVelocity;
-    private Vector3 rotationVelocity;
 
+    private int scrollWheel = 2; 
     private void Awake()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        Vector3 euler = transform.rotation.eulerAngles;
+        yaw = euler.y;
+        pitch = euler.x;
     }
 
     private void Update()
@@ -41,82 +47,109 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate()
     {
-        Vector3 pivot = GetPivot();
-        Vector3 desiredPos = CalculateOrbitPosition(pivot);
-        Vector3 finalPos = ResolveCameraCollision(pivot, desiredPos);
+        Vector3 pivot = GetPivot(target);
 
-        transform.position = Vector3.SmoothDamp(
+        yaw = Damp(yaw, targetYaw, ref yawVel, rotationResponse);
+        pitch = Damp(pitch, targetPitch, ref pitchVel, rotationResponse);
+
+        pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
+        Quaternion rotation = Quaternion.Euler(pitch, yaw, 0f);
+
+
+        Vector3 desiredPos = pivot - rotation * Vector3.forward * radius;
+        desiredPos = ResolveCollision(pivot, desiredPos);
+
+        transform.position = Vector3Damp(
             transform.position,
-            finalPos,
+            desiredPos,
             ref positionVelocity,
-            positionSmoothTime
+            positionResponse
         );
 
-        Vector3 desiredDir = (pivot - transform.position).normalized;
-
-        Vector3 smoothDir = Vector3.SmoothDamp(
-            transform.forward,
-            desiredDir,
-            ref rotationVelocity,
-            rotationSmoothTime
-        ).normalized;
-
-        transform.rotation = Quaternion.LookRotation(smoothDir, Vector3.up);
+        transform.rotation = rotation;
     }
 
     // =========================
     // INPUT
     // =========================
+    private float targetYaw;
+    private float targetPitch;
+
     private void HandleInput()
     {
-        yaw += Input.GetAxis("Mouse X") * mouseSensitivity;
-        pitch -= Input.GetAxis("Mouse Y") * mouseSensitivity;
-
-        pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
+        targetYaw += Input.GetAxis("Mouse X") * mouseSensitivity;
+        targetPitch -= Input.GetAxis("Mouse Y") * mouseSensitivity;
     }
 
     // =========================
     // PIVOT
     // =========================
-    private Vector3 GetPivot()
+    private Vector3 GetPivot(Transform target)
     {
-        return new Vector3(
-            target.position.x,
-            target.position.y + verticalPivotOffset,
-            target.position.z
-        );
-    }
-
-    // =========================
-    // ORBIT MATH
-    // =========================
-    private Vector3 CalculateOrbitPosition(Vector3 pivot)
-    {
-        float yawRad = yaw * Mathf.Deg2Rad;
-        float pitchRad = pitch * Mathf.Deg2Rad;
-
-        return new Vector3(
-            pivot.x + radius * Mathf.Cos(pitchRad) * Mathf.Sin(yawRad),
-            pivot.y + radius * Mathf.Sin(pitchRad),
-            pivot.z + radius * Mathf.Cos(pitchRad) * Mathf.Cos(yawRad)
-        );
+        return target.position + Vector3.up * verticalPivotOffset;
     }
 
     // =========================
     // COLLISION
     // =========================
-    private Vector3 ResolveCameraCollision(Vector3 pivot, Vector3 desiredPos)
+    private Vector3 ResolveCollision(Vector3 pivot, Vector3 desiredPos)
     {
-        Vector3 direction = desiredPos - pivot;
-        float distance = direction.magnitude;
-        direction.Normalize();
+        Vector3 dir = desiredPos - pivot;
+        float dist = dir.magnitude;
+        dir.Normalize();
 
-        if (Physics.Raycast(pivot, direction, out RaycastHit hit, distance, collisionMask))
+        if (Physics.Raycast(pivot, dir, out RaycastHit hit, dist, collisionMask))
         {
-            return pivot + direction * (hit.distance - collisionPadding);
+            return pivot + dir * (hit.distance - collisionPadding);
         }
 
         return desiredPos;
     }
 
+    private float Damp(float current, float target, ref float velocity, float response)
+    {
+        float omega = 4.6f / response;
+        float x = current - target;
+
+        float accel = -omega * omega * x - 2f * omega * velocity;
+        velocity += accel * Time.deltaTime;
+        current += velocity * Time.deltaTime;
+
+        return current;
+    }
+
+    private Vector3 Vector3Damp(Vector3 current, Vector3 target, ref Vector3 velocity, float response)
+    {
+        float omega = 4.6f / response;
+        Vector3 x = current - target;
+
+        Vector3 accel = -omega * omega * x - 2f * omega * velocity;
+        velocity += accel * Time.deltaTime;
+        current += velocity * Time.deltaTime;
+
+        return current;
+    }
+
+    private bool isLockingOn()
+    {
+        if(Input.GetMouseButtonDown(scrollWheel))
+        {
+            return true;
+        }
+        return false;
+    }
+    private void LockOn(Transform lockOnTarget)
+    {
+        //Make Camera Rotate about new Pivot 
+        // Where the Player's Transform Changes dictate Camera's Transform Changes
+
+        Vector3 newPivot = GetPivot(lockOnTarget);
+        Quaternion rotation;
+        float LockingOnRadius;    
+            
+        if (newPivot != null && isLockingOn())
+        {
+            
+        }
+    }
 }
