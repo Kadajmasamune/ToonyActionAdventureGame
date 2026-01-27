@@ -772,6 +772,11 @@ PrefabInstance:
       propertyPath: rotationResponse
       value: 0.17
       objectReference: {fileID: 0}
+    - target: {fileID: 7984208004076185115, guid: 2a70a0a67517455498972d47cfd76aec,
+        type: 3}
+      propertyPath: collisionMask.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 8445267385033454700, guid: 2a70a0a67517455498972d47cfd76aec,
         type: 3}
       propertyPath: m_Name
