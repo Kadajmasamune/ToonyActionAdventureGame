@@ -1,27 +1,29 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 public class AnimatorController : MonoBehaviour
 {
-    //Describes Intent and feeds it to the Animator
-
     [SerializeField] private Animator animator;
-    
-    public float moveAmount;
-    public float maxMoveAmount = 2f;
 
-    private int MoveAmountHash;
+    public float moveX;
+    public float moveY;
+
+    private int MoveXHash;
+    private int MoveYHash;
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
-        MoveAmountHash = Animator.StringToHash("moveAmount");
-        moveAmount = animator.GetFloat(MoveAmountHash);
-        moveAmount = 0f;
+
+        MoveXHash = Animator.StringToHash("moveX");
+        MoveYHash = Animator.StringToHash("moveY");
+
+        moveX = 0f;
+        moveY = 0f;
     }
 
     private void Update()
     {
-        animator.SetFloat(MoveAmountHash, moveAmount);  
+        animator.SetFloat(MoveXHash, moveX);
+        animator.SetFloat(MoveYHash, moveY);
     }
 }

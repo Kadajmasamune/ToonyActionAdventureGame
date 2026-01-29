@@ -471,6 +471,7 @@ GameObject:
   - component: {fileID: 1724367402710898822}
   - component: {fileID: 597188348560457399}
   - component: {fileID: 8414115289854908877}
+  - component: {fileID: 1859373656576493748}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -507,7 +508,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: edb4d526486d8874f81fd18d8431651f, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
@@ -529,8 +530,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimatorController
   animator: {fileID: 0}
-  moveAmount: 0
-  maxMoveAmount: 2
+  moveX: 0
+  moveY: 0
 --- !u!114 &597188348560457399
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -543,8 +544,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84040a1230041404d84911e7e0adedf8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  accelerationAmount: 4.5
-  angularSpeed: 10
+  walkSpeed: 3.4
+  sprintSpeed: 15
+  accel: 120
+  rotationSharpness: 25
+  turnInPlaceThreshold: 0.2
   cameraTransform: {fileID: 0}
 --- !u!54 &8414115289854908877
 Rigidbody:
@@ -571,8 +575,29 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!320 &1859373656576493748
+PlayableDirector:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3192441450695204820}
+  m_Enabled: 0
+  serializedVersion: 3
+  m_PlayableAsset: {fileID: 11400000, guid: ca4a0b5c18a97a14e8fee0be6a9e4cbd, type: 2}
+  m_InitialState: 1
+  m_WrapMode: 2
+  m_DirectorUpdateMode: 1
+  m_InitialTime: 0
+  m_SceneBindings:
+  - key: {fileID: -6795695949224880398, guid: ca4a0b5c18a97a14e8fee0be6a9e4cbd, type: 2}
+    value: {fileID: 6600440574247585827}
+  - key: {fileID: -1669523031644388761, guid: ca4a0b5c18a97a14e8fee0be6a9e4cbd, type: 2}
+    value: {fileID: 6600440574247585827}
+  m_ExposedReferences:
+    m_References: []
 --- !u!1 &3285632100188612156
 GameObject:
   m_ObjectHideFlags: 0

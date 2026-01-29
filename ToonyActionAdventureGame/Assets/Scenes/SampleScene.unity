@@ -460,12 +460,6 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
---- !u!1 &447386976 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3192441450695204820, guid: 2f5ff0a60ffb54c4e938e67d8388efc0,
-    type: 3}
-  m_PrefabInstance: {fileID: 1145336317}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &476765872
 GameObject:
   m_ObjectHideFlags: 0
@@ -895,6 +889,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 597188348560457399, guid: 2f5ff0a60ffb54c4e938e67d8388efc0,
         type: 3}
+      propertyPath: sprintSpeed
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 597188348560457399, guid: 2f5ff0a60ffb54c4e938e67d8388efc0,
+        type: 3}
       propertyPath: cameraTransform
       value: 
       objectReference: {fileID: 1437174706}
@@ -953,50 +952,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: 'Player '
       objectReference: {fileID: 0}
-    - target: {fileID: 8414115289854908877, guid: 2f5ff0a60ffb54c4e938e67d8388efc0,
-        type: 3}
-      propertyPath: m_Constraints
-      value: 112
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3192441450695204820, guid: 2f5ff0a60ffb54c4e938e67d8388efc0,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1402115773}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2f5ff0a60ffb54c4e938e67d8388efc0, type: 3}
 --- !u!4 &1402115772 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 837313433227689844, guid: 2f5ff0a60ffb54c4e938e67d8388efc0,
-    type: 3}
-  m_PrefabInstance: {fileID: 1145336317}
-  m_PrefabAsset: {fileID: 0}
---- !u!320 &1402115773
-PlayableDirector:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 447386976}
-  m_Enabled: 0
-  serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: ca4a0b5c18a97a14e8fee0be6a9e4cbd, type: 2}
-  m_InitialState: 1
-  m_WrapMode: 2
-  m_DirectorUpdateMode: 1
-  m_InitialTime: 0
-  m_SceneBindings:
-  - key: {fileID: -6795695949224880398, guid: ca4a0b5c18a97a14e8fee0be6a9e4cbd, type: 2}
-    value: {fileID: 1402115774}
-  - key: {fileID: -1669523031644388761, guid: ca4a0b5c18a97a14e8fee0be6a9e4cbd, type: 2}
-    value: {fileID: 1402115774}
-  m_ExposedReferences:
-    m_References: []
---- !u!95 &1402115774 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 6600440574247585827, guid: 2f5ff0a60ffb54c4e938e67d8388efc0,
     type: 3}
   m_PrefabInstance: {fileID: 1145336317}
   m_PrefabAsset: {fileID: 0}
