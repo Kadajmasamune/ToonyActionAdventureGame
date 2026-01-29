@@ -151,6 +151,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraController
   target: {fileID: 0}
+  LockOnTarget: {fileID: 0}
   radius: 3.79
   verticalPivotOffset: 1.7
   mouseSensitivity: 1.69
@@ -160,5 +161,5 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   collisionPadding: 0.2
-  positionSmoothTime: 0.08
-  rotationSmoothTime: 0.05
+  positionResponse: 0.19
+  rotationResponse: 0.2
