@@ -13,6 +13,8 @@ import pygame
 
 #Cancellations of Animations as well as blending 
 
+
+
 class State(Enum):
     Idle = 0
     Attacking = 1
@@ -34,12 +36,12 @@ class ComboSequence:
     #And then the next possible chains it can connect with 
     def __init__(self , baseCombo):
         self.baseCombo: list[AttackInput] = baseCombo  
-        self.nextCombo : list[ComboSequence] = []
+        self.__nextCombo : list[ComboSequence] = []
         self.frames = 0 
 
         
     def addCombo(self , nextCombo) -> None:
-        return self.nextCombo.append(nextCombo) 
+        return self.__nextCombo.append(nextCombo) 
 
 class InputBufferer: 
     def __init__(self):
@@ -59,13 +61,18 @@ class InputBufferer:
         """
             The Element that is to be Popped out of the Queue is the current Input.
         """ 
-        return
+        return self.Buffer[-1] if (len(self.Buffer) > 0) else None
+    
     def GetPreviousInput(self):
         """
             The Element that was previously popped will be deduced as the previous input.
         """
-
-        return    
+        return self.Buffer[-2] if len(self.Buffer) >= 1 else None
+    
+class Combo1(ComboSequence) :
+    def __init__(self):
+        super().__init__([AttackInput.Light , AttackInput.Heavy , AttackInput.Light])
+        super().addCombo(ComboSequence([AttackInput.Light , AttackInput.Heavy , AttackInput.Heavy]))
 
 class ComboTree :
     """
@@ -84,10 +91,18 @@ class ComboTreeProcessor :
         self.tree : ComboTree = ComboTree()
         #self.connectNodes() # Bake Once.
 
-    def TraverseTree() : 
-        return
+    def resetCombo(self) -> None : 
 
-    def isComboPartiallyComplete () -> bool :
+        return 
+
+    def isComboPartiallyComplete (self) -> bool :
+        """
+            A combo is only partially complete if at least one or more inputs of the combo sequence have been inputted by the user
+            in a given combo time or a set interval of frames 
+
+            If Combo is partially complete : we return to the default state , which is idle.
+        """
+
         return False  
     
     def connectNodes() -> None  : 
@@ -110,9 +125,12 @@ class Pygame:
         self.clock = pygame.time.Clock()
 
         self.inputBufferer = InputBufferer()
+        self.comboProcessor = ComboTreeProcessor()
+        self.comboTree = ComboTree()
+        self.combo = Combo1()
+
 
     def GetAttackInput(self):
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -129,13 +147,18 @@ class Pygame:
         running = True
         while running:
             attack = self.GetAttackInput()
+            
             if attack == "QUIT":
                 break
+            
             if attack:
                 # print(attack)
+                    
                 self.inputBufferer.bufferInput(attack)
                 print(self.inputBufferer.Buffer)
                 # self.inputBufferer.flushBuffer()
+
+
 
             self.screen.fill((30, 30, 30))  
             pygame.display.flip()
