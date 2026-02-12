@@ -1,307 +1,117 @@
-﻿using System.Collections.Generic;
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class ComboSystem : MonoBehaviour
+namespace ComboSystem
 {
-    
-}
-
-
-public class StateMachine
-{
-    private Dictionary<string, State> states;
-    private State currentState;
-    
-    /**
-     *  Create state machine
-     *
-     *  @return new state machine
-     */
-    public static StateMachine Create()
+    public enum AttackInput
     {
-        var s = new StateMachine();
-        return s;
+        Light,
+        Heavy
     }
 
-    /**
-     *  Find state by id and return casted state
-     *
-     *  @return casted state
-     */
-    //template<class T>
-    public T FindState<T>() where T : State
+    public class AttackNode
     {
-        string name = typeof(T).Name;
-        if (states.ContainsKey(name))
+        public AttackInput Input;
+        public int StartUpFrames;
+        public int ActiveFrames;
+        public int RecoveryFrames;
+
+        public int CancelStart;
+        public int CancelEnd;
+
+        public List<AttackInput> Transition;
+
+        public AttackNode(
+            AttackInput input,
+            int startUpFrames,
+            int activeFrames,
+            int recoveryFrames,
+            int cancelStart,
+            int cancelEnd,
+            List<AttackInput> transition)
         {
-            return states[name] as T;
+            Input = input;
+            StartUpFrames = startUpFrames;
+            ActiveFrames = activeFrames;
+            RecoveryFrames = recoveryFrames;
+            CancelStart = cancelStart;
+            CancelEnd = cancelEnd;
+            Transition = transition ?? new List<AttackInput>();
         }
-        return default(T);
-    }
 
-    /**
-     *  Add new state to state machine
-     *
-     *  @param args arguments to pass to constructor of state
-     */
-    //template<typename T, class... Args>
-    public void AddState<T>() where T : State, new()
-    {
-        var typeId = typeof(T).Name;
-
-        var state = new T();
-        state.SetStateMachine(this);
-
-        if (states == null)
-            states = new Dictionary<string, State>();
-
-        states.Add(typeId, state);
-    }
-
-    /**
-     *  Check if we can enter state
-     *
-     *  @return true if this state is valid, false otherwise
-     */
-    //template<typename T>
-    bool CanEnterState<T>() where T : State
-    {
-        if (currentState == null)
+        public bool CanCancel()
         {
-            return true;
-        }
-        else
-        {
-            var state = FindState<T>() as State;
-            if (state != null)
-            {
-                return currentState.IsValidNextState(state);
-            }
-        }
-        return false;
-    }
-
-    /**
-     *  Enters new state
-     *
-     *  Before entering new state old state will check if it is a valid state to execute
-     *  transaction
-     *
-     *  Order of execution:
-     *
-     *  willExitWithNextState will be called on current state
-     *  didEnterWithPreviousState will be called on new state
-     *
-     *  @return true if entered, false otherwise
-     */
-    //template<typename T>
-    public bool EnterState<T>() where T : State
-    {
-        var state = FindState<T>() as State;
-        if (state != null)
-        {
-            if (currentState == null)
-            {
-                currentState = state;
-                currentState.DidEnterWithPreviousState(null);
-                return true;
-            }
-            else
-            {
-                if (currentState.IsValidNextState(state))
-                {
-                    currentState.WillExitWithNextState(state);
-                    state.DidEnterWithPreviousState(currentState);
-                    currentState = state;
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     *  Enters new state without any check if next state is valid
-     *
-     *
-     *  Order of execution:
-     *
-     *  willExitWithNextState will be called on current state
-     *  didEnterWithPreviousState will be called on new state
-     *
-     *  @return true if entered, false otherwise
-     */
-    //template<typename T>
-    public bool SetState<T>() where T : State
-    {
-        var state = FindState<T>() as State;
-        var previousState = currentState == null ? "NULL" : currentState.GetStateType();
-
-        if (previousState == state.GetStateType())
             return false;
-
-        if (state != null)
-        {
-            if (currentState == null)
-            {
-                currentState = state;
-                currentState.DidEnterWithPreviousState(null);
-                return true;
-            }
-            else
-            {
-                currentState.WillExitWithNextState(state);
-                state.DidEnterWithPreviousState(currentState);
-                currentState = state;
-                return true;
-            }
         }
-        return false;
-    }
 
-    /**
-     *  Update state machine delta time, this will call updateWithDeltaTime on current state
-     *
-     *  @param delta delta time
-     */
-    public void UpdateWithDeltaTime()
-    {
-        if (currentState != null)
+        public void AddCombo(AttackInput nextCombo)
         {
-            currentState.UpdateState();
+            Transition.Add(nextCombo);
         }
     }
 
-    /**
-     *  Get current state
-     *
-     *  @return current state
-     */
-    public State GetState()
+    public class ComboTree
     {
-        return currentState;
+        public AttackNode BaseCombo;
+
+        public void SetRootCombo(AttackNode combo)
+        {
+            BaseCombo = combo;
+        }
     }
 
-    ~StateMachine()
+    public class ComboTreeProcessor
     {
-        currentState = null;
+        private ComboTree tree;
+        private AttackNode[] attackHistory; // Make this into a circular Buffer
+
+        public ComboTreeProcessor()
+        {
+            tree = new ComboTree();
+        }
+
+        public void ResetCombo()
+        {
+        }
+
+        public bool IsComboPartiallyComplete()
+        {
+            return false;
+        }
+
+        public void ConnectNodes()
+        {
+        }
+
+        public void ExecuteMove(AttackNode attack)
+        {
+        }
     }
 
-}
-
-public abstract class State
-{
-    /**
-     *  Called when entering state
-     *
-     *  @param previousState previous state or null if this is the first state
-     */
-    public virtual void DidEnterWithPreviousState(State previousState) { }
-    /**
-     *  Called every frame by state machine
-     *
-     *  @param delta time
-     */
-    public virtual void UpdateState() { }
-    /**
-     *  Checks if next state is valid for transition
-     *
-     *  @param state next state
-     *
-     *  @return true if valid, false otherwise
-     */
-    public virtual bool IsValidNextState(State state) { return false; }
-    /**
-     *  Called when exiting current state
-     *
-     *  @param nextState next state
-     */
-    public virtual void WillExitWithNextState(State nextState) { }
-
-    public virtual string GetStateType() { return ""; }
-
-    /**
-     *  Get state machine
-     *
-     *  @return state machine
-     */
-    public StateMachine GetStateMachine()
+    public class InputBufferer
     {
-        return stateMachine;
-    }
+        public Queue<AttackInput> Buffer = new Queue<AttackInput>();
+        private AttackInput PreviousInput;
+        private AttackInput CurrentInput;
 
-    /**
-     *  Set State machine, this will be set when state has been added to state machine
-     *
-     *  @param stateMachine parent state machine
-     */
-    public void SetStateMachine(StateMachine sm)
-    {
-        stateMachine = sm;
-    }
+        public void BufferInput(AttackInput input)
+        {
+            Buffer.Enqueue(input);
+        }
 
-    protected StateMachine stateMachine;
-}
+        public void ClearBuffer()
+        {
+            Buffer.Clear();
+        }
 
+        public AttackInput GetCurrentInput()
+        {
+            return Buffer.Dequeue();
+        }
 
-public class PlayerIdle : State
-{
-    PlayerStateMachine playerStateMachine;
-    PlayerController player;
-
-    void Init()
-    {
-        playerStateMachine = stateMachine as PlayerStateMachine;
-        player = playerStateMachine.player;
-    }
-
-    public override void DidEnterWithPreviousState(State previousState)
-    {
-
-        if (playerStateMachine == null)
-            Init();
-
-        if (StageManager.IsStageFailed)
-            return;
-
-        if (StageManager.IsStageComplete)
-            return;
-
-        if (player.playerMovement.GotMovementInput)
-            playerStateMachine.SetState<PlayerFlying>();
-        else
-            player.SetPlayerAnimation(PlayerController.PlayerAnimation.Idle);
-
-
-    }
-
-    public override void UpdateState()
-    {
-
-        if (player.playerMovement.GotMovementInput)
-            playerStateMachine.SetState<PlayerFlying>();
-    }
-
-    public override string GetStateType()
-    {
-        return "Idle";
-    }
-}
-
-public class PlayerStateMachine : StateMachine
-{
-    public PlayerController player;
-
-    PlayerStateMachine(PlayerController p)
-    {
-        player = p;
-    }
-
-    public static PlayerStateMachine Create(PlayerController p)
-    {
-        PlayerStateMachine psm = new PlayerStateMachine(p);
-
-        return psm;
+        public AttackInput GetPreviousInput()
+        {
+            return Buffer.Dequeue();
+        }
     }
 }

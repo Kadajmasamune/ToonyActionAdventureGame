@@ -1,11 +1,12 @@
 from common import AttackInput
-
+from glm import * 
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
 
 
-ATTACK_TIME = 0.25
+ATTACK_TIME = 0.09
 COMBO_TIME = 0.32
+FLUSH_TIME = 0.16
 
 
 class ComboTree :
@@ -24,10 +25,36 @@ class ComboTreeProcessor :
 
     """
         State Machine for the combos 
+
+        Validate the inputs of the user and check if they are legal moves or not
+        
     """
     def __init__(self ):
         self.tree : ComboTree = ComboTree()
         self.connectNodes() # Bake Once.
+
+
+
+
+        self.light1 = AttackNode(AttackInput.Light)
+
+
+
+        self.light2 = AttackNode(AttackInput.Light)
+        self.heavy1 = AttackNode(AttackInput.Heavy)
+        self.heavy2 = AttackNode(AttackInput.Heavy)
+
+        self.light1.addCombo(self.light2)
+        self.light1.addCombo(self.heavy1)
+        self.heavy1.addCombo(self.heavy2)
+
+
+        self.attackTime = ATTACK_TIME
+        self.comboTime = COMBO_TIME
+        
+        self.lastAttackTime = -999   
+
+        self.AttackHistory = []   # stores attack history
 
     def resetCombo(self) -> None : 
 
@@ -76,10 +103,11 @@ class AttackNode:
 
 
 #Example : 
-# light1 = AttackNode(AttackInput.Light)
-# Heavy1 = AttackNode(AttackInput.Heavy)
-
-# light1.addCombo(Heavy1)
+light1 = AttackNode(AttackInput.Light)
+Heavy1 = AttackNode(AttackInput.Heavy)
+heavy2 = AttackNode(AttackInput.Heavy)
+light1.addCombo(Heavy1)
+Heavy1.addCombo(heavy2)
 
 def print_tree(root):
     visited = set()
@@ -105,4 +133,4 @@ def print_tree(root):
 
 
 
-# print_tree(light1)
+print_tree(light1)
