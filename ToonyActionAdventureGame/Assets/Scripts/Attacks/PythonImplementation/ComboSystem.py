@@ -1,5 +1,5 @@
-from enum import Enum
-from collections import deque
+from common import *
+from Combos import * 
 import pygame
 
 #We Now Want to make some sort of Tree that Defines all the possible paths a combo can take and be merged into
@@ -14,11 +14,6 @@ import pygame
 #Cancellations of Animations as well as blending 
 
 
-
-class State(Enum):
-    Idle = 0
-    Attacking = 1
-
 class Player :
     def __init__(self , startingState : State):
         self.currentState : State = State()
@@ -27,21 +22,7 @@ class Player :
             self.currentState = State.Idle
         self.currentState = startingState
 
-class AttackInput(Enum) : 
-    Light = 0 
-    Heavy = 1
 
-class ComboSequence: 
-    #Each Node will simply be a sequence of Inputs 
-    #And then the next possible chains it can connect with 
-    def __init__(self , baseCombo):
-        self.baseCombo: list[AttackInput] = baseCombo  
-        self.__nextCombo : list[ComboSequence] = []
-        self.frames = 0 
-
-        
-    def addCombo(self , nextCombo) -> None:
-        return self.__nextCombo.append(nextCombo) 
 
 class InputBufferer: 
     def __init__(self):
@@ -50,66 +31,31 @@ class InputBufferer:
         self.previousInput : AttackInput = None
         self.currentInput : AttackInput = None
 
+
+
     def bufferInput (self, AttackInput : AttackInput) -> None  :
         return self.Buffer.append(AttackInput)
     
+
     def flushBuffer(self) -> None :
-        if len(self.Buffer) > 0 :
-            self.Buffer.pop() 
+        return self.Buffer.pop if (len(self.Buffer) > 0) else None 
+
 
     def GetCurrentInput(self) :
         """
             The Element that is to be Popped out of the Queue is the current Input.
         """ 
-        return self.Buffer[-1] if (len(self.Buffer) > 0) else None
-    
+        # return self.Buffer[-1] if (len(self.Buffer) > 0) else None
+        return self.Buffer[0] if (len(self.Buffer) > 0) else None 
+
+
     def GetPreviousInput(self):
         """
             The Element that was previously popped will be deduced as the previous input.
         """
-        return self.Buffer[-2] if len(self.Buffer) >= 1 else None
-    
-class Combo1(ComboSequence) :
-    def __init__(self):
-        super().__init__([AttackInput.Light , AttackInput.Heavy , AttackInput.Light])
-        super().addCombo(ComboSequence([AttackInput.Light , AttackInput.Heavy , AttackInput.Heavy]))
+        # return self.Buffer[-2] if (len(self.Buffer) >= 1) else None
+        return self.Buffer[1] if (len(self.Buffer) >= 1) else None 
 
-class ComboTree :
-    """
-        Essentially, Each Node will simply be a sequence of Attack States , Light or Heavy Attacks.
-        This will be a Decision Tree, which will mark all the legal moves a user can make per input
-    """    
-    def __init__(self , baseCombo):
-        self.baseCombo : ComboSequence = baseCombo
-
-    def setRootCombo(self , combo) : 
-        self.baseCombo = combo
-
-
-class ComboTreeProcessor : 
-    def __init__(self):
-        self.tree : ComboTree = ComboTree()
-        #self.connectNodes() # Bake Once.
-
-    def resetCombo(self) -> None : 
-
-        return 
-
-    def isComboPartiallyComplete (self) -> bool :
-        """
-            A combo is only partially complete if at least one or more inputs of the combo sequence have been inputted by the user
-            in a given combo time or a set interval of frames 
-
-            If Combo is partially complete : we return to the default state , which is idle.
-        """
-
-        return False  
-    
-    def connectNodes() -> None  : 
-        return 
-    
-    def ExecuteMove(combo) -> None: 
-        return 
 
 class Pygame:
     """
@@ -123,12 +69,32 @@ class Pygame:
         self.screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption(self.title)
         self.clock = pygame.time.Clock()
+        self.deltaTime  = 0 
+        self.currentTime = 0 
 
+        self.attackTime = ATTACK_TIME
+        self.comboTime = COMBO_TIME
+
+        #Attack System :
         self.inputBufferer = InputBufferer()
-        self.comboProcessor = ComboTreeProcessor()
-        self.comboTree = ComboTree()
-        self.combo = Combo1()
+        
+        #Root Combo
+        self.light1 = AttackNode(AttackInput.Light)
 
+
+
+        self.light2 = AttackNode(AttackInput.Light)
+        self.heavy1 = AttackNode(AttackInput.Heavy)
+        self.heavy2 = AttackNode(AttackInput.Heavy)
+
+        self.light1.addCombo(self.light2)
+        self.light1.addCombo(self.heavy1)
+        self.heavy1.addCombo(self.heavy2)
+
+
+    def initAttackSystem(self):
+        return
+    
 
     def GetAttackInput(self):
         for event in pygame.event.get():
@@ -141,21 +107,26 @@ class Pygame:
                     return AttackInput.Light
                 elif event.button == 3:  # right click
                     return AttackInput.Heavy
-        return None
-
+        return None            
+            
     def Update(self):
         running = True
         while running:
+            self.deltaTime = self.clock.tick(60) / 1000
+            self.currentTime = pygame.time.get_ticks()
+
             attack = self.GetAttackInput()
-            
+
             if attack == "QUIT":
                 break
             
             if attack:
                 # print(attack)
-                    
+                
                 self.inputBufferer.bufferInput(attack)
-                print(self.inputBufferer.Buffer)
+                
+                
+                # print(self.inputBufferer.Buffer)
                 # self.inputBufferer.flushBuffer()
 
 
@@ -163,6 +134,8 @@ class Pygame:
             self.screen.fill((30, 30, 30))  
             pygame.display.flip()
             self.clock.tick(60)  
+
+
 
 
 def main() -> None : 
