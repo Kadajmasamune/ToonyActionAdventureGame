@@ -6,9 +6,11 @@ public class AnimatorController : MonoBehaviour
 
     public float moveX;
     public float moveY;
+    public bool Jump; 
 
     private int MoveXHash;
     private int MoveYHash;
+    private int JumpHash;
 
     private void Awake()
     {
@@ -16,14 +18,17 @@ public class AnimatorController : MonoBehaviour
 
         MoveXHash = Animator.StringToHash("moveX");
         MoveYHash = Animator.StringToHash("moveY");
+        JumpHash = Animator.StringToHash("Jump");
 
         moveX = 0f;
         moveY = 0f;
+        Jump = false;
     }
 
     private void Update()
     {
         animator.SetFloat(MoveXHash, moveX);
         animator.SetFloat(MoveYHash, moveY);
+        animator.SetBool(JumpHash, Jump);
     }
 }

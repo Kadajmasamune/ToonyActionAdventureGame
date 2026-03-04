@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq.Expressions;
+using UnityEngine;
 
 [RequireComponent(typeof(AnimatorController))]
 public class PlayerController : MonoBehaviour
@@ -10,17 +11,33 @@ public class PlayerController : MonoBehaviour
     [Header("Acceleration")]
     [SerializeField] private float accel = 50f;
 
+    [Header("Vectors")]
+    private Vector3 velocity;
+    private Vector3 desiredVelocity;
+
+    [Header("Jump")]
+    [SerializeField] private float JumpForce = 4f;
+    [SerializeField] private float Gravity;
+    [SerializeField] private float GroundCheckDistance; 
+    
     [Header("Rotation")]
     [SerializeField] private float rotationSharpness = 25f;
     [SerializeField] private float turnInPlaceThreshold = 0.2f;
 
-    [SerializeField] private Transform cameraTransform;
 
-    private AnimatorController animator;
-    private Vector3 velocity;
-    private Vector3 desiredVelocity;
+    [Header("Inputs")]
+    private Vector2 input;
+    private bool JumpInput;
+
+    [Header("LayerMasks")]
+    public LayerMask GroundLayer;
+    
+    
 
     private float inputYaw;
+    [SerializeField] private Transform cameraTransform;
+    
+    private AnimatorController animator;
 
     private void Awake()
     {
@@ -28,12 +45,18 @@ public class PlayerController : MonoBehaviour
         if (!cameraTransform) cameraTransform = Camera.main.transform;
     }
 
+    private void Start()
+    {
+        //Application.targetFrameRate = 60;
+    }
     private void Update()
     {
         float dt = Time.deltaTime;
 
         ReadInput();
+        ComputeMovement();
         UpdateVelocity(dt);
+        ApplyGravity(dt);
         ApplyMovement(dt);
         UpdateRotation(dt);
         UpdateAnimator();
@@ -41,22 +64,35 @@ public class PlayerController : MonoBehaviour
 
     private void ReadInput()
     {
-        Vector2 input = new Vector2(
+        // Should ONLY Read Input 
+        input = new Vector2(
             Input.GetAxisRaw("Horizontal"),
             Input.GetAxisRaw("Vertical")
         );
 
+        JumpInput = Input.GetKeyDown(KeyCode.Space);
+    }
+    
+    private void ComputeMovement()
+    {
         float magnitude = Mathf.Clamp01(input.magnitude);
 
         Vector3 camForward = Vector3.ProjectOnPlane(cameraTransform.forward, Vector3.up).normalized;
         Vector3 camRight = Vector3.ProjectOnPlane(cameraTransform.right, Vector3.up).normalized;
 
-        Vector3 moveDir = camForward * input.y + camRight * input.x;
+        Vector3 moveDir = (camForward * input.y) + (camRight * input.x);
+
+        if (JumpInput && isGrounded())
+        {
+            velocity.y = JumpForce;
+        }
+
 
         if (moveDir.sqrMagnitude > 0f)
             moveDir.Normalize();
 
         bool sprinting = magnitude > 0f && Input.GetKey(KeyCode.LeftShift);
+
         float speed = sprinting ? sprintSpeed : walkSpeed;
 
         desiredVelocity = moveDir * speed * magnitude;
@@ -70,17 +106,30 @@ public class PlayerController : MonoBehaviour
             inputYaw = 0f;
         }
     }
-
     private void UpdateVelocity(float dt)
     {
-        velocity = Vector3.MoveTowards(
-            velocity,
+        Vector3 horizontalVelocity = new Vector3(velocity.x, 0f, velocity.z);
+
+        horizontalVelocity = Vector3.MoveTowards(
+            horizontalVelocity,
             desiredVelocity,
             accel * dt
         );
 
-        if (desiredVelocity.sqrMagnitude < 0.0001f)
-            velocity = Vector3.zero;
+        velocity.x = horizontalVelocity.x;
+        velocity.z = horizontalVelocity.z;
+    }
+
+    private void ApplyGravity (float dt )
+    {
+        if (!isGrounded())
+        {
+            velocity.y += Gravity * dt ;
+        }
+        else if (velocity.y < 0)
+        {
+            velocity.y = 0f; 
+        }
     }
 
     private void ApplyMovement(float dt)
@@ -90,9 +139,11 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateRotation(float dt)
     {
-        if (velocity.sqrMagnitude > 0.001f)
+        Vector3 horizontalVelocity = new Vector3(velocity.x, 0f, velocity.z);
+
+        if (horizontalVelocity.sqrMagnitude > 0.001f)
         {
-            Quaternion targetRot = Quaternion.LookRotation(velocity.normalized, Vector3.up);
+            Quaternion targetRot = Quaternion.LookRotation(horizontalVelocity.normalized, Vector3.up);
             transform.rotation = Quaternion.Slerp(
                 transform.rotation,
                 targetRot,
@@ -108,6 +159,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public bool isGrounded ()
+    {
+        return Physics.Raycast(transform.position, Vector3.down, GroundCheckDistance, GroundLayer);
+    }
     private void UpdateAnimator()
     {
         Vector3 localVel = transform.InverseTransformDirection(velocity);
@@ -132,7 +187,8 @@ public class PlayerController : MonoBehaviour
 
         animator.moveX = x;
         animator.moveY = y;
+        animator.Jump = JumpInput;
     }
 
-
+    
 }

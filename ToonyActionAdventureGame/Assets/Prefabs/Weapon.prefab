@@ -133,6 +133,7 @@ SkinnedMeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   serializedVersion: 2
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
@@ -276,14 +277,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3322917662898750867}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.00000017886852, y: -0.000000004876237, z: -0.027251452, w: 0.99962866}
+  m_LocalRotation: {x: 0.00000013656881, y: 0.000000115614405, z: -0.6867483, w: 0.72689533}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8727191942036101157}
   m_Father: {fileID: 6216541027309697107}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -86.747}
 --- !u!1 &3516501896331057984
 GameObject:
   m_ObjectHideFlags: 0
