@@ -10,15 +10,13 @@ public class InputBufferer : MonoBehaviour
 
     public Queue<AttackInput> Buffer;
 
+
+
     private void Start()
     {
         Buffer = new Queue<AttackInput>();
     }
 
-    public void BufferInput(AttackInput input)
-    {
-        Buffer.Enqueue(input);
-    }
 
     public void ClearBuffer()
     {

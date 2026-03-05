@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb5f2e3538adeb247a1218f12541bcc4, type: 3}
+  m_Name: HeavyAttack
+  m_EditorClassIdentifier: Assembly-CSharp::Attack
+  StartUpFrames: 0
+  ActiveFrames: 0
+  RecoveryFrames: 0
+  CancelWindowStartFrame: 0
+  CancelWindowEndFrame: 0
+  Damage: 0
+  forwardMovementImpulse: 0
+  speedMultiplierBonus: 0
+  hitStunInflicted: 0
+  hitStopDuration: 0
+  isAirAttack: 0
+  AllowedNextAttacks: 0
