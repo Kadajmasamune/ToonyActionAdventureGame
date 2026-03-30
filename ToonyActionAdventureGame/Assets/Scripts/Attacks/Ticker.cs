@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class Ticker : MonoBehaviour
 {
     private const float tickRate = 1f / 60f; //60 Ticks per second 
-    private float tickTimer;
+    private float accumulator;
 
     public Attack[] Attacks;
 
@@ -36,11 +36,11 @@ public class Ticker : MonoBehaviour
 
     private void Update()
     {
-        tickTimer += Time.deltaTime;
+        accumulator += Time.deltaTime;
 
-        while (tickTimer >= tickRate)
+        while (accumulator >= tickRate)
         {
-            tickTimer -= tickRate;
+            accumulator -= tickRate;
             CombatTick();
         }
     }
@@ -119,3 +119,36 @@ public class Ticker : MonoBehaviour
         comboIndex++;
     }
 }
+
+
+public class TickerProt : MonoBehaviour
+{
+	private const float tickRate = 1f/60f;  //How much a tick costs
+	private float accumulator = 0f; //Wallet  
+
+	private int currentTick = 0; //Total lifetime Ticks 
+
+
+
+	private void Update () 
+	{
+		accumulator += Time.deltaTime ; //You're paid over frames.
+		while(canTick()) 
+		{
+			accumulator -= tickRate ; 
+			currentTick++ ; 
+
+		}
+
+	}
+	
+
+
+	private bool canTick ()  
+	{
+		return accumulator >= tickRate; //If we've accumulated enough time, tick 
+	}
+
+
+}
+
