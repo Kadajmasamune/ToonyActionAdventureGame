@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class Ticker : MonoBehaviour
 {
-    private const float tickRate = 1f / 60f;
+    private const float tickRate = 1f / 60f; //60 Ticks per second 
     private float tickTimer;
 
     public Attack[] Attacks;
