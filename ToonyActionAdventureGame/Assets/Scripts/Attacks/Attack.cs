@@ -12,4 +12,7 @@ public class Attack : FrameData
     public bool isAirAttack;
     public InputBufferer.AttackInput AllowedNextAttacks;
     public InputBufferer.AttackInput RequiredInput;
+
+    [Header("Animation Clip")]
+    public AnimationClip clip;
 }

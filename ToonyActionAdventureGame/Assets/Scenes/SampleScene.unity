@@ -1166,6 +1166,7 @@ GameObject:
   - component: {fileID: 1919010988}
   - component: {fileID: 1919010987}
   - component: {fileID: 1919010986}
+  - component: {fileID: 1919010989}
   m_Layer: 0
   m_Name: ComboSystem
   m_TagString: Untagged
@@ -1185,9 +1186,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7d5035a790bf1a4ba55ec686345d267, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Ticker
-  Attacks:
-  - {fileID: 11400000, guid: f15ffff88523fbf499b402a04bc401f4, type: 2}
-  - {fileID: 11400000, guid: 8217f9f263d97124db75b64704d42846, type: 2}
 --- !u!114 &1919010987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1200,6 +1198,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6a6baf8d05c82741ad7c919d48732c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InputBufferer
+  TicksToReset: 90
 --- !u!4 &1919010988
 Transform:
   m_ObjectHideFlags: 0
@@ -1215,6 +1214,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1919010989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1919010985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a9fb8a8771b4c4686b32132e5d02ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AttackSystem
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

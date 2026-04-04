@@ -70,11 +70,11 @@ public class Player : MonoBehaviour
         JumpPressed = UnityEngine.Input.GetKeyDown(KeyCode.Space);
         SprintHeld = UnityEngine.Input.GetKey(KeyCode.LeftShift);
 
-        if (UnityEngine.Input.GetKeyDown(KeyCode.Mouse0))
-            inputBufferer.Buffer.Enqueue(InputBufferer.AttackInput.Light);
+        //if (UnityEngine.Input.GetKeyDown(KeyCode.Mouse0))
+        //    inputBufferer.Buffer.Enqueue(InputBufferer.AttackInput.Light);
 
-        if (UnityEngine.Input.GetKeyDown(KeyCode.Mouse1))
-            inputBufferer.Buffer.Enqueue(InputBufferer.AttackInput.Heavy);
+        //if (UnityEngine.Input.GetKeyDown(KeyCode.Mouse1))
+        //    inputBufferer.Buffer.Enqueue(InputBufferer.AttackInput.Heavy);
     
 
     }

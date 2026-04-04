@@ -7,7 +7,8 @@ public abstract class FrameData: ScriptableObject
     public int ActiveFrames;
     public int RecoveryFrames;
 
-    public int CancelWindowStartFrame;
-    public int CancelWindowEndFrame;
+    public int[] CancelWindowStartFrames = { };
+    public int[] CancelWindowEndFrames =  { };
 
+    
 }
