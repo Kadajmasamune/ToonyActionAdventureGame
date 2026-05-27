@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "Create Attack" , menuName = "Attacks Scriptable Object")]
+[CreateAssetMenu(fileName = "Create Attack", menuName = "Attacks Scriptable Object")]
 public class Attack : FrameData
 {
     [Header("Attack Data")]
@@ -10,6 +10,10 @@ public class Attack : FrameData
     public float hitStunInflicted;
     public float hitStopDuration;
     public bool isAirAttack;
+
+    public CancelWindow[] cancelWindows;
+
+    [Header("Attack Inputs")]
     public InputBufferer.AttackInput AllowedNextAttacks;
     public InputBufferer.AttackInput RequiredInput;
 

@@ -4,30 +4,29 @@ using UnityEngine;
 
 public class InputBufferer : MonoBehaviour
 {
-    private Ticker ticker;
+
 
     private AttackInput[] AttackHistory;
-
     public enum AttackInput { Light, Heavy }
     public Queue<AttackInput> AttackBuffer;
 
 
     [Header("Ticker Configuration")]
+    private Ticker ticker;
     [SerializeField] private int TicksToReset;
-
-
-
     private int nextResetTick = 0;
+
+
+
 
     private void Start()
     {
         AttackBuffer = new Queue<AttackInput>();
+        ticker = FindFirstObjectByType<Ticker>();
+
         if (ticker == null)
-        {
-            ticker = FindFirstObjectByType<Ticker>();
-        }
-        else
             Debug.LogError("Ticker Not Found");
+        
 
         nextResetTick = TicksToReset + ticker.CurrentTick;
 
@@ -36,8 +35,11 @@ public class InputBufferer : MonoBehaviour
     private void Update()
     {
         BufferInput();
-        //HandleBufferedInput(); 
+
         ClearBuffer();
+
+
+
         //Debug.Log(nextResetTick);
     }
 
@@ -47,26 +49,21 @@ public class InputBufferer : MonoBehaviour
         {
             AttackBuffer.Enqueue(AttackInput.Light);
             nextResetTick = ticker.CurrentTick + TicksToReset; //Update
+            return;
 
         }
         if (Input.GetMouseButtonDown((int)AttackInput.Heavy))
         {
             AttackBuffer.Enqueue(AttackInput.Heavy);
             nextResetTick = ticker.CurrentTick + TicksToReset; //Update
+            return;
         }
 
     }
 
-    //Finish Handling Buffered Input and Decide the Scope
-    private void HandleBufferedInput ()
-    {
-        if (AttackBuffer.Count == 0)
-            return;
 
-        AttackInput input = AttackBuffer.Dequeue();
 
-        
-    }
+    
 
     private void ClearBuffer()
     {

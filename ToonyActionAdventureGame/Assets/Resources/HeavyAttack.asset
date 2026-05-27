@@ -15,8 +15,8 @@ MonoBehaviour:
   StartUpFrames: 0
   ActiveFrames: 0
   RecoveryFrames: 0
-  CancelWindowStartFrame: 0
-  CancelWindowEndFrame: 0
+  CancelWindowStartFrames: 
+  CancelWindowEndFrames: 
   Damage: 0
   forwardMovementImpulse: 0
   speedMultiplierBonus: 0
@@ -24,3 +24,5 @@ MonoBehaviour:
   hitStopDuration: 0
   isAirAttack: 0
   AllowedNextAttacks: 0
+  RequiredInput: 1
+  clip: {fileID: 0}

@@ -1,5 +1,6 @@
-﻿using UnityEngine;
-
+﻿using System;
+using UnityEngine;
+using EntityStateMachines;
 
 [RequireComponent(typeof(AnimatorController))]
 public class Player : MonoBehaviour
@@ -30,9 +31,12 @@ public class Player : MonoBehaviour
 
     public AnimatorController Animator { get; set; }
 
-    private PlayerState currentState;
+
+    public EntityStateMachine<Player> playerStateMachine;
+
 
     [SerializeField] private GameObject AttackSystem;
+
     private InputBufferer inputBufferer;
 
     void Awake()
@@ -40,21 +44,23 @@ public class Player : MonoBehaviour
         Animator = GetComponent<AnimatorController>();
         if (!cameraTransform)
             cameraTransform = Camera.main.transform;
+
     }
 
     void Start()
     {
-        inputBufferer = AttackSystem.GetComponent<InputBufferer>(); 
-
-        SwitchState(new GroundedState());
+        inputBufferer = AttackSystem.GetComponent<InputBufferer>();
+        playerStateMachine = new EntityStateMachine<Player>(this);
+        
+        playerStateMachine.SwitchStates(new GroundedState());
     }
 
     void Update()
     {
         ReadInput();
 
-        currentState.HandleInput(this);
-        currentState.Update(this);
+        playerStateMachine.currentState.HandleInput(this);
+        playerStateMachine.currentState.Update(this); 
 
         Animator.UpdateMovement(Velocity, walkSpeed, sprintSpeed);
         UpdateRotation();
@@ -78,14 +84,6 @@ public class Player : MonoBehaviour
     
 
     }
-
-    public void SwitchState(PlayerState newState)
-    {
-        currentState?.Exit(this);
-        currentState = newState;
-        currentState.Enter(this);
-    }
-
     public bool IsGrounded()
     {
         return Physics.Raycast(
@@ -129,19 +127,11 @@ public class Player : MonoBehaviour
         );
     }
 }
-
-public abstract class PlayerState
-{
-    public virtual void Enter(Player p) { }
-    public virtual void Exit(Player p) { }
-    public abstract void HandleInput(Player p);
-    public abstract void Update(Player p);
-}
-
-public class GroundedState : PlayerState
+public class GroundedState : State<Player>
 {
     public override void Enter(Player p)
     {
+
         if (p.Velocity.y < 0)
             p.Velocity = new Vector3(p.Velocity.x, 0, p.Velocity.z);
     }
@@ -150,12 +140,13 @@ public class GroundedState : PlayerState
     {
         if (p.JumpPressed)
         {
-            p.SwitchState(new JumpState());
+            p.playerStateMachine.SwitchStates(new JumpState());
         }
     }
 
     public override void Update(Player p)
     {
+
         Vector3 moveDir = p.GetCameraRelativeInput();
 
         float speed = p.SprintHeld && moveDir.sqrMagnitude > 0
@@ -177,11 +168,22 @@ public class GroundedState : PlayerState
         p.transform.position += p.Velocity * Time.deltaTime;
 
         if (!p.IsGrounded())
-            p.SwitchState(new FallState());
+            p.playerStateMachine.SwitchStates(new FallState());
+    }
+
+    public override void Exit(Player p)
+    {
+        // No persistent grounded-only flags currently exist,
+        // - coyote timers
+        // - grounded animation flags
+        // - footstep states
+
+        // Example future-safe cleanup:
+        // p.Animator.SetGrounded(false);
     }
 }
 
-public class JumpState : PlayerState
+public class JumpState : State<Player>
 {
     public override void Enter(Player p)
     {
@@ -198,15 +200,27 @@ public class JumpState : PlayerState
 
     public override void Update(Player p)
     {
+
         ApplyAirMovement(p);
         ApplyGravity(p);
 
         p.transform.position += p.Velocity * Time.deltaTime;
 
         if (p.Velocity.y <= 0)
-            p.SwitchState(new FallState());
+            p.playerStateMachine.SwitchStates(new FallState());
     }
 
+    public override void Exit(Player p)
+    {
+        // Leaving jump state → ensure jump animation doesn't get stuck
+        p.Animator.ResetTriggerJump();
+
+        // Optional safety clamp (prevents weird upward carry)
+        if (p.Velocity.y > 0)
+        {
+            p.Velocity = new Vector3(p.Velocity.x, p.Velocity.y, p.Velocity.z);
+        }
+    }
     void ApplyAirMovement(Player p)
     {
         Vector3 moveDir = p.GetCameraRelativeInput();
@@ -227,8 +241,14 @@ public class JumpState : PlayerState
         p.Velocity += Vector3.up * p.gravity * Time.deltaTime;
     }
 }
-public class FallState : PlayerState
+public class FallState : State<Player>
 {
+    public override void Enter(Player p)
+    {
+        // Entering fall state → ensure jump trigger is cleared
+        p.Animator.ResetTriggerJump();
+    }
+
     public override void HandleInput(Player p) { }
 
     public override void Update(Player p)
@@ -239,7 +259,7 @@ public class FallState : PlayerState
         p.transform.position += p.Velocity * Time.deltaTime;
 
         if (p.IsGrounded())
-            p.SwitchState(new GroundedState());
+            p.playerStateMachine.SwitchStates(new GroundedState());
     }
 
     void ApplyAirMovement(Player p)
@@ -255,6 +275,20 @@ public class FallState : PlayerState
         );
 
         p.Velocity = new Vector3(horizontal.x, p.Velocity.y, horizontal.z);
+    }
+
+    public override void Exit(Player p)
+    {
+        // Landing cleanup hook
+
+        // Example: reset vertical velocity if needed
+        if (p.Velocity.y < 0)
+        {
+            p.Velocity = new Vector3(p.Velocity.x, 0, p.Velocity.z);
+        }
+
+        // Optional: landing animation trigger
+        // p.Animator.TriggerLand();
     }
 }
 

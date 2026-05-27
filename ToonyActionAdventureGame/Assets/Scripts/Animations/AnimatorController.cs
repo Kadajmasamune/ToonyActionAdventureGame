@@ -62,10 +62,8 @@ public class AnimatorController : MonoBehaviour
         animator.ResetTrigger(JumpHash);
     }
 
-    public void PlayAttack(InputBufferer.AttackInput input , int comboIndex)
+    public void PlayAttack(int comboIndex)
     {
-        string animName = input == InputBufferer.AttackInput.Light ? "LightAttack" : "HeavyAttack";
-        animName += comboIndex.ToString(); // Optional: select different animation per combo index
-        animator.Play(animName);
+        animator.SetInteger("AttackIndex", comboIndex);   
     }
 }
