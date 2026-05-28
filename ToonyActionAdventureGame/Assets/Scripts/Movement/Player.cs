@@ -35,7 +35,6 @@ public class Player : MonoBehaviour
     public EntityStateMachine<Player> playerStateMachine;
 
 
-    [SerializeField] private GameObject AttackSystem;
 
     private InputBufferer inputBufferer;
 
@@ -49,7 +48,6 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        inputBufferer = AttackSystem.GetComponent<InputBufferer>();
         playerStateMachine = new EntityStateMachine<Player>(this);
         
         playerStateMachine.SwitchStates(new GroundedState());

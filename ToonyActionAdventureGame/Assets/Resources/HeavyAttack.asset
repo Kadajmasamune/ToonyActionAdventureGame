@@ -12,17 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb5f2e3538adeb247a1218f12541bcc4, type: 3}
   m_Name: HeavyAttack
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  StartUpFrames: 0
-  ActiveFrames: 0
-  RecoveryFrames: 0
-  CancelWindowStartFrames: 
-  CancelWindowEndFrames: 
+  StartUpFrames: 4
+  ActiveFrames: 6
+  RecoveryFrames: 8
   Damage: 0
   forwardMovementImpulse: 0
   speedMultiplierBonus: 0
   hitStunInflicted: 0
   hitStopDuration: 0
   isAirAttack: 0
+  cancelWindows: []
   AllowedNextAttacks: 0
   RequiredInput: 1
-  clip: {fileID: 0}
+  clip: {fileID: -203655887218126122, guid: 332f6a54c370e304f8fac36e909557b6, type: 3}

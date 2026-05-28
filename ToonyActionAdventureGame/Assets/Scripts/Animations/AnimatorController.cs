@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AnimatorController : MonoBehaviour
@@ -62,8 +63,35 @@ public class AnimatorController : MonoBehaviour
         animator.ResetTrigger(JumpHash);
     }
 
-    public void PlayAttack(int comboIndex)
+    public void PlayAttack(int animationHash)
     {
-        animator.SetInteger("AttackIndex", comboIndex);   
+
+        animator.SetTrigger(animationHash);
     }
+
+    public void StopAttack(int animationHash)
+    {
+
+        animator.SetTrigger(animationHash);
+    }
+}
+
+
+public class AnimatorStateMachine : MonoBehaviour
+{
+    public Animator aniamtor; 
+
+    public int currentAnimationHash;
+
+    private void Awake()
+    {
+        aniamtor = GetComponent<Animator>();    
+    }
+
+    public void switchAnimation(int newAnimationHash)
+    {
+        currentAnimationHash = newAnimationHash;
+    }
+
+
 }

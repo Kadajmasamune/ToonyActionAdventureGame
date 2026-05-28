@@ -6,17 +6,19 @@ public class InputBufferer : MonoBehaviour
 {
 
 
-    private AttackInput[] AttackHistory;
     public enum AttackInput { Light, Heavy }
+
     public Queue<AttackInput> AttackBuffer;
+
+    public AttackInput attackInput;
+
+    private AttackInput[] AttackHistory;
 
 
     [Header("Ticker Configuration")]
     private Ticker ticker;
     [SerializeField] private int TicksToReset;
     private int nextResetTick = 0;
-
-
 
 
     private void Start()
@@ -35,10 +37,8 @@ public class InputBufferer : MonoBehaviour
     private void Update()
     {
         BufferInput();
-
+        HandleBufferer();
         ClearBuffer();
-
-
 
         //Debug.Log(nextResetTick);
     }
@@ -62,8 +62,14 @@ public class InputBufferer : MonoBehaviour
     }
 
 
+    private void HandleBufferer()
+    {
+        if (AttackBuffer.Count == 0)
+            return;
 
-    
+        attackInput = AttackBuffer.Peek();
+    }
+
 
     private void ClearBuffer()
     {

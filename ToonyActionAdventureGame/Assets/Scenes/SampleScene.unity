@@ -267,6 +267,56 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6659987376489062885, guid: 206e742077fdaf84ab9a03046dccda3d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.15481651
+      objectReference: {fileID: 0}
+    - target: {fileID: 6659987376489062885, guid: 206e742077fdaf84ab9a03046dccda3d,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.00000016950071
+      objectReference: {fileID: 0}
+    - target: {fileID: 6659987376489062885, guid: 206e742077fdaf84ab9a03046dccda3d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.000000074505806
+      objectReference: {fileID: 0}
+    - target: {fileID: 6659987376489062885, guid: 206e742077fdaf84ab9a03046dccda3d,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9697483
+      objectReference: {fileID: 0}
+    - target: {fileID: 6659987376489062885, guid: 206e742077fdaf84ab9a03046dccda3d,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.12810203
+      objectReference: {fileID: 0}
+    - target: {fileID: 6659987376489062885, guid: 206e742077fdaf84ab9a03046dccda3d,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.15703848
+      objectReference: {fileID: 0}
+    - target: {fileID: 6659987376489062885, guid: 206e742077fdaf84ab9a03046dccda3d,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.13607752
+      objectReference: {fileID: 0}
+    - target: {fileID: 6659987376489062885, guid: 206e742077fdaf84ab9a03046dccda3d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -11.871
+      objectReference: {fileID: 0}
+    - target: {fileID: 6659987376489062885, guid: 206e742077fdaf84ab9a03046dccda3d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -20.295
+      objectReference: {fileID: 0}
+    - target: {fileID: 6659987376489062885, guid: 206e742077fdaf84ab9a03046dccda3d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 18.108
+      objectReference: {fileID: 0}
     - target: {fileID: 7669258063034706329, guid: 206e742077fdaf84ab9a03046dccda3d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1924,7 +1974,15 @@ PrefabInstance:
         type: 3}
       insertIndex: 3
       addedObject: {fileID: 8466374204592652466}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3192441450695204820, guid: 2f5ff0a60ffb54c4e938e67d8388efc0,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1821994011}
+    - targetCorrespondingSourceObject: {fileID: 3192441450695204820, guid: 2f5ff0a60ffb54c4e938e67d8388efc0,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1821994010}
   m_SourcePrefab: {fileID: 100100000, guid: 2f5ff0a60ffb54c4e938e67d8388efc0, type: 3}
 --- !u!4 &1145336318 stripped
 Transform:
@@ -1984,6 +2042,43 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 893134227}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1821994005 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3192441450695204820, guid: 2f5ff0a60ffb54c4e938e67d8388efc0,
+    type: 3}
+  m_PrefabInstance: {fileID: 1145336317}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1821994010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1821994005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6a6baf8d05c82741ad7c919d48732c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InputBufferer
+  attackInput: 0
+  TicksToReset: 90
+--- !u!114 &1821994011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1821994005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1843dd8b0eedd934db94668593ba15fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatStateMachine
+  PossibleAttacks:
+  - {fileID: 11400000, guid: f15ffff88523fbf499b402a04bc401f4, type: 2}
+  - {fileID: 11400000, guid: 8217f9f263d97124db75b64704d42846, type: 2}
+  CurrentAttack: {fileID: 0}
+  bufferer: {fileID: 0}
 --- !u!1 &1919010985
 GameObject:
   m_ObjectHideFlags: 0
@@ -1993,12 +2088,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1919010988}
-  - component: {fileID: 1919010987}
   - component: {fileID: 1919010986}
-  - component: {fileID: 1919010989}
-  - component: {fileID: 1919010990}
   m_Layer: 0
-  m_Name: ComboSystem
+  m_Name: Ticker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2016,19 +2108,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7d5035a790bf1a4ba55ec686345d267, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Ticker
---- !u!114 &1919010987
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1919010985}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6a6baf8d05c82741ad7c919d48732c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InputBufferer
-  TicksToReset: 90
 --- !u!4 &1919010988
 Transform:
   m_ObjectHideFlags: 0
@@ -2044,33 +2123,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1919010989
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1919010985}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a9fb8a8771b4c4686b32132e5d02ec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AttackSystem
-  isPlayer: 0
---- !u!114 &1919010990
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1919010985}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1843dd8b0eedd934db94668593ba15fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CombatStateMachine
-  PossibleAttacks: []
-  CurrentAttack: {fileID: 0}
 --- !u!1001 &3895752994365261318
 PrefabInstance:
   m_ObjectHideFlags: 0
