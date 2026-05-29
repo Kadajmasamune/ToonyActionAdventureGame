@@ -65,13 +65,13 @@ public class AnimatorController : MonoBehaviour
 
     public void PlayAttack(int animationHash)
     {
-
+        animator.SetBool("isAttacking", true);
         animator.SetTrigger(animationHash);
     }
 
     public void StopAttack(int animationHash)
     {
-
+        animator.SetBool("isAttacking", false);
         animator.SetTrigger(animationHash);
     }
 }

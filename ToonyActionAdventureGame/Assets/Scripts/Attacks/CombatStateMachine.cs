@@ -157,7 +157,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     private void CacheAttackData(Attack attack)
     {
         float scale = 60f / attack.clip.frameRate;
-
+        
         currentAttackData = new AttackRuntimeData
         {
             startUp = Scale(attack.StartUpFrames, scale),

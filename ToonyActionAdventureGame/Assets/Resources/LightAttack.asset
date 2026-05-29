@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb5f2e3538adeb247a1218f12541bcc4, type: 3}
   m_Name: LightAttack
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  StartUpFrames: 6
-  ActiveFrames: 4
-  RecoveryFrames: 8
+  StartUpFrames: 15
+  ActiveFrames: 15
+  RecoveryFrames: 38
   Damage: 40
   forwardMovementImpulse: 0
   speedMultiplierBonus: 0
