@@ -1,31 +1,49 @@
 using Unity.Cinemachine;
 using UnityEngine;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
+
 public class CameraControllerCinemachine : MonoBehaviour
 {
+    [Header("Cinemachine Camera components")]
     private CinemachineCamera _cam;
+    private CinemachineOrbitalFollow _cam_OrbitalFollow;
+    private CinemachineRotationComposer _cam_RotComposer;
+    private CinemachineGroupFraming _cam_GroupFraming;
+    [SerializeField] private CinemachineTargetGroup _targetGroup;
 
-    [SerializeField] private float LockOnRadius;
 
-    private Transform LockOnTarget;
+    [Header("Target Tracking Settings")]
     private Player player;
-
-    private bool LockedOn; 
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private bool LockedOn;
+    private bool hasCameraReset = false;
+    private CinemachineTargetGroup.Target Enemy; 
+    [SerializeField] private float LockOnRadius;
+    [SerializeField] private LayerMask enemyLayer;
+    
     void Start()
     {
+
+        _cam = GetComponent<CinemachineCamera>();
+        _cam_OrbitalFollow = GetComponent <CinemachineOrbitalFollow>();
+        _cam_RotComposer = GetComponent <CinemachineRotationComposer>();
+        _cam_GroupFraming = GetComponent<CinemachineGroupFraming>();
+
+        player = FindFirstObjectByType<Player>();
         if (_cam == null)
             Debug.LogError("Cinemachine Camera Not Found...");
-
-        _cam = GetComponentInChildren<CinemachineCamera>(); 
+        
     }
 
     
     void Update()
     {
         HandleInput();
+
+        if (LockedOn)
+            LockOn();
+
+        else if(!LockedOn && !hasCameraReset)
+            ResetCamera(Enemy);
     }
 
     private void HandleInput()
@@ -35,18 +53,18 @@ public class CameraControllerCinemachine : MonoBehaviour
             Recenter();
         }
 
-        if(Input.GetKeyDown(KeyCode.Q) && !LockedOn)
+        if(Input.GetKeyDown(KeyCode.Q))
         {
-            LockOn(); 
+            LockedOn = !LockedOn;
         }
     }
 
     private void Recenter()
     {
-        
+
     }
 
-    private void LockOn()
+    private void LockOn(float targetWeight = 1 , float targetRadius = 1 ) 
     {
         // How do we find who to look at ? 
 
@@ -55,22 +73,68 @@ public class CameraControllerCinemachine : MonoBehaviour
         // --> Check if it's in range 
         // = Find best Candidate
 
-        LockedOn = true;
-        Transform LockOntarget = BestCandidateForLockOn();
 
+
+        int maxTargetCap = 2;
+        int enemyIndex = 1;
+
+
+        hasCameraReset = false; 
+
+        Transform lockOnCandidate = BestCandidateForLockOn();
+
+        if (lockOnCandidate == null)
+            return; // -- > No one to lock on to 
+
+
+        CinemachineTargetGroup.Target target = new CinemachineTargetGroup.Target();
+
+
+        target.Object = lockOnCandidate;
+        target.Weight = targetWeight;
+        target.Radius = targetRadius;
+
+
+        Enemy = target;
+
+        //Debug.Log($"Best Lock On Target : -- > {target.gameObject.name}");
         // --> Cinemachine Camera Motion Update
-        // --> Player movement Update ------------> Feed Request into Statemachine to introduce strafing 
+        // --> Player movement Update ------------> Feed Request into Statemachine to introduce strafin 
+
+        if(!_targetGroup.Targets.Contains(Enemy) && _targetGroup.Targets.Count < maxTargetCap)
+        {
+            _targetGroup.Targets.Add(Enemy);
+        }
+
+        // --> Free index is available 
+        _targetGroup.Targets[enemyIndex] = target; 
+
+        if (!_cam_GroupFraming.enabled)
+        {
+            _cam_GroupFraming.enabled = true;
+        }
     }
 
+    private void ResetCamera(CinemachineTargetGroup.Target target)
+    {
+        int enemyIndex = 1;
+
+        hasCameraReset = true;
+        _cam_GroupFraming.enabled = false;
+
+        _targetGroup.Targets[enemyIndex].Object = null;
+
+    }
 
     private Transform BestCandidateForLockOn()
     {
-        List<Collider> availableEnemies = new List<Collider>(Physics.OverlapSphere(player.transform.position, LockOnRadius));
+        List<Collider> availableEnemies = new(Physics.OverlapSphere(player.transform.position, LockOnRadius ,enemyLayer ));
 
         Vector3 forward = _cam.transform.forward;
 
         Transform bestTarget = null;
         float bestDot = 0;
+
 
         for (int i = 0; i < availableEnemies.Count; i++)
         {

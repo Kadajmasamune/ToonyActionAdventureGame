@@ -291,5 +291,31 @@ public class FallState : State<Player>
 }
 
 
+public class LockOnState : State<Player>
+{
+    // THIS ONLY CONTROLS MOVEMENT  
+    // EVERYTHING ATTACKS RELATED SHOULD BE HANDLED BY THE COMBATSTATEMACHINE
+
+    // -- > Strafing 
+    // -- > Orbital movement around enemy (Adjust rotation of player ) 
+   
+    public override void Enter(Player context)
+    {
+
+    }
+
+    public override void HandleInput(Player context)
+    {
+        
+    }
+
+    public override void Update(Player context)
+    {
+
+    }
+    public override void Exit(Player context)
+    {
+    }
+}
 
 
