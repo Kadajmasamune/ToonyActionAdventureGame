@@ -1,3 +1,4 @@
+using Autodesk.Fbx;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -13,6 +14,7 @@ public class AnimatorController : MonoBehaviour
     private int MoveYHash;
     private int JumpHash;
 
+
     private void Awake()
     {
         if (!animator)
@@ -23,16 +25,29 @@ public class AnimatorController : MonoBehaviour
         JumpHash = Animator.StringToHash("Jump");
     }
 
-    public void UpdateMovement(Vector3 worldVelocity, float walkSpeed, float sprintSpeed)
+    //--- > Fix Y Axis Animation Blend 
+    public void UpdateMovement(
+       Vector3 worldVelocity,
+       float strafingSpeed,
+       float walkSpeed,
+       float sprintSpeed
+   )
     {
         Vector3 localVel = transform.InverseTransformDirection(worldVelocity);
 
-        // X = strafe
-        float x = Mathf.Abs(localVel.x) < 0.01f ? 0f : localVel.x / sprintSpeed;
+        // -------------------------
+        // X (STRAFE)
+        // -------------------------
+        float x = localVel.x / Mathf.Max(strafingSpeed, 0.01f);
         x = Mathf.Clamp(x, -1f, 1f);
+        x *= 0.5f;
 
-        // Z = forward/back
+        // -------------------------
+        // Y (FORWARD / SPEED ZONE)
+        // -------------------------
+
         float z = localVel.z;
+
         float y = 0f;
 
         if (Mathf.Abs(z) > 0.01f)
@@ -43,8 +58,11 @@ public class AnimatorController : MonoBehaviour
             }
             else
             {
-                float runPercent = (z - walkSpeed) / (sprintSpeed - walkSpeed);
+                float runPercent =
+                    (z - walkSpeed) / (sprintSpeed - walkSpeed);
+
                 runPercent = Mathf.Clamp01(runPercent);
+
                 y = 0.5f + runPercent * 0.5f;
             }
         }
@@ -52,7 +70,6 @@ public class AnimatorController : MonoBehaviour
         animator.SetFloat(MoveXHash, x);
         animator.SetFloat(MoveYHash, y);
     }
-
     public void TriggerJump()
     {
         animator.SetTrigger(JumpHash);
@@ -74,6 +91,8 @@ public class AnimatorController : MonoBehaviour
         animator.SetBool("isAttacking", false);
         animator.SetTrigger(animationHash);
     }
+
+
 }
 
 

@@ -46,8 +46,8 @@ GameObject:
   - component: {fileID: 2870194385922126706}
   - component: {fileID: 7131393463668744093}
   - component: {fileID: 5441716355630405840}
-  - component: {fileID: 8432781565130462061}
   - component: {fileID: 4426865991171642858}
+  - component: {fileID: 8432781565130462061}
   - component: {fileID: 8313939580241767306}
   m_Layer: 0
   m_Name: ThirdPersonCamera
@@ -206,6 +206,27 @@ MonoBehaviour:
     Time: 0
     Smoothing: 0
     IgnoreY: 0
+--- !u!114 &4426865991171642858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1686472274575356556}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4eb4843bae7d24943842ea23130dcd55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineGroupFraming
+  FramingMode: 2
+  FramingSize: 0.8
+  CenterOffset: {x: 0, y: 0}
+  Damping: 2
+  SizeAdjustment: 2
+  LateralAdjustment: 0
+  FovRange: {x: 1, y: 100}
+  DollyRange: {x: -100, y: 100}
+  OrthoSizeRange: {x: 1, y: 1000}
 --- !u!114 &8432781565130462061
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -256,27 +277,6 @@ MonoBehaviour:
       Driver:
         AccelTime: 0
         DecelTime: 0
---- !u!114 &4426865991171642858
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1686472274575356556}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4eb4843bae7d24943842ea23130dcd55, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineGroupFraming
-  FramingMode: 2
-  FramingSize: 0.8
-  CenterOffset: {x: 0, y: 0}
-  Damping: 2
-  SizeAdjustment: 2
-  LateralAdjustment: 0
-  FovRange: {x: 1, y: 100}
-  DollyRange: {x: -100, y: 100}
-  OrthoSizeRange: {x: 1, y: 1000}
 --- !u!114 &8313939580241767306
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -290,6 +290,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraControllerCinemachine
   _targetGroup: {fileID: 9199429833435062437}
+  LockedOn: 0
+  Enemy:
+    Object: {fileID: 0}
+    Weight: 1
+    Radius: 0.5
   LockOnRadius: 20
   enemyLayer:
     serializedVersion: 2

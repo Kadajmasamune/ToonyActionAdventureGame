@@ -1,6 +1,7 @@
-﻿using System;
+﻿using EntityStateMachines;
+using System;
 using UnityEngine;
-using EntityStateMachines;
+using UnityEngine.UIElements;
 
 [RequireComponent(typeof(AnimatorController))]
 public class Player : MonoBehaviour
@@ -8,6 +9,7 @@ public class Player : MonoBehaviour
     [Header("Speed")]
     public float walkSpeed = 2.2f;
     public float sprintSpeed = 4.8f;
+    public float strafingSpeed = 5f;
     public float accel = 50f;
     public float airControl = 0.5f;
 
@@ -34,12 +36,13 @@ public class Player : MonoBehaviour
 
     public EntityStateMachine<Player> playerStateMachine;
 
+    public CameraControllerCinemachine cinCam;
 
-
-    private InputBufferer inputBufferer;
+   
 
     void Awake()
     {
+        cinCam = FindFirstObjectByType<CameraControllerCinemachine>();
         Animator = GetComponent<AnimatorController>();
         if (!cameraTransform)
             cameraTransform = Camera.main.transform;
@@ -60,8 +63,6 @@ public class Player : MonoBehaviour
         playerStateMachine.currentState.HandleInput(this);
         playerStateMachine.currentState.Update(this); 
 
-        Animator.UpdateMovement(Velocity, walkSpeed, sprintSpeed);
-        UpdateRotation();
     }
 
     void ReadInput()
@@ -110,20 +111,6 @@ public class Player : MonoBehaviour
         return dir;
     }
 
-    void UpdateRotation()
-    {
-        Vector3 horizontal = new Vector3(Velocity.x, 0, Velocity.z);
-
-        if (horizontal.sqrMagnitude < 0.001f)
-            return;
-
-        Quaternion target = Quaternion.LookRotation(horizontal);
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
-            target,
-            1f - Mathf.Exp(-rotationSharpness * Time.deltaTime)
-        );
-    }
 }
 public class GroundedState : State<Player>
 {
@@ -140,10 +127,16 @@ public class GroundedState : State<Player>
         {
             p.playerStateMachine.SwitchStates(new JumpState());
         }
+
+        if(p.cinCam.LockedOn)
+        {
+            p.playerStateMachine.SwitchStates(new LockOnState());
+        }
     }
 
     public override void Update(Player p)
     {
+
 
         Vector3 moveDir = p.GetCameraRelativeInput();
 
@@ -164,9 +157,26 @@ public class GroundedState : State<Player>
         p.Velocity = new Vector3(horizontal.x, 0, horizontal.z);
 
         p.transform.position += p.Velocity * Time.deltaTime;
+        UpdateRotation(p);
+        p.Animator.UpdateMovement(p.Velocity, p.strafingSpeed, p.walkSpeed, p.sprintSpeed);
 
         if (!p.IsGrounded())
             p.playerStateMachine.SwitchStates(new FallState());
+
+        void UpdateRotation(Player p )
+        {
+            Vector3 horizontal = new Vector3(p.Velocity.x, 0, p.Velocity.z);
+
+            if (horizontal.sqrMagnitude < 0.001f)
+                return;
+
+            Quaternion target = Quaternion.LookRotation(horizontal);
+            p.transform.rotation = Quaternion.Slerp(
+                p.transform.rotation,
+                target,
+                1f - Mathf.Exp(-p.rotationSharpness * Time.deltaTime)
+            );
+        }
     }
 
     public override void Exit(Player p)
@@ -198,6 +208,7 @@ public class JumpState : State<Player>
 
     public override void Update(Player p)
     {
+        p.Animator.UpdateMovement(p.Velocity, p.strafingSpeed, p.walkSpeed, p.sprintSpeed);
 
         ApplyAirMovement(p);
         ApplyGravity(p);
@@ -251,6 +262,8 @@ public class FallState : State<Player>
 
     public override void Update(Player p)
     {
+        p.Animator.UpdateMovement(p.Velocity, p.strafingSpeed, p.walkSpeed, p.sprintSpeed);
+
         ApplyAirMovement(p);
         p.Animator.ResetTriggerJump();
         p.Velocity += Vector3.up * p.gravity * Time.deltaTime;
@@ -298,24 +311,87 @@ public class LockOnState : State<Player>
 
     // -- > Strafing 
     // -- > Orbital movement around enemy (Adjust rotation of player ) 
-   
-    public override void Enter(Player context)
+
+    public override void Enter(Player p)
     {
+        Debug.Log("LOCKON ENTERED");
+    }
+    public override void HandleInput(Player p)   {      }
+
+    public override void Update(Player p)
+    {
+        if(!p.cinCam.LockedOn)
+        {
+            p.playerStateMachine.SwitchStates(new GroundedState());
+            return;
+        }
+        UpdateMovement(p);
+        p.Animator.UpdateMovement(p.Velocity, p.strafingSpeed, p.walkSpeed, p.sprintSpeed);
+        UpdateRotation(p);
+    }
+    public override void Exit(Player p)
+    {
+        p.Velocity = Vector3.zero;
+ 
+    }
+
+    private void UpdateRotation(Player p)
+    {
+        Vector3 toEnemyDir = (p.cinCam.Enemy.Object.position - p.transform.position).normalized;
+
+        if (toEnemyDir.sqrMagnitude < 0.001f)
+            return;
+
+        Quaternion target = Quaternion.LookRotation(toEnemyDir);
+        p.transform.rotation = Quaternion.Slerp(
+            p.transform.rotation,
+            target,
+            1f - Mathf.Exp(-p.rotationSharpness * Time.deltaTime)
+        );
+
 
     }
 
-    public override void HandleInput(Player context)
+    private void UpdateMovement(Player p)
     {
-        
+        Transform enemy = p.cinCam.Enemy.Object;
+
+        Vector3 offset = p.transform.position - enemy.position;
+        offset.y = 0f;
+
+        Vector3 radial = offset.normalized;
+        Vector3 tangent = new Vector3(-radial.z, 0f, radial.x);
+
+        Vector3 desiredVelocity =
+            (tangent * p.Input.x -
+             radial * p.Input.y) *
+            p.strafingSpeed;
+
+        Vector3 horizontal =
+            new Vector3(
+                p.Velocity.x,
+                0,
+                p.Velocity.z
+            );
+
+        horizontal = Vector3.MoveTowards(
+            horizontal,
+            desiredVelocity,
+            p.accel * Time.deltaTime
+        );
+
+        p.Velocity = new Vector3(
+            horizontal.x,
+            0,
+            horizontal.z
+        );
+
+        p.transform.position +=
+            p.Velocity * Time.deltaTime;
     }
 
-    public override void Update(Player context)
-    {
 
-    }
-    public override void Exit(Player context)
-    {
-    }
 }
+
 
 

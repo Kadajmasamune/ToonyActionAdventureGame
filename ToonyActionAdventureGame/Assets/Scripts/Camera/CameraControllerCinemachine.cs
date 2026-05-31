@@ -13,13 +13,14 @@ public class CameraControllerCinemachine : MonoBehaviour
 
 
     [Header("Target Tracking Settings")]
+    public bool LockedOn;
+    public CinemachineTargetGroup.Target Enemy; 
     private Player player;
-    private bool LockedOn;
     private bool hasCameraReset = false;
-    private CinemachineTargetGroup.Target Enemy; 
     [SerializeField] private float LockOnRadius;
     [SerializeField] private LayerMask enemyLayer;
-    
+
+    private List<Collider> availableEnemies;
     void Start()
     {
 
@@ -53,7 +54,7 @@ public class CameraControllerCinemachine : MonoBehaviour
             Recenter();
         }
 
-        if(Input.GetKeyDown(KeyCode.Q))
+        if(Input.GetKeyDown(KeyCode.Q) && canLockOn())
         {
             LockedOn = !LockedOn;
         }
@@ -63,7 +64,13 @@ public class CameraControllerCinemachine : MonoBehaviour
     {
 
     }
+    
+    private bool canLockOn()
+    {
+        availableEnemies = new(Physics.OverlapSphere(player.transform.position, LockOnRadius, enemyLayer));
+        return availableEnemies.Count > 0;
 
+    }
     private void LockOn(float targetWeight = 1 , float targetRadius = 1 ) 
     {
         // How do we find who to look at ? 
@@ -128,8 +135,6 @@ public class CameraControllerCinemachine : MonoBehaviour
 
     private Transform BestCandidateForLockOn()
     {
-        List<Collider> availableEnemies = new(Physics.OverlapSphere(player.transform.position, LockOnRadius ,enemyLayer ));
-
         Vector3 forward = _cam.transform.forward;
 
         Transform bestTarget = null;
