@@ -64,8 +64,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1686472274575356556}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.03584271, y: -0.06752444, z: 0.0024273645, w: 0.99707067}
-  m_LocalPosition: {x: 8.079206, y: -2.7950249, z: 22.251179}
+  m_LocalRotation: {x: 0.03856647, y: -0.06661144, z: 0.0025766203, w: 0.9970301}
+  m_LocalPosition: {x: 8.080423, y: -1.7438703, z: 22.26633}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -95,7 +95,7 @@ MonoBehaviour:
     LookAtTarget: {fileID: 7611526858534121410}
     CustomLookAtTarget: 1
   Lens:
-    FieldOfView: 70
+    FieldOfView: 73.2
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 5005
@@ -130,9 +130,9 @@ MonoBehaviour:
   TrackerSettings:
     BindingMode: 4
     PositionDamping: {x: 1.75, y: 0.8, z: 0.83}
-    AngularDampingMode: 0
+    AngularDampingMode: 1
     RotationDamping: {x: 1, y: 1, z: 1}
-    QuaternionDamping: 1
+    QuaternionDamping: 13.8
   OrbitStyle: 0
   Radius: 4.92
   Orbits:
@@ -158,9 +158,9 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   VerticalAxis:
-    Value: 14.3
+    Value: 15
     Center: 17.5
-    Range: {x: 0, y: 65}
+    Range: {x: 15, y: 65}
     Wrap: 0
     Recentering:
       Enabled: 0
@@ -219,9 +219,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineGroupFraming
   FramingMode: 2
-  FramingSize: 0.8
-  CenterOffset: {x: 0, y: 0}
-  Damping: 2
+  FramingSize: 0.55
+  CenterOffset: {x: 0, y: -0.13}
+  Damping: 4.5
   SizeAdjustment: 2
   LateralAdjustment: 0
   FovRange: {x: 1, y: 100}
@@ -326,8 +326,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5160933290964487734}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.03584271, y: -0.06752444, z: 0.0024273696, w: 0.99707067}
-  m_LocalPosition: {x: 8.079206, y: -2.7950249, z: 22.251179}
+  m_LocalRotation: {x: 0.038566474, y: -0.066611454, z: 0.0025766212, w: 0.9970301}
+  m_LocalPosition: {x: 8.080423, y: -1.7438703, z: 22.26633}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -398,7 +398,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 5005
-  field of view: 70
+  field of view: 73.2
   orthographic: 0
   orthographic size: 10
   m_Depth: 0
@@ -486,7 +486,7 @@ Transform:
   m_GameObject: {fileID: 7036579648516506546}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.1607304, y: -4.8302603, z: 26.523441}
+  m_LocalPosition: {x: 7.1607304, y: -3.8372602, z: 26.523441}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -504,11 +504,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5eb80d8e62d9d145bb50fb783c0f731, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineTargetGroup
-  PositionMode: 0
+  PositionMode: 1
   RotationMode: 1
   UpdateMethod: 2
   Targets:
   - Object: {fileID: 0}
     Weight: 1
-    Radius: 1
+    Radius: 2
   m_LegacyTargets: []

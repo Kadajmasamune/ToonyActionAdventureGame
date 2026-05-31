@@ -25,7 +25,7 @@ public class AnimatorController : MonoBehaviour
         JumpHash = Animator.StringToHash("Jump");
     }
 
-    //--- > Fix Y Axis Animation Blend 
+
     public void UpdateMovement(
        Vector3 worldVelocity,
        float strafingSpeed,

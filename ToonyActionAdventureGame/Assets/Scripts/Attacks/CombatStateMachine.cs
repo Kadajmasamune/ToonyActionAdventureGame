@@ -6,6 +6,16 @@ using static InputBufferer;
 public class CombatStateMachine : MonoBehaviour // ----> “Given state + input + context → what happens next?”                                                
 // ----> This class Decides Transition logic, not Attacks Themselves, they simply consume the signals given by the Machine and perform the exact Transition. 
 {
+
+    //To do : 
+        // -- > Fix Issue with Speed (30 FPS clips being played at 2x speed causes them to be played twice) 
+        // -- > Because Frame data is being scaled to 60 FPS. 
+
+        // -- > Begin Implementing Direction Modifiers 
+        // -- > Timing Between inputs Modifiers 
+        // -- > Transition Logic 
+
+
     public Attack[] PossibleAttacks;
     public Attack CurrentAttack;
 
