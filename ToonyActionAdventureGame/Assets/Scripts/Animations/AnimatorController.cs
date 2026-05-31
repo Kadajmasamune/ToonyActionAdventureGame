@@ -89,7 +89,7 @@ public class AnimatorController : MonoBehaviour
     public void StopAttack(int animationHash)
     {
         animator.SetBool("isAttacking", false);
-        animator.SetTrigger(animationHash);
+        animator.ResetTrigger(animationHash);
     }
 
 
