@@ -96,21 +96,3 @@ public class AnimatorController : MonoBehaviour
 }
 
 
-public class AnimatorStateMachine : MonoBehaviour
-{
-    public Animator aniamtor; 
-
-    public int currentAnimationHash;
-
-    private void Awake()
-    {
-        aniamtor = GetComponent<Animator>();    
-    }
-
-    public void switchAnimation(int newAnimationHash)
-    {
-        currentAnimationHash = newAnimationHash;
-    }
-
-
-}

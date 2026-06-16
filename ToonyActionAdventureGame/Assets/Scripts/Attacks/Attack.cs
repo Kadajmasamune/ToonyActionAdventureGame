@@ -10,11 +10,11 @@ public class Attack : FrameData
     public float hitStunInflicted;
     public float hitStopDuration;
     public bool isAirAttack;
+    public Attack[] AllowedAttackTransitions;
 
     public CancelWindow[] cancelWindows;
 
     [Header("Attack Inputs")]
-    public InputBufferer.AttackInput AllowedNextAttacks;
     public InputBufferer.AttackInput RequiredInput;
 
     [Header("Animation Clip")]

@@ -6,14 +6,12 @@ using static InputBufferer;
 public class CombatStateMachine : MonoBehaviour // ----> “Given state + input + context → what happens next?”                                                
 // ----> This class Decides Transition logic, not Attacks Themselves, they simply consume the signals given by the Machine and perform the exact Transition. 
 {
+        // --> Update Animation Combat state machine transition and animation playback logic
+        // --> Use crossFade 
 
-    //To do : 
-        // -- > Fix Issue with Speed (30 FPS clips being played at 2x speed causes them to be played twice) 
-        // -- > Because Frame data is being scaled to 60 FPS. 
-
+        // -- > Transition Logic 
         // -- > Begin Implementing Direction Modifiers 
         // -- > Timing Between inputs Modifiers 
-        // -- > Transition Logic 
 
 
     public Attack[] PossibleAttacks;
@@ -25,16 +23,12 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     private int currentTick;
     private bool isAttacking;
 
-    private CancelWindowRuntime[] cancelWindows;
+    //private CancelWindowRuntime[] cancelWindows;
     public AttackRuntimeData currentAttackData;
 
     public struct AttackRuntimeData { public int startUp; public int active; public int recovery; }
 
-    public struct CancelWindowRuntime
-    {
-        public int start;
-        public int end;
-    }
+    //public struct CancelWindowRuntime { public int start; public int end; }
 
     private void Start()
     {
@@ -51,6 +45,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         }
 
         UpdateAttack();
+        Debug.Log(currentTick);
     }
 
 
@@ -88,7 +83,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         isAttacking = true;
         currentTick = 0;
 
-        CacheAttackData(attack);
+        //CacheAttackData(attack);
 
         int hash = Animator.StringToHash(attack.clip.name);
         animator.PlayAttack(hash);
@@ -132,9 +127,9 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         if (currentAttack == null)
             return false;
 
-        for (int i = 0; i < cancelWindows.Length; i++)
+        for (int i = 0; i < currentAttack.cancelWindows.Length; i++)
         {
-            if (tick >= cancelWindows[i].start && tick <= cancelWindows[i].end)
+            if (tick >= currentAttack.cancelWindows[i].startFrame && tick <= currentAttack.cancelWindows[i].endFrame)
                 return true;
         }
         return false;
@@ -157,42 +152,36 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         return false;
     }
 
-    public void SetAttack(Attack attack)
-    {
-        CurrentAttack = attack;
-        CacheAttackData(attack);
-    }
-
-
-    private void CacheAttackData(Attack attack)
-    {
-        float scale = 60f / attack.clip.frameRate;
+    ////(Rework)
+    //private void CacheAttackData(Attack attack)
+    //{
+    //    float scale = 60f / attack.clip.frameRate;
         
-        currentAttackData = new AttackRuntimeData
-        {
-            startUp = Scale(attack.StartUpFrames, scale),
-            active = Scale(attack.ActiveFrames, scale),
-            recovery = Scale(attack.RecoveryFrames, scale),
-        };
+    //    currentAttackData = new AttackRuntimeData
+    //    {
+    //        startUp = Scale(attack.StartUpFrames, scale),
+    //        active = Scale(attack.ActiveFrames, scale),
+    //        recovery = Scale(attack.RecoveryFrames, scale),
+    //    };
 
-        if (attack.cancelWindows != null)
-        {
-            cancelWindows = new CancelWindowRuntime[attack.cancelWindows.Length];
+    //    if (attack.cancelWindows != null)
+    //    {
+    //        cancelWindows = new CancelWindowRuntime[attack.cancelWindows.Length];
 
-            for (int i = 0; i < attack.cancelWindows.Length; i++)
-            {
-                cancelWindows[i] = new CancelWindowRuntime
-                {
-                    start = Scale(attack.cancelWindows[i].startFrame, scale),
-                    end = Scale(attack.cancelWindows[i].endFrame, scale)
-                };
-            }
-        }
-        else
-        {
-            cancelWindows = new CancelWindowRuntime[0];
-        }
-    }
+    //        for (int i = 0; i < attack.cancelWindows.Length; i++)
+    //        {
+    //            cancelWindows[i] = new CancelWindowRuntime
+    //            {
+    //                start = Scale(attack.cancelWindows[i].startFrame, scale),
+    //                end = Scale(attack.cancelWindows[i].endFrame, scale)
+    //            };
+    //        }
+    //    }
+    //    else
+    //    {
+    //        cancelWindows = new CancelWindowRuntime[0];
+    //    }
+    //}
 
 
 
