@@ -309,8 +309,10 @@ public class LockOnState : State<Player>
     // THIS ONLY CONTROLS MOVEMENT  
     // EVERYTHING ATTACKS RELATED SHOULD BE HANDLED BY THE COMBATSTATEMACHINE
 
-    // -- > Strafing 
-    // -- > Orbital movement around enemy (Adjust rotation of player ) 
+    // Fix Movement
+    // Make WASD movement adjust depending on player's position in the AOE 
+    // i.e. if player is behind the enemy while facing the camera, W should move him back. 
+
 
     public override void Enter(Player p)
     {
