@@ -1,21 +1,26 @@
-﻿using System.Collections;
+﻿using NUnit.Framework.Constraints;
+using System.Collections;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 using static FrameData;
 using static InputBufferer;
 
 public class CombatStateMachine : MonoBehaviour // ----> “Given state + input + context → what happens next?”                                                
 // ----> This class Decides Transition logic, not Attacks Themselves, they simply consume the signals given by the Machine and perform the exact Transition. 
 {
-        // --> Update Animation Combat state machine transition and animation playback logic
-        // --> Use crossFade 
-
+        // --> Animation Interrupt Logic 
         // -- > Transition Logic 
+
+
+
         // -- > Begin Implementing Direction Modifiers 
         // -- > Timing Between inputs Modifiers 
 
 
     public Attack[] PossibleAttacks;
     public Attack CurrentAttack;
+
 
     [SerializeField] private InputBufferer bufferer;
     private AnimatorController animator;
@@ -24,11 +29,15 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     private bool isAttacking;
 
     //private CancelWindowRuntime[] cancelWindows;
-    public AttackRuntimeData currentAttackData;
+    //public AttackRuntimeData currentAttackData;
 
-    public struct AttackRuntimeData { public int startUp; public int active; public int recovery; }
-
+    //public struct AttackRuntimeData { public int startUp; public int active; public int recovery; } 
     //public struct CancelWindowRuntime { public int start; public int end; }
+
+
+    private AnimatorStateInfo AttackAnimationInfo;
+    private AnimatorTransitionInfo AttackTransitionInfo; 
+
 
     private void Start()
     {
@@ -45,7 +54,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         }
 
         UpdateAttack();
-        Debug.Log(currentTick);
+        //Debug.Log(currentTick);
     }
 
 
@@ -54,9 +63,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         if (bufferer.AttackBuffer.Count == 0)
             return;
 
-        AttackInput input = bufferer.AttackBuffer.Peek();
-
-        Attack next = GetAttackFromInput(input);
+        Attack next = GetAttackFromInput(bufferer.attackInput);
 
         if (next == null)
             return;
@@ -97,28 +104,24 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
             CurrentAttack.StartUpFrames +
             CurrentAttack.ActiveFrames +
             CurrentAttack.RecoveryFrames;
-
+        
+        Debug.Log(totalFrames);
         if (IsInCancelWindow(currentTick , CurrentAttack))
         {
             // combo logic later
-            CancelAttack(ref CurrentAttack);
+            CancelAttack(CurrentAttack);
+        }
+
+        if(canChain(currentTick , CurrentAttack , out Attack newAttack))
+        {
+            if(newAttack != null)
+                TransitionAttack(newAttack);
         }
 
         if (currentTick >= totalFrames)
         {
             EndAttack();
         }
-    }
-
-
-    private void EndAttack()
-    {
-        int hash = Animator.StringToHash(CurrentAttack.clip.name);
-        animator.StopAttack(hash);
-
-        CurrentAttack = null;
-        isAttacking = false;
-        currentTick = 0;
     }
 
 
@@ -136,21 +139,55 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
 
     }
 
-    public void transitionAttack(ref Attack newAttack)
+    public void CancelAttack(Attack currentAttack)
     {
+        //Interrupt Attack with a different move (i.e. Jump ) 
         return;
     }
 
-    public void CancelAttack(ref Attack currentAttack)
+    public bool canChain(int tick , Attack currentAttack , out Attack newAttack)
     {
-        return;
-    }
+        newAttack = null;
 
+        if (currentAttack == null) return false;
 
-    public bool CanChain()
-    {
+        if (tick > (currentAttack.StartUpFrames + currentAttack.ActiveFrames) && tick <= (currentAttack.RecoveryFrames + currentAttack.ActiveFrames + CurrentAttack.StartUpFrames))
+        {
+            foreach(Attack transition in currentAttack.AllowedAttackTransitions)
+            {
+                if (transition.RequiredInput == bufferer.attackInput)
+                {
+                    newAttack = transition;
+                    //Debug.Log("Chaining");
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
+
+    public void TransitionAttack(Attack newAttack)
+    {
+        CurrentAttack = newAttack;
+        currentTick = 0;
+        isAttacking = true;
+
+        int hash = Animator.StringToHash(newAttack.clip.name);
+        animator.PlayAttack(hash);
+    }
+
+    private void EndAttack()
+    {
+        int hash = Animator.StringToHash(CurrentAttack.clip.name);
+        animator.StopAttack(hash);
+
+        CurrentAttack = null;
+        isAttacking = false;
+        currentTick = 0;
+    }
+
+}
 
     ////(Rework)
     //private void CacheAttackData(Attack attack)
@@ -184,12 +221,9 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     //}
 
 
-
-
-    private int Scale(int frames, float scale)
-    {
-        return Mathf.RoundToInt(frames * scale);
-    }
-}
+    //private int Scale(int frames, float scale)
+    //{
+    //    return Mathf.RoundToInt(frames * scale);
+    //}
 
 

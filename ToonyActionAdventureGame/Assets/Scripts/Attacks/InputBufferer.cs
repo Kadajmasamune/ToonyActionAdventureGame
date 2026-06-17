@@ -6,7 +6,7 @@ public class InputBufferer : MonoBehaviour
 {
 
 
-    public enum AttackInput { Light, Heavy }
+    public enum AttackInput { Light, Heavy , None}
 
     public Queue<AttackInput> AttackBuffer;
 
@@ -40,7 +40,12 @@ public class InputBufferer : MonoBehaviour
         HandleBufferer();
         ClearBuffer();
 
-        //Debug.Log(nextResetTick);
+        //if (AttackBuffer.Count > 0)
+        //{
+        //    Debug.Log(AttackBuffer.Count);
+        //}
+
+        Debug.Log(attackInput);
     }
 
     private void BufferInput()
@@ -65,8 +70,10 @@ public class InputBufferer : MonoBehaviour
     private void HandleBufferer()
     {
         if (AttackBuffer.Count == 0)
+        {
+            attackInput = AttackInput.None;
             return;
-
+        }
         attackInput = AttackBuffer.Peek();
     }
 

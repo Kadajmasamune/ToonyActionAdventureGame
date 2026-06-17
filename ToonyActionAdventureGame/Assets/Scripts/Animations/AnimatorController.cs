@@ -1,10 +1,12 @@
 using Autodesk.Fbx;
+using System.Collections;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class AnimatorController : MonoBehaviour
 {
-
+    
     [SerializeField] public Animator animator;
 
     [SerializeField] private float walkSpeed = 2.2f;
@@ -14,6 +16,7 @@ public class AnimatorController : MonoBehaviour
     private int MoveYHash;
     private int JumpHash;
 
+    int currentAnimationHash = -1;
 
     private void Awake()
     {
@@ -23,15 +26,11 @@ public class AnimatorController : MonoBehaviour
         MoveXHash = Animator.StringToHash("moveX");
         MoveYHash = Animator.StringToHash("moveY");
         JumpHash = Animator.StringToHash("Jump");
+
     }
 
 
-    public void UpdateMovement(
-       Vector3 worldVelocity,
-       float strafingSpeed,
-       float walkSpeed,
-       float sprintSpeed
-   )
+    public void UpdateMovement(Vector3 worldVelocity, float strafingSpeed,float walkSpeed,float sprintSpeed )
     {
         Vector3 localVel = transform.InverseTransformDirection(worldVelocity);
 
@@ -83,16 +82,43 @@ public class AnimatorController : MonoBehaviour
     public void PlayAttack(int animationHash)
     {
         animator.SetBool("isAttacking", true);
-        animator.SetTrigger(animationHash);
+        //animator.SetTrigger(animationHash)
+        ChangeAnimation(animationHash);
     }
 
     public void StopAttack(int animationHash)
     {
         animator.SetBool("isAttacking", false);
-        animator.ResetTrigger(animationHash);
+        //animator.ResetTrigger(animationHash);
     }
 
 
+    public void ChangeAnimation(int targetHash, float delay = 0.0f, float crossfade = 0.05f)
+    {
+        if (currentAnimationHash == targetHash) return;
+
+        if (delay > 0f)
+        {
+            StartCoroutine(WaitAndPlay());
+        }
+        else
+        {
+            Play();
+        }
+
+        IEnumerator WaitAndPlay()
+        {
+            yield return new WaitForSecondsRealtime(Mathf.Max(0f, delay - crossfade));
+            Play();
+        }
+
+        void Play()
+        {
+
+            animator.CrossFadeInFixedTime(targetHash, crossfade);
+            currentAnimationHash = targetHash;
+        }
+    }
 }
 
 
