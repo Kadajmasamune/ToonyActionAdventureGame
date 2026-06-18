@@ -17,6 +17,9 @@ public class Attack : FrameData
     [Header("Attack Inputs")]
     public InputBufferer.AttackInput RequiredInput;
 
-    [Header("Animation Clip")]
+    [Header("Animation")]
     public AnimationClip clip;
+    [Tooltip("Attack Index must match the index within the Animator Controller")]
+    public int AttackIndexLayer;
+    
 }

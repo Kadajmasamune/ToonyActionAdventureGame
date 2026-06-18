@@ -79,16 +79,18 @@ public class AnimatorController : MonoBehaviour
         animator.ResetTrigger(JumpHash);
     }
 
-    public void PlayAttack(int animationHash)
+    public void PlayAttack(int animationHash, int AttackIndex , bool shouldCrossFade = false)
     {
         animator.SetBool("isAttacking", true);
+        animator.SetInteger("AttackIndex", AttackIndex);
         //animator.SetTrigger(animationHash)
-        ChangeAnimation(animationHash);
+        //ChangeAnimation(animationHash);
     }
 
     public void StopAttack(int animationHash)
     {
         animator.SetBool("isAttacking", false);
+        animator.SetInteger("AttackIndex", 0);
         //animator.ResetTrigger(animationHash);
     }
 

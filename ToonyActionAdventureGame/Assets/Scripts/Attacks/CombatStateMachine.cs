@@ -9,9 +9,9 @@ using static InputBufferer;
 public class CombatStateMachine : MonoBehaviour // ----> “Given state + input + context → what happens next?”                                                
 // ----> This class Decides Transition logic, not Attacks Themselves, they simply consume the signals given by the Machine and perform the exact Transition. 
 {
-        // --> Animation Interrupt Logic 
-        // -- > Transition Logic 
 
+        //Implement stricter flow of attacks 
+        //Remove Spamming input and attack
 
 
         // -- > Begin Implementing Direction Modifiers 
@@ -28,6 +28,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     private int currentTick;
     private bool isAttacking;
 
+    private bool canTransition = true;
     //private CancelWindowRuntime[] cancelWindows;
     //public AttackRuntimeData currentAttackData;
 
@@ -89,11 +90,12 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         CurrentAttack = attack;
         isAttacking = true;
         currentTick = 0;
+        canTransition = true;
 
         //CacheAttackData(attack);
 
         int hash = Animator.StringToHash(attack.clip.name);
-        animator.PlayAttack(hash);
+        animator.PlayAttack(hash , attack.AttackIndexLayer);
     }
 
     private void UpdateAttack()
@@ -112,10 +114,15 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
             CancelAttack(CurrentAttack);
         }
 
-        if(canChain(currentTick , CurrentAttack , out Attack newAttack))
+        if(canChain(currentTick , CurrentAttack , out Attack newAttack) && canTransition)
         {
-            if(newAttack != null)
+            if (newAttack != null)
+            {
                 TransitionAttack(newAttack);
+                bufferer.AttackBuffer.Dequeue();
+                canTransition = false;
+            }
+
         }
 
         if (currentTick >= totalFrames)
@@ -174,7 +181,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         isAttacking = true;
 
         int hash = Animator.StringToHash(newAttack.clip.name);
-        animator.PlayAttack(hash);
+        animator.PlayAttack(hash , newAttack.AttackIndexLayer);
     }
 
     private void EndAttack()

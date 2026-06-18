@@ -28,3 +28,4 @@ MonoBehaviour:
     endFrame: 4
   RequiredInput: 0
   clip: {fileID: -203655887218126122, guid: dc5662c1f711b4e47969d18f7499d5a0, type: 3}
+  AttackIndexLayer: 1

@@ -25,3 +25,4 @@ MonoBehaviour:
   cancelWindows: []
   RequiredInput: 1
   clip: {fileID: -203655887218126122, guid: 332f6a54c370e304f8fac36e909557b6, type: 3}
+  AttackIndexLayer: 3

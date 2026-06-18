@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Light2
   m_EditorClassIdentifier: Assembly-CSharp::Attack
   StartUpFrames: 5
-  ActiveFrames: 3
-  RecoveryFrames: 7
+  ActiveFrames: 4
+  RecoveryFrames: 6
   Damage: 0
   forwardMovementImpulse: 0
   speedMultiplierBonus: 0
@@ -25,3 +25,4 @@ MonoBehaviour:
   cancelWindows: []
   RequiredInput: 0
   clip: {fileID: -203655887218126122, guid: b09082235fad06a4097cb7164544f3aa, type: 3}
+  AttackIndexLayer: 2

@@ -838,13 +838,18 @@ PrefabInstance:
     - target: {fileID: 4946592345472122834, guid: 2f5ff0a60ffb54c4e938e67d8388efc0,
         type: 3}
       propertyPath: TicksToReset
-      value: 10
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 6600440574247585827, guid: 2f5ff0a60ffb54c4e938e67d8388efc0,
         type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 8ea2fd3b53a9cb54b89c4da1a4eb98d9, type: 2}
+    - target: {fileID: 6600440574247585827, guid: 2f5ff0a60ffb54c4e938e67d8388efc0,
+        type: 3}
+      propertyPath: m_UpdateMode
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
