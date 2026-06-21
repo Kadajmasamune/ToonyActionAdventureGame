@@ -7,10 +7,19 @@ public abstract class FrameData : ScriptableObject
     public int ActiveFrames;
     public int RecoveryFrames;
 
+    public enum WindowType
+    {
+        Interrupt, 
+        Invulnerability,
+        None
+    }
+
+  
     [System.Serializable]
-    public struct CancelWindow
+    public struct FrameWindows
     {
         public int startFrame;
         public int endFrame;
+        public WindowType windowType;
     }
 }

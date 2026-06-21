@@ -10,34 +10,40 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
 // ----> This class Decides Transition logic, not Attacks Themselves, they simply consume the signals given by the Machine and perform the exact Transition. 
 {
 
-        //Implement stricter flow of attacks 
-        //Remove Spamming input and attack
+
+    // -- > Implement stricter flow of attacks 
+    // -- > Remove Spamming input and attack
 
 
-        // -- > Begin Implementing Direction Modifiers 
-        // -- > Timing Between inputs Modifiers 
+    // -- > Begin Implementing Direction Modifiers 
+    // -- > Timing Between inputs Modifiers 
 
 
+    [Header("Attack")]
     public Attack[] PossibleAttacks;
     public Attack CurrentAttack;
+    private bool isAttacking = false;
+    private bool isTransitioning = false;
+    private bool hasChainedThisWindow;
+    private bool isTryingToCancel = false;
 
+    [Header("Ticker Config")]
+    private int attackStartTick;
 
+    [Header("References")]
     [SerializeField] private InputBufferer bufferer;
     private AnimatorController animator;
 
-    private int currentTick;
-    private bool isAttacking;
 
-    private bool canTransition = true;
     //private CancelWindowRuntime[] cancelWindows;
     //public AttackRuntimeData currentAttackData;
 
     //public struct AttackRuntimeData { public int startUp; public int active; public int recovery; } 
     //public struct CancelWindowRuntime { public int start; public int end; }
 
+    //private AnimatorStateInfo AttackAnimationInfo;
+    //private AnimatorTransitionInfo AttackTransitionInfo;
 
-    private AnimatorStateInfo AttackAnimationInfo;
-    private AnimatorTransitionInfo AttackTransitionInfo; 
 
 
     private void Start()
@@ -46,24 +52,33 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         animator = GetComponent<AnimatorController>();
     }
 
-    private void Update()
+    private void OnEnable()
     {
-        if (!isAttacking)
+        Ticker.OnTick += OnTick;
+    }
+
+    private void OnDisable()
+    {
+        Ticker.OnTick -= OnTick;
+    }
+
+    private void OnTick()
+    {
+        if (!isAttacking && !isTransitioning)
         {
             TryStartAttack();
             return;
         }
 
         UpdateAttack();
-        //Debug.Log(currentTick);
+        
     }
-
 
     private void TryStartAttack()
     {
         if (bufferer.AttackBuffer.Count == 0)
             return;
-
+    
         Attack next = GetAttackFromInput(bufferer.attackInput);
 
         if (next == null)
@@ -89,99 +104,122 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     {
         CurrentAttack = attack;
         isAttacking = true;
-        currentTick = 0;
-        canTransition = true;
+        isTransitioning = false ;
+        hasChainedThisWindow = false;
 
+        attackStartTick = Ticker.instance.CurrentTick;
         //CacheAttackData(attack);
 
         int hash = Animator.StringToHash(attack.clip.name);
-        animator.PlayAttack(hash , attack.AttackIndexLayer);
+        animator.PlayAttack(hash , attack.AttackIndexLayer , isTransitioning);
     }
 
     private void UpdateAttack()
     {
-        currentTick++;
-
+        int tick = Ticker.instance.CurrentTick - attackStartTick;
+        
         int totalFrames =
             CurrentAttack.StartUpFrames +
             CurrentAttack.ActiveFrames +
             CurrentAttack.RecoveryFrames;
         
         Debug.Log(totalFrames);
-        if (IsInCancelWindow(currentTick , CurrentAttack))
-        {
-            // combo logic later
-            CancelAttack(CurrentAttack);
-        }
 
-        if(canChain(currentTick , CurrentAttack , out Attack newAttack) && canTransition)
+        if (DeduceCurrentWindow(tick , CurrentAttack) == WindowType.Interrupt)
         {
+            Attack newAttack = GetNewAttack(CurrentAttack);
             if (newAttack != null)
             {
-                TransitionAttack(newAttack);
+                hasChainedThisWindow = true;
+
                 bufferer.AttackBuffer.Dequeue();
-                canTransition = false;
+                TransitionAttack(newAttack);
             }
 
+            if (isTryingToCancel)
+                CancelAttack(CurrentAttack);
         }
 
-        if (currentTick >= totalFrames)
+
+        if (DeduceCurrentWindow(tick, CurrentAttack) == WindowType.Invulnerability)
+        {
+            Invulnerabilize();
+        }
+
+        if (tick >= totalFrames)
         {
             EndAttack();
+            Debug.Log(tick);
         }
     }
-
-
-    public bool IsInCancelWindow(int tick, Attack currentAttack)
+    public WindowType DeduceCurrentWindow(int tick, Attack currentAttack)
     {
         if (currentAttack == null)
-            return false;
+            return WindowType.None;
 
-        for (int i = 0; i < currentAttack.cancelWindows.Length; i++)
+        
+        for (int i = 0; i < currentAttack.FrameWindows.Length; i++)
         {
-            if (tick >= currentAttack.cancelWindows[i].startFrame && tick <= currentAttack.cancelWindows[i].endFrame)
-                return true;
+        
+            if (currentAttack.FrameWindows[i].windowType == WindowType.Interrupt &&
+                (tick >= currentAttack.FrameWindows[i].startFrame &&
+                tick <= currentAttack.FrameWindows[i].endFrame))
+                return WindowType.Interrupt;
+
+
+            else if (currentAttack.FrameWindows[i].windowType == WindowType.Invulnerability &&
+                (tick >= currentAttack.FrameWindows[i].startFrame &&
+                tick <= currentAttack.FrameWindows[i].endFrame))
+
+                return WindowType.Invulnerability;
         }
-        return false;
 
+
+        return WindowType.None;
     }
 
-    public void CancelAttack(Attack currentAttack)
+    public Attack GetNewAttack(Attack currentAttack)
     {
-        //Interrupt Attack with a different move (i.e. Jump ) 
-        return;
-    }
+        if (isTransitioning) return null;
+        if (currentAttack == null) return null;
+        if (currentAttack.AllowedAttackTransitions.Length == 0) return null;
 
-    public bool canChain(int tick , Attack currentAttack , out Attack newAttack)
-    {
-        newAttack = null;
+        Attack newAttack = null;
 
-        if (currentAttack == null) return false;
-
-        if (tick > (currentAttack.StartUpFrames + currentAttack.ActiveFrames) && tick <= (currentAttack.RecoveryFrames + currentAttack.ActiveFrames + CurrentAttack.StartUpFrames))
+        foreach (Attack transition in currentAttack.AllowedAttackTransitions)
         {
-            foreach(Attack transition in currentAttack.AllowedAttackTransitions)
+            if (transition.RequiredInput == bufferer.attackInput)
             {
-                if (transition.RequiredInput == bufferer.attackInput)
-                {
-                    newAttack = transition;
-                    //Debug.Log("Chaining");
-                    return true;
-                }
+                newAttack = transition;
+                return newAttack;
             }
         }
 
-        return false;
-    }
 
+        return newAttack;    
+    }
     public void TransitionAttack(Attack newAttack)
     {
         CurrentAttack = newAttack;
-        currentTick = 0;
+        attackStartTick = Ticker.instance.CurrentTick;
         isAttacking = true;
+        isTransitioning = true;
 
         int hash = Animator.StringToHash(newAttack.clip.name);
-        animator.PlayAttack(hash , newAttack.AttackIndexLayer);
+        animator.PlayAttack(hash , newAttack.AttackIndexLayer , isTransitioning);
+    }
+
+
+    public void CancelAttack(Attack currentAttack)
+    {
+        //Interrupt Attack with a different move (i.e. Jump  , parry etc) 
+        return;
+    }
+
+
+    private void Invulnerabilize()
+    {
+        // Invincible during these Frames
     }
 
     private void EndAttack()
@@ -191,46 +229,9 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
 
         CurrentAttack = null;
         isAttacking = false;
-        currentTick = 0;
+        isTransitioning = false;
+        attackStartTick = 0;
+
     }
 
 }
-
-    ////(Rework)
-    //private void CacheAttackData(Attack attack)
-    //{
-    //    float scale = 60f / attack.clip.frameRate;
-        
-    //    currentAttackData = new AttackRuntimeData
-    //    {
-    //        startUp = Scale(attack.StartUpFrames, scale),
-    //        active = Scale(attack.ActiveFrames, scale),
-    //        recovery = Scale(attack.RecoveryFrames, scale),
-    //    };
-
-    //    if (attack.cancelWindows != null)
-    //    {
-    //        cancelWindows = new CancelWindowRuntime[attack.cancelWindows.Length];
-
-    //        for (int i = 0; i < attack.cancelWindows.Length; i++)
-    //        {
-    //            cancelWindows[i] = new CancelWindowRuntime
-    //            {
-    //                start = Scale(attack.cancelWindows[i].startFrame, scale),
-    //                end = Scale(attack.cancelWindows[i].endFrame, scale)
-    //            };
-    //        }
-    //    }
-    //    else
-    //    {
-    //        cancelWindows = new CancelWindowRuntime[0];
-    //    }
-    //}
-
-
-    //private int Scale(int frames, float scale)
-    //{
-    //    return Mathf.RoundToInt(frames * scale);
-    //}
-
-

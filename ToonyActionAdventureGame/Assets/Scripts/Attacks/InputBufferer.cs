@@ -84,7 +84,7 @@ public class InputBufferer : MonoBehaviour
             return;
         if (ticker.CurrentTick >= nextResetTick)
         { 
-            Debug.Log($"Buffer Cleared at Tick : {ticker.CurrentTick}");
+            //Debug.Log($"Buffer Cleared at Tick : {ticker.CurrentTick}");
             AttackBuffer.Clear();
         }
         else

@@ -12,7 +12,7 @@ public class Attack : FrameData
     public bool isAirAttack;
     public Attack[] AllowedAttackTransitions;
 
-    public CancelWindow[] cancelWindows;
+    public new FrameWindows[] FrameWindows;
 
     [Header("Attack Inputs")]
     public InputBufferer.AttackInput RequiredInput;

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 
 public class Ticker: MonoBehaviour
@@ -8,7 +9,8 @@ public class Ticker: MonoBehaviour
 	private float accumulator = 0f; //Wallet  
 
 	private int currentTick = 0; //Total lifetime Ticks 
-    
+
+    public static event Action OnTick;
     public int CurrentTick { get { return currentTick; } private set { currentTick = value; }  }
     public static Ticker instance;
      
@@ -25,21 +27,15 @@ public class Ticker: MonoBehaviour
         {
             //Debug.Log($"Accumulator : {accumulator} , Ticks : {currentTick}");
             accumulator -= tickRate;
-            Tick();
+            currentTick++;            
 
+            OnTick?.Invoke();
+            
         }
 
     }
     
-    private int Tick()
-    {
-        return currentTick++;
-    }
-
-
-
-    
-	private bool canTick ()  
+	public bool canTick ()  
 	{
 		return accumulator >= tickRate; //If we've accumulated enough time, tick 
 	}
