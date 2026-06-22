@@ -31,7 +31,7 @@ public class CameraController : MonoBehaviour
 
     private int scrollWheel = 2; 
     private void Awake()
-    {
+    { 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
