@@ -417,7 +417,17 @@ public class AttackingState : State<Player>
 
     public override void Update(Player p)
     {
-        throw new NotImplementedException();
+        if (!p.cinCam.LockedOn)
+        {
+            AttackDir = p.Input.normalized;
+        }
+
+        else
+        {
+            AttackDir = p.transform.forward;
+        }
+
+
     }
     public override void Exit(Player p)
     {
