@@ -85,7 +85,7 @@ public class AnimatorController : MonoBehaviour
         animator.SetBool("isTransitioning", isTransitioning);
         animator.SetInteger("AttackIndex", AttackIndex);
         //animator.SetTrigger(animationHash)
-        //ChangeAnimation(animationHash);
+        ChangeAnimation(animationHash);
     }
 
     public void StopAttack(int animationHash)
@@ -97,7 +97,7 @@ public class AnimatorController : MonoBehaviour
     }
 
 
-    public void ChangeAnimation(int targetHash, float delay = 0.0f, float crossfade = 0.05f)
+    public void ChangeAnimation(int targetHash, float delay = 0.0f, float crossfade = 0.09f)
     {
         if (currentAnimationHash == targetHash) return;
 

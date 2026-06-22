@@ -1,8 +1,4 @@
-﻿using NUnit.Framework.Constraints;
-using System.Collections;
-using System.Runtime.InteropServices.WindowsRuntime;
-using UnityEngine;
-using UnityEngine.Animations.Rigging;
+﻿using UnityEngine;
 using static FrameData;
 using static InputBufferer;
 
@@ -24,7 +20,9 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     public Attack CurrentAttack;
     private bool isAttacking = false;
     private bool isTransitioning = false;
-    private bool hasChainedThisWindow;
+    private bool hasChainedThisWindow = false;
+
+
     private bool isTryingToCancel = false;
 
     [Header("Ticker Config")]
@@ -33,17 +31,6 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     [Header("References")]
     [SerializeField] private InputBufferer bufferer;
     private AnimatorController animator;
-
-
-    //private CancelWindowRuntime[] cancelWindows;
-    //public AttackRuntimeData currentAttackData;
-
-    //public struct AttackRuntimeData { public int startUp; public int active; public int recovery; } 
-    //public struct CancelWindowRuntime { public int start; public int end; }
-
-    //private AnimatorStateInfo AttackAnimationInfo;
-    //private AnimatorTransitionInfo AttackTransitionInfo;
-
 
 
     private void Start()
@@ -71,21 +58,19 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         }
 
         UpdateAttack();
-        
+        //Debug.Log($"Ticker:{Ticker.instance.CurrentTick} start:{attackStartTick} tick:{(Ticker.instance.CurrentTick - attackStartTick)} attack:{(CurrentAttack?.clip?.name ?? "null")}");
     }
 
     private void TryStartAttack()
     {
-        if (bufferer.AttackBuffer.Count == 0)
-            return;
-    
-        Attack next = GetAttackFromInput(bufferer.attackInput);
 
-        if (next == null)
-            return;
-
-        bufferer.AttackBuffer.Dequeue();
-        StartAttack(next);
+        if (!bufferer.HasInput) return;
+        else
+        {
+            var input = GetAttackFromInput(bufferer.ConsumeInput());
+            StartAttack(input);
+        }
+     
     }
 
     private Attack GetAttackFromInput(AttackInput input)
@@ -117,23 +102,32 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     private void UpdateAttack()
     {
         int tick = Ticker.instance.CurrentTick - attackStartTick;
-        
+
+        if (isTransitioning)
+            isTransitioning = false;
+
+
         int totalFrames =
             CurrentAttack.StartUpFrames +
             CurrentAttack.ActiveFrames +
             CurrentAttack.RecoveryFrames;
-        
-        Debug.Log(totalFrames);
 
-        if (DeduceCurrentWindow(tick , CurrentAttack) == WindowType.Interrupt)
+        //Debug.Log(totalFrames);
+
+
+        if (DeduceCurrentWindow(tick, CurrentAttack) != WindowType.Interrupt)
+        {
+            hasChainedThisWindow = false;
+        }
+        else
         {
             Attack newAttack = GetNewAttack(CurrentAttack);
+
             if (newAttack != null)
             {
                 hasChainedThisWindow = true;
-
-                bufferer.AttackBuffer.Dequeue();
                 TransitionAttack(newAttack);
+                return;
             }
 
             if (isTryingToCancel)
@@ -149,7 +143,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         if (tick >= totalFrames)
         {
             EndAttack();
-            Debug.Log(tick);
+            //Debug.Log(tick);
         }
     }
     public WindowType DeduceCurrentWindow(int tick, Attack currentAttack)
@@ -180,23 +174,22 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
 
     public Attack GetNewAttack(Attack currentAttack)
     {
-        if (isTransitioning) return null;
+        if (hasChainedThisWindow) return null;
         if (currentAttack == null) return null;
         if (currentAttack.AllowedAttackTransitions.Length == 0) return null;
 
-        Attack newAttack = null;
+        AttackInput input = bufferer.PeekInput();
 
         foreach (Attack transition in currentAttack.AllowedAttackTransitions)
         {
-            if (transition.RequiredInput == bufferer.attackInput)
+            if (transition.RequiredInput == input)
             {
-                newAttack = transition;
-                return newAttack;
+                bufferer.ConsumeInput();
+                return transition;
             }
         }
 
-
-        return newAttack;    
+        return null;
     }
     public void TransitionAttack(Attack newAttack)
     {
@@ -204,7 +197,8 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         attackStartTick = Ticker.instance.CurrentTick;
         isAttacking = true;
         isTransitioning = true;
-
+        hasChainedThisWindow = false;
+        //Debug.Log($"Chaining into  {CurrentAttack.name}");
         int hash = Animator.StringToHash(newAttack.clip.name);
         animator.PlayAttack(hash , newAttack.AttackIndexLayer , isTransitioning);
     }
@@ -230,6 +224,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         CurrentAttack = null;
         isAttacking = false;
         isTransitioning = false;
+        hasChainedThisWindow = false;
         attackStartTick = 0;
 
     }

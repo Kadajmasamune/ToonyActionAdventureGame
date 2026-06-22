@@ -1,93 +1,88 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class InputBufferer : MonoBehaviour
 {
+    public enum AttackInput { Light, Heavy, None }
 
+    private struct BufferedInput
+    {
+        public AttackInput input;
+        public int tick;
+    }
 
-    public enum AttackInput { Light, Heavy , None}
+    private BufferedInput lastInput;
+    private bool hasInput;
 
-    public Queue<AttackInput> AttackBuffer;
-
-    public AttackInput attackInput;
-
-    private AttackInput[] AttackHistory;
-
-
-    [Header("Ticker Configuration")]
+    [Header("Ticker")]
     private Ticker ticker;
-    [SerializeField] private int TicksToReset;
-    private int nextResetTick = 0;
 
+    [Header("Buffer Settings")]
+    [SerializeField] private int inputBufferWindow = 10;
 
     private void Start()
     {
-        AttackBuffer = new Queue<AttackInput>();
         ticker = FindFirstObjectByType<Ticker>();
 
         if (ticker == null)
             Debug.LogError("Ticker Not Found");
-        
-
-        nextResetTick = TicksToReset + ticker.CurrentTick;
-
     }
 
     private void Update()
     {
-        BufferInput();
-        HandleBufferer();
-        ClearBuffer();
-
-        //if (AttackBuffer.Count > 0)
-        //{
-        //    Debug.Log(AttackBuffer.Count);
-        //}
-
-        Debug.Log(attackInput);
+        ReadInput();
+        ExpireInput();
     }
 
-    private void BufferInput()
+    private void ReadInput()
     {
         if (Input.GetMouseButtonDown((int)AttackInput.Light))
         {
-            AttackBuffer.Enqueue(AttackInput.Light);
-            nextResetTick = ticker.CurrentTick + TicksToReset; //Update
-            return;
-
+            StoreInput(AttackInput.Light);
         }
-        if (Input.GetMouseButtonDown((int)AttackInput.Heavy))
+        else if (Input.GetMouseButtonDown((int)AttackInput.Heavy))
         {
-            AttackBuffer.Enqueue(AttackInput.Heavy);
-            nextResetTick = ticker.CurrentTick + TicksToReset; //Update
-            return;
+            StoreInput(AttackInput.Heavy);
         }
-
     }
 
-
-    private void HandleBufferer()
+    private void StoreInput(AttackInput input)
     {
-        if (AttackBuffer.Count == 0)
+        lastInput = new BufferedInput
         {
-            attackInput = AttackInput.None;
-            return;
-        }
-        attackInput = AttackBuffer.Peek();
+            input = input,
+            tick = ticker.CurrentTick
+        };
+
+        hasInput = true;
     }
 
-
-    private void ClearBuffer()
+    private void ExpireInput()
     {
-        if (AttackBuffer.Count == 0)
+        if (!hasInput)
             return;
-        if (ticker.CurrentTick >= nextResetTick)
-        { 
-            //Debug.Log($"Buffer Cleared at Tick : {ticker.CurrentTick}");
-            AttackBuffer.Clear();
+
+        if (ticker.CurrentTick - lastInput.tick > inputBufferWindow)
+        {
+            hasInput = false;
         }
-        else
-            return;
+    }
+
+    public bool HasInput => hasInput;
+
+    public AttackInput PeekInput()
+    {
+        if (!hasInput)
+            return AttackInput.None;
+
+        return lastInput.input;
+    }
+
+    public AttackInput ConsumeInput()
+    {
+        if (!hasInput)
+            return AttackInput.None;
+
+        hasInput = false;
+        return lastInput.input;
     }
 }

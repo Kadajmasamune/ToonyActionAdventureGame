@@ -21,8 +21,12 @@ MonoBehaviour:
   hitStunInflicted: 0
   hitStopDuration: 0
   isAirAttack: 0
-  AllowedAttackTransitions: []
-  cancelWindows: []
+  AllowedAttackTransitions:
+  - {fileID: 11400000, guid: 3b79e2f802136cf49a46c926fdfac7e6, type: 2}
+  FrameWindows:
+  - startFrame: 10
+    endFrame: 27
+    windowType: 0
   RequiredInput: 1
   clip: {fileID: -203655887218126122, guid: 332f6a54c370e304f8fac36e909557b6, type: 3}
   AttackIndexLayer: 3
