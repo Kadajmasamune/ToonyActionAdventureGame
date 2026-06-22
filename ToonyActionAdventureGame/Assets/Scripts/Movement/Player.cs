@@ -399,13 +399,16 @@ public class LockOnState : State<Player>
 
 public class AttackingState : State<Player>
 {
+    // ONLY FOR ATTACK MOVEMENT 
+    // Attack Data is handled by the combat state machine 
+
     private bool isGroundAttack = false;
     private bool isAirAttack = false;
-
 
     private Attack CurrentAttack = null;
     Vector3 AttackDir = Vector3.zero; 
 
+    
     public override void Enter(Player p)
     {
         CurrentAttack = p.combatStateMachine.CurrentAttack; 

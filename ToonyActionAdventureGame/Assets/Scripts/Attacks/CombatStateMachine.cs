@@ -1,9 +1,9 @@
-﻿using UnityEngine;
+﻿using Common;
+using UnityEngine;
 using static FrameData;
 using static InputBufferer;
 
 public class CombatStateMachine : MonoBehaviour // ----> “Given state + input + context → what happens next?”                                                
-// ----> This class Decides Transition logic, not Attacks Themselves, they simply consume the signals given by the Machine and perform the exact Transition. 
 {
 
 
@@ -32,7 +32,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     [SerializeField] private InputBufferer bufferer;
     private AnimatorController animator;
 
-
+   
     private void Start()
     {
         bufferer = GetComponent<InputBufferer>();
