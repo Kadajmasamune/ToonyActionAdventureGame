@@ -33,8 +33,9 @@ public class Player : MonoBehaviour
 
     public AnimatorController Animator { get; set; }
 
-
     public EntityStateMachine<Player> playerStateMachine;
+
+    public CombatStateMachine combatStateMachine;
 
     public CameraControllerCinemachine cinCam;
 
@@ -46,13 +47,14 @@ public class Player : MonoBehaviour
         Animator = GetComponent<AnimatorController>();
         if (!cameraTransform)
             cameraTransform = Camera.main.transform;
-
+        
+        
     }
 
     void Start()
     {
         playerStateMachine = new EntityStateMachine<Player>(this);
-        
+        combatStateMachine = GetComponent < CombatStateMachine>();        
         playerStateMachine.SwitchStates(new GroundedState());
     }
 
@@ -306,19 +308,17 @@ public class FallState : State<Player>
 
 public class LockOnState : State<Player>
 {
-    // THIS ONLY CONTROLS MOVEMENT  
-    // EVERYTHING ATTACKS RELATED SHOULD BE HANDLED BY THE COMBATSTATEMACHINE
-
-    // Fix Movement
-    // Make WASD movement adjust depending on player's position in the AOE 
-    // i.e. if player is behind the enemy while facing the camera, W should move him back. 
-
-
     public override void Enter(Player p)
     {
         Debug.Log("LOCKON ENTERED");
     }
-    public override void HandleInput(Player p)   {      }
+    public override void HandleInput(Player p)  
+    {
+        if (p.JumpPressed)
+        {
+            p.playerStateMachine.SwitchStates(new JumpState());
+        }
+    }
 
     public override void Update(Player p)
     {
@@ -331,10 +331,12 @@ public class LockOnState : State<Player>
         p.Animator.UpdateMovement(p.Velocity, p.strafingSpeed, p.walkSpeed, p.sprintSpeed);
         UpdateRotation(p);
     }
+
+
+
     public override void Exit(Player p)
     {
         p.Velocity = Vector3.zero;
- 
     }
 
     private void UpdateRotation(Player p)
@@ -351,30 +353,36 @@ public class LockOnState : State<Player>
             1f - Mathf.Exp(-p.rotationSharpness * Time.deltaTime)
         );
 
-
     }
 
     private void UpdateMovement(Player p)
     {
+        if (!p.IsGrounded())
+        {
+            p.playerStateMachine.SwitchStates(new FallState());
+            return;
+        }
+
         Transform enemy = p.cinCam.Enemy.Object;
 
         Vector3 offset = p.transform.position - enemy.position;
         offset.y = 0f;
 
+        if (offset.sqrMagnitude < 0.001f)
+            return;
+
         Vector3 radial = offset.normalized;
         Vector3 tangent = new Vector3(-radial.z, 0f, radial.x);
 
-        Vector3 desiredVelocity =
-            (tangent * p.Input.x -
-             radial * p.Input.y) *
-            p.strafingSpeed;
+        Vector3 moveDir = p.GetCameraRelativeInput();
 
-        Vector3 horizontal =
-            new Vector3(
-                p.Velocity.x,
-                0,
-                p.Velocity.z
-            );
+        float strafe = Vector3.Dot(moveDir, tangent);
+        float inOut = Vector3.Dot(moveDir, radial);
+
+        Vector3 desiredVelocity =
+            (tangent * strafe + radial * inOut) * p.strafingSpeed;
+
+        Vector3 horizontal = new Vector3(p.Velocity.x, 0f, p.Velocity.z);
 
         horizontal = Vector3.MoveTowards(
             horizontal,
@@ -382,18 +390,37 @@ public class LockOnState : State<Player>
             p.accel * Time.deltaTime
         );
 
-        p.Velocity = new Vector3(
-            horizontal.x,
-            0,
-            horizontal.z
-        );
-
-        p.transform.position +=
-            p.Velocity * Time.deltaTime;
+        p.Velocity = new Vector3(horizontal.x, p.Velocity.y, horizontal.z);
+        p.transform.position += p.Velocity * Time.deltaTime;
     }
 
 
 }
 
+public class AttackingState : State<Player>
+{
+    private bool isGroundAttack = false;
+    private bool isAirAttack = false;
 
 
+    private Attack CurrentAttack = null;
+    Vector3 AttackDir = Vector3.zero; 
+
+    public override void Enter(Player p)
+    {
+        CurrentAttack = p.combatStateMachine.CurrentAttack; 
+        isAirAttack = CurrentAttack.isAirAttack;
+        isGroundAttack = isAirAttack ? false : true; 
+    }
+
+    public override void HandleInput(Player p) { }
+
+    public override void Update(Player p)
+    {
+        throw new NotImplementedException();
+    }
+    public override void Exit(Player p)
+    {
+        throw new NotImplementedException();
+    }
+}
