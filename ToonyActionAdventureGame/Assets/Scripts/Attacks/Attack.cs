@@ -7,6 +7,7 @@ public class Attack : FrameData
     public float Damage;
     public float forwardMovementImpulse;
     public float attackAcceleration;
+    public float upwardLaunchImpulse; 
     public float hitStunInflicted;
     public float knockBackInflicted;
     public float hitStopDuration;

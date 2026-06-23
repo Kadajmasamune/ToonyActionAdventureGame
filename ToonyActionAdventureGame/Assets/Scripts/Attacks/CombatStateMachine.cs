@@ -1,4 +1,6 @@
 ﻿using Common;
+using System.Runtime.CompilerServices;
+using Unity.Profiling;
 using UnityEngine;
 using static FrameData;
 using static InputBufferer;
@@ -21,9 +23,14 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     public bool isAttacking = false;
     public bool isTransitioning = false;
     public bool hasChainedThisWindow = false;
+    public bool shouldLaunchTarget => (CurrentAttack.upwardLaunchImpulse > 0 && CurrentAttack.knockBackInflicted <= 0);
 
     [Header("Weapon")]
-    public Weapon currentWeapon; 
+    //public Weapon currentWeapon;
+    public WeaponHandling currentWeapon;
+    public Transform target;
+    public bool isTargetHit;
+
 
     private bool isTryingToCancel = false;
 
@@ -39,6 +46,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     {
         bufferer = GetComponent<InputBufferer>();
         animator = GetComponent<AnimatorController>();
+        currentWeapon = FindFirstObjectByType<WeaponHandling>();
     }
 
     private void OnEnable()
@@ -93,6 +101,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         isAttacking = true;
         isTransitioning = false ;
         hasChainedThisWindow = false;
+        currentWeapon.GetComponent<Collider>().enabled = false ;
 
         attackStartTick = Ticker.instance.CurrentTick;
         //CacheAttackData(attack);
@@ -116,6 +125,8 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
 
         //Debug.Log(totalFrames);
 
+        HandleWeaponCollider(tick , CurrentAttack , currentWeapon);
+        HandleAttackProperties(CurrentAttack);
 
         if (DeduceCurrentWindow(tick, CurrentAttack) != WindowType.Interrupt)
         {
@@ -218,6 +229,49 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         // Invincible during these Frames
     }
 
+   
+    private void HandleWeaponCollider(int tick , Attack currentAttack ,WeaponHandling currentWeapon)
+    {
+        Collider weaponCollider = currentWeapon.GetComponent<Collider>();
+        int ActiveEnd = currentAttack.StartUpFrames + currentAttack.ActiveFrames;
+        if (tick >= currentAttack.StartUpFrames && tick <= ActiveEnd)
+        {
+            if (weaponCollider != null && !weaponCollider.enabled)
+            {
+                Debug.Log("Activating Collider");
+                weaponCollider.enabled = true;
+            }
+        }
+        else
+        {
+            weaponCollider.enabled = false;
+            target = null;
+            isTargetHit = false;
+        }
+    }
+
+    private void HandleAttackProperties(Attack currentAttack)
+    {
+        if (isTargetHit && target != null)
+        {
+            Vector3 currentPos = target.position;
+            Vector3 destination = currentPos + Vector3.up * currentAttack.upwardLaunchImpulse;
+
+            Vector3 vertical = new Vector3(0, destination.y, 0);
+
+            target.position = Vector3.Lerp(
+                target.position,
+                vertical,
+                currentAttack.attackAcceleration * Time.deltaTime
+            );
+            Health targetHealth = target.GetComponent<Health>();
+            if (targetHealth != null)
+            {
+                targetHealth.TakeDamage(currentAttack.Damage);
+            }
+        }
+    }
+
     private void EndAttack()
     {
         int hash = Animator.StringToHash(CurrentAttack.clip.name);
@@ -228,7 +282,9 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         isTransitioning = false;
         hasChainedThisWindow = false;
         attackStartTick = 0;
-
+        currentWeapon.GetComponent<Collider>().enabled = false;
+        isTargetHit = false;
+        target = null;
     }
 
 }
