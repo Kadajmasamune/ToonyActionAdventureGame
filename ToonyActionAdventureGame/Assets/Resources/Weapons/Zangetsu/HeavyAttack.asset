@@ -10,23 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cb5f2e3538adeb247a1218f12541bcc4, type: 3}
-  m_Name: Light2
+  m_Name: HeavyAttack
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  StartUpFrames: 5
-  ActiveFrames: 4
-  RecoveryFrames: 6
+  StartUpFrames: 23
+  ActiveFrames: 13
+  RecoveryFrames: 24
   Damage: 0
-  forwardMovementImpulse: 0
-  speedMultiplierBonus: 0
+  forwardMovementImpulse: 5
+  attackAcceleration: 4
   hitStunInflicted: 0
+  knockBackInflicted: 0
   hitStopDuration: 0
   isAirAttack: 0
   AllowedAttackTransitions:
-  - {fileID: 11400000, guid: 09f66742113076f47ae67d5dfeea9d93, type: 2}
+  - {fileID: 11400000, guid: 3b79e2f802136cf49a46c926fdfac7e6, type: 2}
   FrameWindows:
-  - startFrame: 10
-    endFrame: 14
+  - startFrame: 27
+    endFrame: 29
     windowType: 0
-  RequiredInput: 0
-  clip: {fileID: -203655887218126122, guid: b09082235fad06a4097cb7164544f3aa, type: 3}
-  AttackIndexLayer: 2
+  RequiredInput: 1
+  clip: {fileID: -203655887218126122, guid: 332f6a54c370e304f8fac36e909557b6, type: 3}
+  AttackIndexLayer: 3

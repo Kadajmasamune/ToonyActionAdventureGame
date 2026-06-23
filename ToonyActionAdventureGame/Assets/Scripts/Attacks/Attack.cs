@@ -6,8 +6,9 @@ public class Attack : FrameData
     [Header("Attack Data")]
     public float Damage;
     public float forwardMovementImpulse;
-    public float speedMultiplierBonus;
+    public float attackAcceleration;
     public float hitStunInflicted;
+    public float knockBackInflicted;
     public float hitStopDuration;
     public bool isAirAttack;
     public Attack[] AllowedAttackTransitions;

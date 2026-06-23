@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9f0fec9bb411b2468b6a6fa21cfd6e7, type: 3}
+  m_Name: Zangetsu
+  m_EditorClassIdentifier: Assembly-CSharp::Weapon
+  WeaponName: Zangetsu
+  WeaponPrefab: {fileID: 4970657866011112096, guid: 2b919abc1b2d2c441b63c052a41ef4fe,
+    type: 3}
+  attacks:
+  - {fileID: 11400000, guid: 09f66742113076f47ae67d5dfeea9d93, type: 2}
+  - {fileID: 11400000, guid: 8217f9f263d97124db75b64704d42846, type: 2}
+  - {fileID: 11400000, guid: 57d83a97026ed384f9434c5c64eb78b6, type: 2}
+  - {fileID: 11400000, guid: 3b79e2f802136cf49a46c926fdfac7e6, type: 2}
+  - {fileID: 11400000, guid: f15ffff88523fbf499b402a04bc401f4, type: 2}

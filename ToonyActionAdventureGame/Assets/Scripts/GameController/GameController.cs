@@ -9,7 +9,8 @@ public class GameController : MonoBehaviour
     {
         instance = this;
         Application.targetFrameRate = 60;
-
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Update()

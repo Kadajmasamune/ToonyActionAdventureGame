@@ -63,8 +63,8 @@ public class Player : MonoBehaviour
         ReadInput();
 
         playerStateMachine.currentState.HandleInput(this);
-        playerStateMachine.currentState.Update(this); 
-
+        playerStateMachine.currentState.Update(this);
+        //playerStateMachine.currentState.Exit(this);
     }
 
     void ReadInput()
@@ -129,7 +129,11 @@ public class GroundedState : State<Player>
         {
             p.playerStateMachine.SwitchStates(new JumpState());
         }
-
+        
+        if (p.combatStateMachine.isAttacking)
+        {
+            p.playerStateMachine.SwitchStates(new AttackingState());
+        }
         if(p.cinCam.LockedOn)
         {
             p.playerStateMachine.SwitchStates(new LockOnState());
@@ -399,41 +403,61 @@ public class LockOnState : State<Player>
 
 public class AttackingState : State<Player>
 {
-    // ONLY FOR ATTACK MOVEMENT 
-    // Attack Data is handled by the combat state machine 
+    private Attack CurrentAttack;
 
-    private bool isGroundAttack = false;
-    private bool isAirAttack = false;
+    private Vector3 AttackDir;
+    private Vector3 startPos;
+    private Vector3 targetPos;
 
-    private Attack CurrentAttack = null;
-    Vector3 AttackDir = Vector3.zero; 
 
-    
     public override void Enter(Player p)
     {
-        CurrentAttack = p.combatStateMachine.CurrentAttack; 
-        isAirAttack = CurrentAttack.isAirAttack;
-        isGroundAttack = isAirAttack ? false : true; 
+        InitializeAttack(p);
     }
 
-    public override void HandleInput(Player p) { }
+    public override void HandleInput(Player p)
+    {
+        if (!p.combatStateMachine.isAttacking)
+            p.playerStateMachine.SwitchStates(new GroundedState());
+    }
 
     public override void Update(Player p)
     {
-        if (!p.cinCam.LockedOn)
+        if (p.combatStateMachine.isTransitioning)
         {
-            AttackDir = p.Input.normalized;
+            InitializeAttack(p);
+            MovePlayer(p);
         }
 
-        else
-        {
+        MovePlayer(p);
+    }
+    public void InitializeAttack(Player p)
+    {
+        CurrentAttack = p.combatStateMachine.CurrentAttack;
+
+        if (p.cinCam.LockedOn)
             AttackDir = p.transform.forward;
-        }
+        else
+            AttackDir = p.GetCameraRelativeInput();
+
+        if (AttackDir == Vector3.zero)
+            AttackDir = p.transform.forward;
 
 
+        startPos = p.transform.position;
+        targetPos = startPos + AttackDir * CurrentAttack.forwardMovementImpulse;
+    }
+
+    private void MovePlayer(Player p)
+    {
+        p.transform.position = Vector3.Lerp(
+            p.transform.position,
+            targetPos,
+            CurrentAttack.attackAcceleration * Time.deltaTime
+        );
     }
     public override void Exit(Player p)
     {
-        throw new NotImplementedException();
     }
+
 }

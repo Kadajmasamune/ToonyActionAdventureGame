@@ -18,10 +18,12 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     [Header("Attack")]
     public Attack[] PossibleAttacks;
     public Attack CurrentAttack;
-    private bool isAttacking = false;
-    private bool isTransitioning = false;
-    private bool hasChainedThisWindow = false;
+    public bool isAttacking = false;
+    public bool isTransitioning = false;
+    public bool hasChainedThisWindow = false;
 
+    [Header("Weapon")]
+    public Weapon currentWeapon; 
 
     private bool isTryingToCancel = false;
 
