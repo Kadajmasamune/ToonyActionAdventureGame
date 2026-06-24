@@ -406,7 +406,6 @@ public class AttackingState : State<Player>
     private Attack CurrentAttack;
 
     private Vector3 AttackDir;
-    private Vector3 startPos;
     private Vector3 targetPos;
 
 
@@ -415,38 +414,44 @@ public class AttackingState : State<Player>
         InitializeAttack(p);
     }
 
-    public override void HandleInput(Player p)
-    {
-        if (!p.combatStateMachine.isAttacking)
-            p.playerStateMachine.SwitchStates(new GroundedState());
-    }
 
     public override void Update(Player p)
     {
+        int ActiveEnd = CurrentAttack.StartUpFrames + CurrentAttack.ActiveFrames;
+        
         if (p.combatStateMachine.isTransitioning)
         {
             InitializeAttack(p);
-            MovePlayer(p);
+            targetPos = calculateDstVector(p.transform.position);
         }
 
-        MovePlayer(p);
+        targetPos = calculateDstVector(p.transform.position);
+        if (p.combatStateMachine.CurrentAttackTick <= ActiveEnd)
+        {
+            MovePlayer(p);
+            UpdateRotation(p);
+
+        }
     }
+
+    public override void HandleInput(Player p)
+    {
+        if (!p.combatStateMachine.isAttacking) p.playerStateMachine.SwitchStates(new GroundedState());
+    }
+
     public void InitializeAttack(Player p)
     {
         CurrentAttack = p.combatStateMachine.CurrentAttack;
 
-        if (p.cinCam.LockedOn)
-            AttackDir = p.transform.forward;
-        else
-            AttackDir = p.GetCameraRelativeInput();
+        AttackDir = p.cinCam.LockedOn
+            ? p.transform.forward
+            : p.GetCameraRelativeInput();
+
 
         if (AttackDir == Vector3.zero)
             AttackDir = p.transform.forward;
-
-
-        startPos = p.transform.position;
-        targetPos = startPos + AttackDir * CurrentAttack.forwardMovementImpulse;
     }
+
 
     private void MovePlayer(Player p)
     {
@@ -455,9 +460,44 @@ public class AttackingState : State<Player>
             targetPos,
             CurrentAttack.attackAcceleration * Time.deltaTime
         );
-    }
-    public override void Exit(Player p)
-    {
+
+        
     }
 
+
+    private Vector3 calculateDstVector(Vector3 startPos)
+    {
+        Vector3 dst = startPos + AttackDir * CurrentAttack.forwardMovementImpulse;
+        Vector3 movementVector = dst - startPos;
+
+        float maxDistance = movementVector.magnitude;
+
+        if (Physics.Raycast(startPos, movementVector.normalized, out RaycastHit hit, maxDistance))
+        {
+            const float OFFSET = 0.4f;
+            float lambda = Mathf.Clamp01((hit.distance - OFFSET) / maxDistance);
+
+            Vector3 newDestination = startPos + (lambda * movementVector);
+            return newDestination;
+        }
+        return dst;
+    }
+    void UpdateRotation(Player p)
+    {
+
+        if (AttackDir.sqrMagnitude < 0.001f)
+            return;
+
+        Quaternion target = Quaternion.LookRotation(AttackDir);
+        p.transform.rotation = Quaternion.Slerp(
+            p.transform.rotation,
+            target,
+            1f - Mathf.Exp(-p.rotationSharpness * Time.deltaTime)
+        );
+    }
+
+    public override void Exit(Player p)
+    {
+
+    }
 }

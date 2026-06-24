@@ -1,9 +1,10 @@
-﻿using UnityEngine; 
+﻿using UnityEngine;
+using System.Collections.Generic;
 public class WeaponHandling : MonoBehaviour
 {
 
     public LayerMask EnemyLayer;
-    public Collider[] Targets;
+    public List<Collider>Targets;
     
     private void Awake()
     {
@@ -14,9 +15,21 @@ public class WeaponHandling : MonoBehaviour
     {
         if ((1 << other.gameObject.layer & EnemyLayer) != 0)
         {
-            // Implement for multiple enemies 
+            Targets.Add(other);
         }
-
     }
-    
+
+    private void Update()
+    {
+        //if (Targets.Count > 0)
+        //{
+        //    foreach (Collider target in Targets)
+        //    {
+        //        Debug.Log(target.gameObject.name, target);
+        //    }
+        //}
+
+        Debug.Log(Targets.Count);
+    }
+
 }

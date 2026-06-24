@@ -16,8 +16,9 @@ MonoBehaviour:
   ActiveFrames: 7
   RecoveryFrames: 19
   Damage: 40
-  forwardMovementImpulse: 5
-  attackAcceleration: 4
+  forwardMovementImpulse: 2
+  attackAcceleration: 21
+  upwardLaunchImpulse: 0
   hitStunInflicted: 0
   knockBackInflicted: 0
   hitStopDuration: 0

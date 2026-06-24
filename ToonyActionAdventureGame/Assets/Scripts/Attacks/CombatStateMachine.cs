@@ -1,4 +1,6 @@
 ﻿using Common;
+using NUnit.Framework;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.Profiling;
 using UnityEngine;
@@ -24,11 +26,15 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     public bool isTransitioning = false;
     public bool hasChainedThisWindow = false;
     public bool shouldLaunchTarget => (CurrentAttack.upwardLaunchImpulse > 0 && CurrentAttack.knockBackInflicted <= 0);
+    public int CurrentAttackTick {  get; private set; }
 
     [Header("Weapon")]
     //public Weapon currentWeapon;
     public WeaponHandling currentWeapon;
-    public Transform target;
+    public List<Collider> targetsHit => currentWeapon.Targets;
+    private HashSet<Collider> hitTargets = new HashSet<Collider>();
+    private Dictionary<Collider , Vector3> TargetsToBeLaunched = new Dictionary<Collider , Vector3>();
+    private Dictionary<Collider, Vector3> TargetsToApplyKnockBack = new Dictionary<Collider, Vector3>();
     public bool isTargetHit;
 
 
@@ -61,6 +67,11 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
 
     private void OnTick()
     {
+        foreach (Collider target in TargetsToBeLaunched.Keys)
+        {
+            UpdateLaunch(target, TargetsToBeLaunched[target]);
+        }
+
         if (!isAttacking && !isTransitioning)
         {
             TryStartAttack();
@@ -68,6 +79,8 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         }
 
         UpdateAttack();
+        if (targetsHit.Count > 0) Debug.Log(targetsHit.Count);
+
         //Debug.Log($"Ticker:{Ticker.instance.CurrentTick} start:{attackStartTick} tick:{(Ticker.instance.CurrentTick - attackStartTick)} attack:{(CurrentAttack?.clip?.name ?? "null")}");
     }
 
@@ -102,7 +115,9 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         isTransitioning = false ;
         hasChainedThisWindow = false;
         currentWeapon.GetComponent<Collider>().enabled = false ;
-
+        hitTargets.Clear();
+        currentWeapon.Targets.Clear();
+        TargetsToBeLaunched.Clear();
         attackStartTick = Ticker.instance.CurrentTick;
         //CacheAttackData(attack);
 
@@ -113,7 +128,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     private void UpdateAttack()
     {
         int tick = Ticker.instance.CurrentTick - attackStartTick;
-
+        CurrentAttackTick = tick;
         if (isTransitioning)
             isTransitioning = false;
 
@@ -245,33 +260,63 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         else
         {
             weaponCollider.enabled = false;
-            target = null;
+            targetsHit.Clear();
             isTargetHit = false;
+
         }
     }
 
     private void HandleAttackProperties(Attack currentAttack)
     {
-        if (isTargetHit && target != null)
+        foreach (Collider target in targetsHit)
         {
-            Vector3 currentPos = target.position;
-            Vector3 destination = currentPos + Vector3.up * currentAttack.upwardLaunchImpulse;
+            if (hitTargets.Contains(target))
+                continue;
 
-            Vector3 vertical = new Vector3(0, destination.y, 0);
+            hitTargets.Add(target);
 
-            target.position = Vector3.Lerp(
-                target.position,
-                vertical,
-                currentAttack.attackAcceleration * Time.deltaTime
-            );
-            Health targetHealth = target.GetComponent<Health>();
-            if (targetHealth != null)
-            {
-                targetHealth.TakeDamage(currentAttack.Damage);
-            }
+            if (shouldLaunchTarget)
+                startLaunch(target, currentAttack);
+
+            if (!shouldLaunchTarget)
+                ApplyKnockBack(target, currentAttack);
+
+            Health health = target.GetComponent<Health>();
+
+            if (health != null)
+                health.TakeDamage(currentAttack.Damage);
         }
     }
+    
+    private void startLaunch(Collider target, Attack currentAttack)
+    {
+        Vector3 startPos = target.transform.position;
+        Vector3 destination = startPos + Vector3.up * currentAttack.upwardLaunchImpulse;
 
+        TargetsToBeLaunched[target] = destination;
+    }
+
+    private void ApplyKnockBack(Collider target, Attack currentAttack)
+    {
+        Vector3 startPos = target.transform.position;
+        Vector3 destination = startPos + Vector3.back * currentAttack.knockBackInflicted;
+
+        TargetsToApplyKnockBack[target] = destination;
+    }
+
+    private void ApplyHitStun(Collider target, Attack currentAttack)
+    {
+
+    }
+
+    private void UpdateLaunch(Collider target , Vector3 dstVec)
+    {
+        target.transform.position = Vector3.Lerp(
+                target.transform.position,
+                dstVec,
+                CurrentAttack.attackAcceleration * Time.deltaTime
+            );
+    }
     private void EndAttack()
     {
         int hash = Animator.StringToHash(CurrentAttack.clip.name);
@@ -284,7 +329,9 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         attackStartTick = 0;
         currentWeapon.GetComponent<Collider>().enabled = false;
         isTargetHit = false;
-        target = null;
+        hitTargets.Clear();
+        currentWeapon.Targets.Clear();
+        TargetsToBeLaunched.Clear();
     }
 
 }
