@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5982810002998520}
   - component: {fileID: 3442594390996601240}
   - component: {fileID: 1570422933342471126}
+  - component: {fileID: 7564592245822947244}
   m_Layer: 0
   m_Name: weaponCollider
   m_TagString: Untagged
@@ -68,10 +69,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68d5ec5378db7ad4a9d72775d3b998bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponHandling
-  EnemyLayer:
+  enemyLayer:
     serializedVersion: 2
     m_Bits: 64
-  Targets: []
+--- !u!114 &7564592245822947244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 644644299199203717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9f0fec9bb411b2468b6a6fa21cfd6e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Weapon
+  weaponCollider: {fileID: 0}
 --- !u!1 &1841801321487873790
 GameObject:
   m_ObjectHideFlags: 0

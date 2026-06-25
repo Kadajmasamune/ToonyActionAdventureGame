@@ -36,11 +36,8 @@ public class Player : MonoBehaviour, ICombatHandler
     public bool SprintHeld { get; private set; }
 
     public AnimatorController Animator { get; set; }
-
     public EntityStateMachine<Player> entityStateMachine { get; private set; }
-
     public CombatStateMachine combatStateMachine { get; private set; }
-
     public CameraControllerCinemachine cinCam;
 
     public Vector3 AttackDirection
@@ -55,7 +52,6 @@ public class Player : MonoBehaviour, ICombatHandler
             return GetCameraRelativeInput();
         }
     }
-
     public bool IsLockedOn => cinCam.LockedOn;
     public Attack.Context[] Context
     {

@@ -16,15 +16,41 @@ MonoBehaviour:
   ActiveFrames: 13
   RecoveryFrames: 24
   Damage: 0
+  attackSpeed: 2.8
   forwardMovementImpulse: 4
-  attackAcceleration: 21.52
-  upwardLaunchImpulse: 5
+  upwardLaunchImpulse: 9.73
   hitStunInflicted: 0
   knockBackInflicted: 0
   hitStopDuration: 0
-  isAirAttack: 0
+  cameraShakeIntensity: 0
+  DirectionRequired: {x: 0, y: 0, z: 0}
+  contextRequired: 
   AllowedAttackTransitions:
   - {fileID: 11400000, guid: 3b79e2f802136cf49a46c926fdfac7e6, type: 2}
+  lungeCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   FrameWindows:
   - startFrame: 27
     endFrame: 29

@@ -28,7 +28,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     public bool hasChainedThisWindow = false;
     public bool shouldLaunchTarget => (CurrentAttack.upwardLaunchImpulse > 0 && CurrentAttack.knockBackInflicted <= 0);
     public int CurrentAttackTick {  get; private set; }
-    public List<Collider> targetsHit => currentWeapon.Targets;
+    private IReadOnlyList<Collider> targetsHit => weaponHanlder.Targets;
     private HashSet<Collider> hitTargets = new HashSet<Collider>();
     private class ImpactData
     {
@@ -46,7 +46,8 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
 
     [Header("Weapon")]
     //public Weapon currentWeapon;
-    public WeaponHandling currentWeapon;
+    //public WeaponHandling currentWeapon;
+    private IWeapon weaponHanlder;
     private ICombatHandler handler;
     public Attack.Context[] currentContext;
     
@@ -63,11 +64,17 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     {
         this.handler = handler;
     }
+    public void Initialize(IWeapon handler)
+    {
+        this.weaponHanlder = handler;
+    }
+
+
     private void Start()
     {
         bufferer = GetComponent<InputBufferer>();
         animator = GetComponent<AnimatorController>();
-        currentWeapon = FindFirstObjectByType<WeaponHandling>();
+        //currentWeapon = FindFirstObjectByType<WeaponHandling>();
     }
 
     private void OnEnable()
@@ -140,9 +147,11 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         isAttacking = true;
         isTransitioning = false ;
         hasChainedThisWindow = false;
-        currentWeapon.GetComponent<Collider>().enabled = false ;
+        //currentWeapon.GetComponent<Collider>().enabled = false ;
+        weaponHanlder.DisableHitbox();
+        weaponHanlder.ClearTargets();
         hitTargets.Clear();
-        currentWeapon.Targets.Clear();
+        //currentWeapon.Targets.Clear();
 
         attackStartTick = Ticker.instance.CurrentTick;
         //CacheAttackData(attack);
@@ -166,7 +175,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
 
         //Debug.Log(totalFrames);
 
-        HandleWeaponCollider(tick , CurrentAttack , currentWeapon);
+        UpdateWeaponState(tick);
         HandleAttackProperties(CurrentAttack);
 
         if (DeduceCurrentWindow(tick, CurrentAttack) != WindowType.Interrupt)
@@ -270,27 +279,23 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         // Invincible during these Frames
     }
 
-   
-    private void HandleWeaponCollider(int tick , Attack currentAttack ,WeaponHandling currentWeapon)
+
+    private void UpdateWeaponState(int tick)
     {
-        Collider weaponCollider = currentWeapon.GetComponent<Collider>();
-        int ActiveEnd = currentAttack.StartUpFrames + currentAttack.ActiveFrames;
-        if (tick >= currentAttack.StartUpFrames && tick <= ActiveEnd)
+        int activeStart = CurrentAttack.StartUpFrames;
+        int activeEnd = activeStart + CurrentAttack.ActiveFrames;
+
+
+        if (tick >= activeStart && tick <= activeEnd)
         {
-            if (weaponCollider != null && !weaponCollider.enabled)
-            {
-                Debug.Log("Activating Collider");
-                weaponCollider.enabled = true;
-            }
+            weaponHanlder.EnableHitbox();
         }
         else
         {
-            weaponCollider.enabled = false;
-            targetsHit.Clear();
-            isTargetHit = false;
-
+            weaponHanlder.DisableHitbox();
         }
     }
+
 
     private void HandleAttackProperties(Attack currentAttack)
     {
@@ -402,10 +407,12 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         isTransitioning = false;
         hasChainedThisWindow = false;
         attackStartTick = 0;
-        currentWeapon.GetComponent<Collider>().enabled = false;
         isTargetHit = false;
+        weaponHanlder.DisableHitbox();
+        weaponHanlder.ClearTargets();
         hitTargets.Clear();
-        currentWeapon.Targets.Clear();
+        //currentWeapon.GetComponent<Collider>().enabled = false;
+        //currentWeapon.Targets.Clear();
     }
 
 }
