@@ -7,10 +7,14 @@ public class Weapon : ScriptableObject
 {
     [Header("Weapon Attributes")]
     public string WeaponName;
-    public GameObject WeaponPrefab;
     public List<Attack> attacks;
+    public GameObject weaponObj;
+    public WeaponHandling collisionHandlingScript;
+
+
 
     [ContextMenu("Add Attacks")]
+    [Tooltip("BE CAERFUL OF SPACES")]
     public void AddAttacks ()
     {
         if(attacks.Count > 0)
@@ -23,4 +27,12 @@ public class Weapon : ScriptableObject
             attacks.Add(attack);
         }
     }
+
+    public void SetWeapon(GameObject obj)
+    {
+        weaponObj = obj;
+        collisionHandlingScript = weaponObj.GetComponent<WeaponHandling>();
+    }
+        
 }
+

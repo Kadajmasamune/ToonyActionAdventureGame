@@ -68,10 +68,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68d5ec5378db7ad4a9d72775d3b998bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponHandling
-  parentCombatStateMachine: {fileID: 0}
   EnemyLayer:
     serializedVersion: 2
     m_Bits: 64
+  Targets: []
 --- !u!1 &1841801321487873790
 GameObject:
   m_ObjectHideFlags: 0
@@ -407,7 +407,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6216541027309697107}
   - component: {fileID: 7228528268808531281}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Zangetsu
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -40,6 +40,7 @@ public class Player : MonoBehaviour , ICombatHandler
     public CameraControllerCinemachine cinCam;
 
 
+
     public Vector3 AttackDirection {
         get
         {
@@ -54,6 +55,29 @@ public class Player : MonoBehaviour , ICombatHandler
 
     public bool IsLockedOn => cinCam.LockedOn;
     public Transform Transform => this.transform;
+
+    public Attack.Context[] Context {
+        get
+        {
+            if (IsLockedOn)
+                return new Attack.Context[] { Attack.Context.LockedOn };
+
+            if (IsGrounded())
+                return new Attack.Context[] { Attack.Context.Grounded };
+
+            if (!IsGrounded())
+                return new Attack.Context[] { Attack.Context.InAir };
+
+            if (IsLockedOn && IsGrounded())
+                return new Attack.Context[] { Attack.Context.LockedOn, Attack.Context.Grounded };
+
+            if (IsLockedOn && !IsGrounded())
+                return new Attack.Context[] { Attack.Context.LockedOn, Attack.Context.InAir };
+
+
+            return new Attack.Context[] { Attack.Context.Grounded };
+        }
+    }
 
     void Awake()
     {

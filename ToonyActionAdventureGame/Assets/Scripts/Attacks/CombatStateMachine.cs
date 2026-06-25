@@ -44,11 +44,11 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     private bool isTryingToCancel = false;
 
 
-    private ICombatHandler handler;
-
     [Header("Weapon")]
     //public Weapon currentWeapon;
     public WeaponHandling currentWeapon;
+    private ICombatHandler handler;
+    public Attack.Context[] currentContext;
     
 
 
