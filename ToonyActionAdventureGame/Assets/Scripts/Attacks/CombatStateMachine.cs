@@ -42,9 +42,9 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     private List<Collider> finishedImpacts = new();
     public bool isTargetHit;
     private bool isTryingToCancel = false;
-    public Vector3 AttackDir;
 
 
+    private ICombatHandler handler;
 
     [Header("Weapon")]
     //public Weapon currentWeapon;
@@ -59,7 +59,10 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     [SerializeField] private InputBufferer bufferer;
     private AnimatorController animator;
 
-   
+    public void Initialize(ICombatHandler handler)
+    {
+        this.handler = handler;
+    }
     private void Start()
     {
         bufferer = GetComponent<InputBufferer>();

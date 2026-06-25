@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 [RequireComponent(typeof(AnimatorController))]
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour , ICombatHandler
 {
     [Header("Speed")]
     public float walkSpeed = 2.2f;
@@ -33,13 +33,25 @@ public class Player : MonoBehaviour
 
     public AnimatorController Animator { get; set; }
 
-    public EntityStateMachine<Player> playerStateMachine;
+    public EntityStateMachine<Player> entityStateMachine { get; private set; }
 
-    public CombatStateMachine combatStateMachine;
+    public CombatStateMachine combatStateMachine { get; private set; }
 
     public CameraControllerCinemachine cinCam;
 
-   
+
+    public Vector3 AttackDirection {
+        get
+        {
+            if (cinCam.LockedOn)
+                return transform.forward;
+
+            return GetCameraRelativeInput();
+        }
+    }
+
+    public bool IsLockedOn => cinCam.LockedOn;
+    public Transform Transform => this.transform;
 
     void Awake()
     {
@@ -47,23 +59,23 @@ public class Player : MonoBehaviour
         Animator = GetComponent<AnimatorController>();
         if (!cameraTransform)
             cameraTransform = Camera.main.transform;
-        
-        
+        combatStateMachine = GetComponent<CombatStateMachine>();
+        combatStateMachine.Initialize(this);
     }
 
     void Start()
     {
-        playerStateMachine = new EntityStateMachine<Player>(this);
+        entityStateMachine = new EntityStateMachine<Player>(this);
         combatStateMachine = GetComponent < CombatStateMachine>();        
-        playerStateMachine.SwitchStates(new GroundedState());
+        entityStateMachine.SwitchStates(new GroundedState());
     }
 
     void Update()
     {
         ReadInput();
 
-        playerStateMachine.currentState.HandleInput(this);
-        playerStateMachine.currentState.Update(this);
+        entityStateMachine.currentState.HandleInput(this);
+        entityStateMachine.currentState.Update(this);
         //playerStateMachine.currentState.Exit(this);
     }
 
@@ -75,7 +87,7 @@ public class Player : MonoBehaviour
         );
 
         JumpPressed = UnityEngine.Input.GetKeyDown(KeyCode.Space);
-        SprintHeld = UnityEngine.Input.GetKey(KeyCode.LeftShift);
+        SprintHeld = UnityEngine.Input.GetKey(KeyCode.LeftControl);
 
         //if (UnityEngine.Input.GetKeyDown(KeyCode.Mouse0))
         //    inputBufferer.Buffer.Enqueue(InputBufferer.AttackInput.Light);
@@ -131,16 +143,16 @@ public class GroundedState : State<Player>
     {
         if (p.JumpPressed)
         {
-            p.playerStateMachine.SwitchStates(new JumpState());
+            p.entityStateMachine.SwitchStates(new JumpState());
         }
         
         if (p.combatStateMachine.isAttacking)
         {
-            p.playerStateMachine.SwitchStates(new AttackingState());
+            p.entityStateMachine.SwitchStates(new AttackingState());
         }
         if(p.cinCam.LockedOn)
         {
-            p.playerStateMachine.SwitchStates(new LockOnState());
+            p.entityStateMachine.SwitchStates(new LockOnState());
         }
     }
 
@@ -171,7 +183,7 @@ public class GroundedState : State<Player>
         p.Animator.UpdateMovement(p.Velocity, p.strafingSpeed, p.walkSpeed, p.sprintSpeed);
 
         if (!p.IsGrounded())
-            p.playerStateMachine.SwitchStates(new FallState());
+            p.entityStateMachine.SwitchStates(new FallState());
 
         void UpdateRotation(Player p )
         {
@@ -226,7 +238,7 @@ public class JumpState : State<Player>
         p.transform.position += p.Velocity * Time.deltaTime;
 
         if (p.Velocity.y <= 0)
-            p.playerStateMachine.SwitchStates(new FallState());
+            p.entityStateMachine.SwitchStates(new FallState());
     }
 
     public override void Exit(Player p)
@@ -280,7 +292,7 @@ public class FallState : State<Player>
         p.transform.position += p.Velocity * Time.deltaTime;
 
         if (p.IsGrounded())
-            p.playerStateMachine.SwitchStates(new GroundedState());
+            p.entityStateMachine.SwitchStates(new GroundedState());
     }
 
     void ApplyAirMovement(Player p)
@@ -324,12 +336,12 @@ public class LockOnState : State<Player>
     {
         if (p.JumpPressed)
         {
-            p.playerStateMachine.SwitchStates(new JumpState());
+            p.entityStateMachine.SwitchStates(new JumpState());
         }
 
         if (p.combatStateMachine.isAttacking)
         {
-            p.playerStateMachine.SwitchStates(new AttackingState());
+            p.entityStateMachine.SwitchStates(new AttackingState());
         }
     }
 
@@ -337,7 +349,7 @@ public class LockOnState : State<Player>
     {
         if(!p.cinCam.LockedOn)
         {
-            p.playerStateMachine.SwitchStates(new GroundedState());
+            p.entityStateMachine.SwitchStates(new GroundedState());
             return;
         }
         UpdateMovement(p);
@@ -372,7 +384,7 @@ public class LockOnState : State<Player>
     {
         if (!p.IsGrounded())
         {
-            p.playerStateMachine.SwitchStates(new FallState());
+            p.entityStateMachine.SwitchStates(new FallState());
             return;
         }
 
@@ -416,7 +428,6 @@ public class AttackingState : State<Player>
 
     private Vector3 AttackDir;
 
-
     private float attackTimer;
     private Vector3 attackStart;
     private Vector3 attackEnd;
@@ -447,7 +458,7 @@ public class AttackingState : State<Player>
 
     public override void HandleInput(Player p)
     {
-        if (!p.combatStateMachine.isAttacking) p.playerStateMachine.SwitchStates(new GroundedState());
+        if (!p.combatStateMachine.isAttacking) p.entityStateMachine.SwitchStates(new GroundedState());
     }
 
     public void InitializeAttack(Player p)
@@ -461,6 +472,8 @@ public class AttackingState : State<Player>
 
         if (AttackDir == Vector3.zero)
             AttackDir = p.transform.forward;
+
+        p.Velocity = AttackDir;
 
         attackTimer = 0;
 
@@ -491,7 +504,7 @@ public class AttackingState : State<Player>
 
         if (Physics.Raycast(startPos, movementVector.normalized, out RaycastHit hit, maxDistance))
         {
-            const float OFFSET = 0.4f;
+            const float OFFSET = 0.1f;
             float lambda = Mathf.Clamp01((hit.distance - OFFSET) / maxDistance);
 
             Vector3 newDestination = startPos + (lambda * movementVector);
