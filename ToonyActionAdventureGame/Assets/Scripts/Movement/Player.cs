@@ -46,6 +46,8 @@ public class Player : MonoBehaviour , ICombatHandler
             if (cinCam.LockedOn)
                 return transform.forward;
 
+            if (Input == Vector2.zero)
+                return transform.forward;
             return GetCameraRelativeInput();
         }
     }
