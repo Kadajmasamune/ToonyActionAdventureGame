@@ -8,7 +8,7 @@ using Unity.VisualScripting;
 
 
 [RequireComponent(typeof(AnimatorController))]
-public class Player : MonoBehaviour , ICombatHandler
+public class Player : MonoBehaviour, ICombatHandler
 {
     [Header("Speed")]
     public float walkSpeed = 2.2f;
@@ -43,28 +43,8 @@ public class Player : MonoBehaviour , ICombatHandler
 
     public CameraControllerCinemachine cinCam;
 
-    public List<Weapon> weapons;
-    
-    private int currentWeaponIndex = 0;
-
-    public Weapon _Weapon { get; private set; }
-
-    [SerializeField] private LayerMask WeaponsLayer;
-    public Collider _WeaponCollider { 
-        get
-        {
-            foreach (Transform child in transform)
-            {
-                if ((1 << transform.gameObject.layer & WeaponsLayer) != 0)
-                {
-                    return child.GetComponentInChildren<Collider>();
-                }
-            }
-
-            return null;
-        }
-    }
-    public Vector3 AttackDirection {
+    public Vector3 AttackDirection
+    {
         get
         {
             if (cinCam.LockedOn)
@@ -77,9 +57,8 @@ public class Player : MonoBehaviour , ICombatHandler
     }
 
     public bool IsLockedOn => cinCam.LockedOn;
-    public Transform Transform => this.transform;
-
-    public Attack.Context[] Context {
+    public Attack.Context[] Context
+    {
         get
         {
             if (IsLockedOn)
@@ -115,7 +94,7 @@ public class Player : MonoBehaviour , ICombatHandler
     void Start()
     {
         entityStateMachine = new EntityStateMachine<Player>(this);
-        combatStateMachine = GetComponent < CombatStateMachine>();        
+        combatStateMachine = GetComponent<CombatStateMachine>();
         entityStateMachine.SwitchStates(new GroundedState());
     }
 
@@ -137,16 +116,13 @@ public class Player : MonoBehaviour , ICombatHandler
 
         JumpPressed = UnityEngine.Input.GetKeyDown(KeyCode.Space);
         SprintHeld = UnityEngine.Input.GetKey(KeyCode.LeftControl);
-        if (UnityEngine.Input.GetKeyDown(KeyCode.E) && weapons.Count > 1) 
-        {
-            _Weapon = SwitchWeapons();
-        }
+
         //if (UnityEngine.Input.GetKeyDown(KeyCode.Mouse0))
         //    inputBufferer.Buffer.Enqueue(InputBufferer.AttackInput.Light);
 
         //if (UnityEngine.Input.GetKeyDown(KeyCode.Mouse1))
         //    inputBufferer.Buffer.Enqueue(InputBufferer.AttackInput.Heavy);
-    
+
 
     }
     public bool IsGrounded()
@@ -176,420 +152,407 @@ public class Player : MonoBehaviour , ICombatHandler
 
         return dir;
     }
-    
-    public Weapon SwitchWeapons()
-    {
-        if (weapons.Count == 0)
-            return null;
-
-        currentWeaponIndex++;
-
-        if (currentWeaponIndex >= weapons.Count)
-            currentWeaponIndex = 0;
-
-        return weapons[currentWeaponIndex];
-    }
-}
-public class GroundedState : State<Player>
-{
-
-    // Fix lerping through walls via Capsule cast and modify destination vector so player doesn't faze through walls 
-    public override void Enter(Player p)
+    public class GroundedState : State<Player>
     {
 
-        if (p.Velocity.y < 0)
-            p.Velocity = new Vector3(p.Velocity.x, 0, p.Velocity.z);
-    }
-
-    public override void HandleInput(Player p)
-    {
-        if (p.JumpPressed)
+        // Fix lerping through walls via Capsule cast and modify destination vector so player doesn't faze through walls 
+        public override void Enter(Player p)
         {
-            p.entityStateMachine.SwitchStates(new JumpState());
+
+            if (p.Velocity.y < 0)
+                p.Velocity = new Vector3(p.Velocity.x, 0, p.Velocity.z);
         }
-        
-        if (p.combatStateMachine.isAttacking)
+
+        public override void HandleInput(Player p)
         {
-            p.entityStateMachine.SwitchStates(new AttackingState());
+            if (p.JumpPressed)
+            {
+                p.entityStateMachine.SwitchStates(new JumpState());
+            }
+
+            if (p.combatStateMachine.isAttacking)
+            {
+                p.entityStateMachine.SwitchStates(new AttackingState());
+            }
+            if (p.cinCam.LockedOn)
+            {
+                p.entityStateMachine.SwitchStates(new LockOnState());
+            }
         }
-        if(p.cinCam.LockedOn)
+
+        public override void Update(Player p)
         {
-            p.entityStateMachine.SwitchStates(new LockOnState());
-        }
-    }
-
-    public override void Update(Player p)
-    {
 
 
-        Vector3 moveDir = p.GetCameraRelativeInput();
+            Vector3 moveDir = p.GetCameraRelativeInput();
 
-        float speed = p.SprintHeld && moveDir.sqrMagnitude > 0
-            ? p.sprintSpeed
-            : p.walkSpeed;
+            float speed = p.SprintHeld && moveDir.sqrMagnitude > 0
+                ? p.sprintSpeed
+                : p.walkSpeed;
 
-        Vector3 desiredVelocity = moveDir * speed;
+            Vector3 desiredVelocity = moveDir * speed;
 
-        Vector3 horizontal = new Vector3(p.Velocity.x, 0, p.Velocity.z);
-
-        horizontal = Vector3.MoveTowards(
-            horizontal,
-            desiredVelocity,
-            p.accel * Time.deltaTime
-        );
-
-        p.Velocity = new Vector3(horizontal.x, 0, horizontal.z);
-
-        p.transform.position += p.Velocity * Time.deltaTime;
-        UpdateRotation(p);
-        p.Animator.UpdateMovement(p.Velocity, p.strafingSpeed, p.walkSpeed, p.sprintSpeed);
-
-        if (!p.IsGrounded())
-            p.entityStateMachine.SwitchStates(new FallState());
-
-        void UpdateRotation(Player p )
-        {
             Vector3 horizontal = new Vector3(p.Velocity.x, 0, p.Velocity.z);
 
-            if (horizontal.sqrMagnitude < 0.001f)
+            horizontal = Vector3.MoveTowards(
+                horizontal,
+                desiredVelocity,
+                p.accel * Time.deltaTime
+            );
+
+            p.Velocity = new Vector3(horizontal.x, 0, horizontal.z);
+
+            p.transform.position += p.Velocity * Time.deltaTime;
+            UpdateRotation(p);
+            p.Animator.UpdateMovement(p.Velocity, p.strafingSpeed, p.walkSpeed, p.sprintSpeed);
+
+            if (!p.IsGrounded())
+                p.entityStateMachine.SwitchStates(new FallState());
+
+            void UpdateRotation(Player p)
+            {
+                Vector3 horizontal = new Vector3(p.Velocity.x, 0, p.Velocity.z);
+
+                if (horizontal.sqrMagnitude < 0.001f)
+                    return;
+
+                Quaternion target = Quaternion.LookRotation(horizontal);
+                p.transform.rotation = Quaternion.Slerp(
+                    p.transform.rotation,
+                    target,
+                    1f - Mathf.Exp(-p.rotationSharpness * Time.deltaTime)
+                );
+            }
+        }
+
+        public override void Exit(Player p)
+        {
+            // No persistent grounded-only flags currently exist,
+            // - coyote timers
+            // - grounded animation flags
+            // - footstep states
+
+            // Example future-safe cleanup:
+            // p.Animator.SetGrounded(false);
+        }
+    }
+
+    public class JumpState : State<Player>
+    {
+        public override void Enter(Player p)
+        {
+            p.Velocity = new Vector3(
+                p.Velocity.x,
+                p.jumpForce,
+                p.Velocity.z
+            );
+
+            p.Animator.TriggerJump();
+        }
+
+        public override void HandleInput(Player p) { }
+
+        public override void Update(Player p)
+        {
+            p.Animator.UpdateMovement(p.Velocity, p.strafingSpeed, p.walkSpeed, p.sprintSpeed);
+
+            ApplyAirMovement(p);
+            ApplyGravity(p);
+
+            p.transform.position += p.Velocity * Time.deltaTime;
+
+            if (p.Velocity.y <= 0)
+                p.entityStateMachine.SwitchStates(new FallState());
+        }
+
+        public override void Exit(Player p)
+        {
+            // Leaving jump state → ensure jump animation doesn't get stuck
+            p.Animator.ResetTriggerJump();
+
+            // Optional safety clamp (prevents weird upward carry)
+            if (p.Velocity.y > 0)
+            {
+                p.Velocity = new Vector3(p.Velocity.x, p.Velocity.y, p.Velocity.z);
+            }
+        }
+        void ApplyAirMovement(Player p)
+        {
+            Vector3 moveDir = p.GetCameraRelativeInput();
+
+            Vector3 horizontal = new Vector3(p.Velocity.x, 0, p.Velocity.z);
+
+            horizontal = Vector3.MoveTowards(
+                horizontal,
+                moveDir * p.walkSpeed,
+                p.accel * p.airControl * Time.deltaTime
+            );
+
+            p.Velocity = new Vector3(horizontal.x, p.Velocity.y, horizontal.z);
+        }
+
+        void ApplyGravity(Player p)
+        {
+            p.Velocity += Vector3.up * p.gravity * Time.deltaTime;
+        }
+    }
+    public class FallState : State<Player>
+    {
+        public override void Enter(Player p)
+        {
+            // Entering fall state → ensure jump trigger is cleared
+            p.Animator.ResetTriggerJump();
+        }
+
+        public override void HandleInput(Player p) { }
+
+        public override void Update(Player p)
+        {
+            p.Animator.UpdateMovement(p.Velocity, p.strafingSpeed, p.walkSpeed, p.sprintSpeed);
+
+            ApplyAirMovement(p);
+            p.Animator.ResetTriggerJump();
+            p.Velocity += Vector3.up * p.gravity * Time.deltaTime;
+            p.transform.position += p.Velocity * Time.deltaTime;
+
+            if (p.IsGrounded())
+                p.entityStateMachine.SwitchStates(new GroundedState());
+        }
+
+        void ApplyAirMovement(Player p)
+        {
+            Vector3 moveDir = p.GetCameraRelativeInput();
+
+            Vector3 horizontal = new Vector3(p.Velocity.x, 0, p.Velocity.z);
+
+            horizontal = Vector3.MoveTowards(
+                horizontal,
+                moveDir * p.walkSpeed,
+                p.accel * p.airControl * Time.deltaTime
+            );
+
+            p.Velocity = new Vector3(horizontal.x, p.Velocity.y, horizontal.z);
+        }
+
+        public override void Exit(Player p)
+        {
+            // Landing cleanup hook
+
+            // Example: reset vertical velocity if needed
+            if (p.Velocity.y < 0)
+            {
+                p.Velocity = new Vector3(p.Velocity.x, 0, p.Velocity.z);
+            }
+
+            // Optional: landing animation trigger
+            // p.Animator.TriggerLand();
+        }
+    }
+
+
+    public class LockOnState : State<Player>
+    {
+        public override void Enter(Player p)
+        {
+            Debug.Log("LOCKON ENTERED");
+        }
+        public override void HandleInput(Player p)
+        {
+            if (p.JumpPressed)
+            {
+                p.entityStateMachine.SwitchStates(new JumpState());
+            }
+
+            if (p.combatStateMachine.isAttacking)
+            {
+                p.entityStateMachine.SwitchStates(new AttackingState());
+            }
+        }
+
+        public override void Update(Player p)
+        {
+            if (!p.cinCam.LockedOn)
+            {
+                p.entityStateMachine.SwitchStates(new GroundedState());
+                return;
+            }
+            UpdateMovement(p);
+            p.Animator.UpdateMovement(p.Velocity, p.strafingSpeed, p.walkSpeed, p.sprintSpeed);
+            UpdateRotation(p);
+        }
+
+
+
+        public override void Exit(Player p)
+        {
+            p.Velocity = Vector3.zero;
+        }
+
+        private void UpdateRotation(Player p)
+        {
+            Vector3 toEnemyDir = (p.cinCam.Enemy.Object.position - p.transform.position).normalized;
+
+            if (toEnemyDir.sqrMagnitude < 0.001f)
                 return;
 
-            Quaternion target = Quaternion.LookRotation(horizontal);
+            Quaternion target = Quaternion.LookRotation(toEnemyDir);
+            p.transform.rotation = Quaternion.Slerp(
+                p.transform.rotation,
+                target,
+                1f - Mathf.Exp(-p.rotationSharpness * Time.deltaTime)
+            );
+
+        }
+
+        private void UpdateMovement(Player p)
+        {
+            if (!p.IsGrounded())
+            {
+                p.entityStateMachine.SwitchStates(new FallState());
+                return;
+            }
+
+            Transform enemy = p.cinCam.Enemy.Object;
+
+            Vector3 offset = p.transform.position - enemy.position;
+            offset.y = 0f;
+
+            if (offset.sqrMagnitude < 0.001f)
+                return;
+
+            Vector3 radial = offset.normalized;
+            Vector3 tangent = new Vector3(-radial.z, 0f, radial.x);
+
+            Vector3 moveDir = p.GetCameraRelativeInput();
+
+            float strafe = Vector3.Dot(moveDir, tangent);
+            float inOut = Vector3.Dot(moveDir, radial);
+
+            Vector3 desiredVelocity =
+                (tangent * strafe + radial * inOut) * p.strafingSpeed;
+
+            Vector3 horizontal = new Vector3(p.Velocity.x, 0f, p.Velocity.z);
+
+            horizontal = Vector3.MoveTowards(
+                horizontal,
+                desiredVelocity,
+                p.accel * Time.deltaTime
+            );
+
+            p.Velocity = new Vector3(horizontal.x, p.Velocity.y, horizontal.z);
+            p.transform.position += p.Velocity * Time.deltaTime;
+        }
+
+
+    }
+
+    public class AttackingState : State<Player>
+    {
+        private Attack CurrentAttack;
+
+        private Vector3 AttackDir;
+
+        private float attackTimer;
+        private Vector3 attackStart;
+        private Vector3 attackEnd;
+        public override void Enter(Player p)
+        {
+            InitializeAttack(p);
+        }
+
+
+        public override void Update(Player p)
+        {
+            int ActiveEnd = CurrentAttack.StartUpFrames + CurrentAttack.ActiveFrames;
+
+            if (p.combatStateMachine.isTransitioning)
+            {
+                InitializeAttack(p);
+                attackEnd = calculateDstVector(p.transform.position);
+            }
+
+            attackEnd = calculateDstVector(p.transform.position);
+            if (p.combatStateMachine.CurrentAttackTick <= ActiveEnd)
+            {
+                MovePlayer(p);
+                UpdateRotation(p);
+
+            }
+        }
+
+        public override void HandleInput(Player p)
+        {
+            if (!p.combatStateMachine.isAttacking) p.entityStateMachine.SwitchStates(new GroundedState());
+        }
+
+        public void InitializeAttack(Player p)
+        {
+            CurrentAttack = p.combatStateMachine.CurrentAttack;
+
+            AttackDir = p.cinCam.LockedOn
+                ? p.transform.forward
+                : p.GetCameraRelativeInput();
+
+
+            if (AttackDir == Vector3.zero)
+                AttackDir = p.transform.forward;
+
+            p.Velocity = AttackDir;
+
+            attackTimer = 0;
+
+            attackStart = p.transform.position;
+            attackEnd = calculateDstVector(attackStart);
+        }
+
+
+        private void MovePlayer(Player p)
+        {
+            attackTimer += Time.deltaTime;
+            float t = attackTimer / CurrentAttack.attackSpeed;
+            float easedT = CurrentAttack.lungeCurve.Evaluate(t);
+
+            p.transform.position = Vector3.Lerp(
+                attackStart,
+                attackEnd,
+                easedT
+            );
+        }
+
+        private Vector3 calculateDstVector(Vector3 startPos)
+        {
+            Vector3 dst = startPos + AttackDir * CurrentAttack.forwardMovementImpulse;
+            Vector3 movementVector = dst - startPos;
+
+            float maxDistance = movementVector.magnitude;
+
+            if (Physics.Raycast(startPos, movementVector.normalized, out RaycastHit hit, maxDistance))
+            {
+                const float OFFSET = 0.1f;
+                float lambda = Mathf.Clamp01((hit.distance - OFFSET) / maxDistance);
+
+                Vector3 newDestination = startPos + (lambda * movementVector);
+                return newDestination;
+            }
+            return dst;
+        }
+        void UpdateRotation(Player p)
+        {
+
+            if (AttackDir.sqrMagnitude < 0.001f)
+                return;
+
+            Quaternion target = Quaternion.LookRotation(AttackDir);
             p.transform.rotation = Quaternion.Slerp(
                 p.transform.rotation,
                 target,
                 1f - Mathf.Exp(-p.rotationSharpness * Time.deltaTime)
             );
         }
-    }
 
-    public override void Exit(Player p)
-    {
-        // No persistent grounded-only flags currently exist,
-        // - coyote timers
-        // - grounded animation flags
-        // - footstep states
-
-        // Example future-safe cleanup:
-        // p.Animator.SetGrounded(false);
-    }
-}
-
-public class JumpState : State<Player>
-{
-    public override void Enter(Player p)
-    {
-        p.Velocity = new Vector3(
-            p.Velocity.x,
-            p.jumpForce,
-            p.Velocity.z
-        );
-
-        p.Animator.TriggerJump();
-    }
-
-    public override void HandleInput(Player p) { }
-
-    public override void Update(Player p)
-    {
-        p.Animator.UpdateMovement(p.Velocity, p.strafingSpeed, p.walkSpeed, p.sprintSpeed);
-
-        ApplyAirMovement(p);
-        ApplyGravity(p);
-
-        p.transform.position += p.Velocity * Time.deltaTime;
-
-        if (p.Velocity.y <= 0)
-            p.entityStateMachine.SwitchStates(new FallState());
-    }
-
-    public override void Exit(Player p)
-    {
-        // Leaving jump state → ensure jump animation doesn't get stuck
-        p.Animator.ResetTriggerJump();
-
-        // Optional safety clamp (prevents weird upward carry)
-        if (p.Velocity.y > 0)
+        public override void Exit(Player p)
         {
-            p.Velocity = new Vector3(p.Velocity.x, p.Velocity.y, p.Velocity.z);
-        }
-    }
-    void ApplyAirMovement(Player p)
-    {
-        Vector3 moveDir = p.GetCameraRelativeInput();
-
-        Vector3 horizontal = new Vector3(p.Velocity.x, 0, p.Velocity.z);
-
-        horizontal = Vector3.MoveTowards(
-            horizontal,
-            moveDir * p.walkSpeed,
-            p.accel * p.airControl * Time.deltaTime
-        );
-
-        p.Velocity = new Vector3(horizontal.x, p.Velocity.y, horizontal.z);
-    }
-
-    void ApplyGravity(Player p)
-    {
-        p.Velocity += Vector3.up * p.gravity * Time.deltaTime;
-    }
-}
-public class FallState : State<Player>
-{
-    public override void Enter(Player p)
-    {
-        // Entering fall state → ensure jump trigger is cleared
-        p.Animator.ResetTriggerJump();
-    }
-
-    public override void HandleInput(Player p) { }
-
-    public override void Update(Player p)
-    {
-        p.Animator.UpdateMovement(p.Velocity, p.strafingSpeed, p.walkSpeed, p.sprintSpeed);
-
-        ApplyAirMovement(p);
-        p.Animator.ResetTriggerJump();
-        p.Velocity += Vector3.up * p.gravity * Time.deltaTime;
-        p.transform.position += p.Velocity * Time.deltaTime;
-
-        if (p.IsGrounded())
-            p.entityStateMachine.SwitchStates(new GroundedState());
-    }
-
-    void ApplyAirMovement(Player p)
-    {
-        Vector3 moveDir = p.GetCameraRelativeInput();
-
-        Vector3 horizontal = new Vector3(p.Velocity.x, 0, p.Velocity.z);
-
-        horizontal = Vector3.MoveTowards(
-            horizontal,
-            moveDir * p.walkSpeed,
-            p.accel * p.airControl * Time.deltaTime
-        );
-
-        p.Velocity = new Vector3(horizontal.x, p.Velocity.y, horizontal.z);
-    }
-
-    public override void Exit(Player p)
-    {
-        // Landing cleanup hook
-
-        // Example: reset vertical velocity if needed
-        if (p.Velocity.y < 0)
-        {
-            p.Velocity = new Vector3(p.Velocity.x, 0, p.Velocity.z);
-        }
-
-        // Optional: landing animation trigger
-        // p.Animator.TriggerLand();
-    }
-}
-
-
-public class LockOnState : State<Player>
-{
-    public override void Enter(Player p)
-    {
-        Debug.Log("LOCKON ENTERED");
-    }
-    public override void HandleInput(Player p)  
-    {
-        if (p.JumpPressed)
-        {
-            p.entityStateMachine.SwitchStates(new JumpState());
-        }
-
-        if (p.combatStateMachine.isAttacking)
-        {
-            p.entityStateMachine.SwitchStates(new AttackingState());
-        }
-    }
-
-    public override void Update(Player p)
-    {
-        if(!p.cinCam.LockedOn)
-        {
-            p.entityStateMachine.SwitchStates(new GroundedState());
-            return;
-        }
-        UpdateMovement(p);
-        p.Animator.UpdateMovement(p.Velocity, p.strafingSpeed, p.walkSpeed, p.sprintSpeed);
-        UpdateRotation(p);
-    }
-
-
-
-    public override void Exit(Player p)
-    {
-        p.Velocity = Vector3.zero;
-    }
-
-    private void UpdateRotation(Player p)
-    {
-        Vector3 toEnemyDir = (p.cinCam.Enemy.Object.position - p.transform.position).normalized;
-
-        if (toEnemyDir.sqrMagnitude < 0.001f)
-            return;
-
-        Quaternion target = Quaternion.LookRotation(toEnemyDir);
-        p.transform.rotation = Quaternion.Slerp(
-            p.transform.rotation,
-            target,
-            1f - Mathf.Exp(-p.rotationSharpness * Time.deltaTime)
-        );
-
-    }
-
-    private void UpdateMovement(Player p)
-    {
-        if (!p.IsGrounded())
-        {
-            p.entityStateMachine.SwitchStates(new FallState());
-            return;
-        }
-
-        Transform enemy = p.cinCam.Enemy.Object;
-
-        Vector3 offset = p.transform.position - enemy.position;
-        offset.y = 0f;
-
-        if (offset.sqrMagnitude < 0.001f)
-            return;
-
-        Vector3 radial = offset.normalized;
-        Vector3 tangent = new Vector3(-radial.z, 0f, radial.x);
-
-        Vector3 moveDir = p.GetCameraRelativeInput();
-
-        float strafe = Vector3.Dot(moveDir, tangent);
-        float inOut = Vector3.Dot(moveDir, radial);
-
-        Vector3 desiredVelocity =
-            (tangent * strafe + radial * inOut) * p.strafingSpeed;
-
-        Vector3 horizontal = new Vector3(p.Velocity.x, 0f, p.Velocity.z);
-
-        horizontal = Vector3.MoveTowards(
-            horizontal,
-            desiredVelocity,
-            p.accel * Time.deltaTime
-        );
-
-        p.Velocity = new Vector3(horizontal.x, p.Velocity.y, horizontal.z);
-        p.transform.position += p.Velocity * Time.deltaTime;
-    }
-
-
-}
-
-public class AttackingState : State<Player>
-{
-    private Attack CurrentAttack;
-
-    private Vector3 AttackDir;
-
-    private float attackTimer;
-    private Vector3 attackStart;
-    private Vector3 attackEnd;
-    public override void Enter(Player p)
-    {
-        InitializeAttack(p);
-    }
-
-
-    public override void Update(Player p)
-    {
-        int ActiveEnd = CurrentAttack.StartUpFrames + CurrentAttack.ActiveFrames;
-        
-        if (p.combatStateMachine.isTransitioning)
-        {
-            InitializeAttack(p);
-            attackEnd = calculateDstVector(p.transform.position);
-        }
-
-        attackEnd = calculateDstVector(p.transform.position);
-        if (p.combatStateMachine.CurrentAttackTick <= ActiveEnd)
-        {
-            MovePlayer(p);
-            UpdateRotation(p);
 
         }
-    }
-
-    public override void HandleInput(Player p)
-    {
-        if (!p.combatStateMachine.isAttacking) p.entityStateMachine.SwitchStates(new GroundedState());
-    }
-
-    public void InitializeAttack(Player p)
-    {
-        CurrentAttack = p.combatStateMachine.CurrentAttack;
-
-        AttackDir = p.cinCam.LockedOn
-            ? p.transform.forward
-            : p.GetCameraRelativeInput();
-
-
-        if (AttackDir == Vector3.zero)
-            AttackDir = p.transform.forward;
-
-        p.Velocity = AttackDir;
-
-        attackTimer = 0;
-
-        attackStart = p.transform.position;
-        attackEnd = calculateDstVector(attackStart);
-    }
-
-
-    private void MovePlayer(Player p)
-    {
-        attackTimer += Time.deltaTime;
-        float t = attackTimer / CurrentAttack.attackSpeed;
-        float easedT = CurrentAttack.lungeCurve.Evaluate(t);
-
-        p.transform.position = Vector3.Lerp(
-            attackStart,
-            attackEnd,
-            easedT
-        );
-    }
-
-    private Vector3 calculateDstVector(Vector3 startPos)
-    {
-        Vector3 dst = startPos + AttackDir * CurrentAttack.forwardMovementImpulse;
-        Vector3 movementVector = dst - startPos;
-
-        float maxDistance = movementVector.magnitude;
-
-        if (Physics.Raycast(startPos, movementVector.normalized, out RaycastHit hit, maxDistance))
-        {
-            const float OFFSET = 0.1f;
-            float lambda = Mathf.Clamp01((hit.distance - OFFSET) / maxDistance);
-
-            Vector3 newDestination = startPos + (lambda * movementVector);
-            return newDestination;
-        }
-        return dst;
-    }
-    void UpdateRotation(Player p)
-    {
-
-        if (AttackDir.sqrMagnitude < 0.001f)
-            return;
-
-        Quaternion target = Quaternion.LookRotation(AttackDir);
-        p.transform.rotation = Quaternion.Slerp(
-            p.transform.rotation,
-            target,
-            1f - Mathf.Exp(-p.rotationSharpness * Time.deltaTime)
-        );
-    }
-
-    public override void Exit(Player p)
-    {
-
     }
 }
