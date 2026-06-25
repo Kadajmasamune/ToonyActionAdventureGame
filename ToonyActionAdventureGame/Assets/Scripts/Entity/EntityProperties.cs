@@ -9,8 +9,8 @@ public interface ICombatHandler
 
     bool IsLockedOn { get; }
 
-    Transform Owner { get; }
+    //Transform Owner { get; }
 
-    WeaponInstance Weapon { get; }
+    //WeaponInstance Weapon { get; }
 }
 
