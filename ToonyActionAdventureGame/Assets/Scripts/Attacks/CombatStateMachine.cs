@@ -42,6 +42,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     private List<Collider> finishedImpacts = new();
     public bool isTargetHit;
     private bool isTryingToCancel = false;
+    public Vector3 AttackDir;
 
 
 
