@@ -1,5 +1,7 @@
 ﻿using Common;
+using Mono.Cecil;
 using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.Profiling;
@@ -18,7 +20,6 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     // -- > Begin Implementing Direction Modifiers 
     // -- > Timing Between inputs Modifiers 
 
-
     [Header("Attack")]
     public Attack[] PossibleAttacks;
     public Attack CurrentAttack;
@@ -27,18 +28,28 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     public bool hasChainedThisWindow = false;
     public bool shouldLaunchTarget => (CurrentAttack.upwardLaunchImpulse > 0 && CurrentAttack.knockBackInflicted <= 0);
     public int CurrentAttackTick {  get; private set; }
+    public List<Collider> targetsHit => currentWeapon.Targets;
+    private HashSet<Collider> hitTargets = new HashSet<Collider>();
+    private class ImpactData
+    {
+        public Vector3 start;
+        public Vector3 end;
+        public float timer;
+        public float duration;
+        public AnimationCurve curve;
+    }
+    private Dictionary<Collider, ImpactData> impacts = new();
+    private List<Collider> finishedImpacts = new();
+    public bool isTargetHit;
+    private bool isTryingToCancel = false;
+
+
 
     [Header("Weapon")]
     //public Weapon currentWeapon;
     public WeaponHandling currentWeapon;
-    public List<Collider> targetsHit => currentWeapon.Targets;
-    private HashSet<Collider> hitTargets = new HashSet<Collider>();
-    private Dictionary<Collider , Vector3> TargetsToBeLaunched = new Dictionary<Collider , Vector3>();
-    private Dictionary<Collider, Vector3> TargetsToApplyKnockBack = new Dictionary<Collider, Vector3>();
-    public bool isTargetHit;
+    
 
-
-    private bool isTryingToCancel = false;
 
     [Header("Ticker Config")]
     private int attackStartTick;
@@ -67,10 +78,24 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
 
     private void OnTick()
     {
-        foreach (Collider target in TargetsToBeLaunched.Keys)
+        finishedImpacts.Clear();
+
+        foreach (var impact in impacts)
         {
-            UpdateLaunch(target, TargetsToBeLaunched[target]);
+            UpdateImpact(impact.Key, impact.Value);
+
+            if (impact.Value.timer >= impact.Value.duration)
+            {
+                finishedImpacts.Add(impact.Key);
+            }
         }
+
+
+        foreach (Collider target in finishedImpacts)
+        {
+            impacts.Remove(target);
+        }
+
 
         if (!isAttacking && !isTransitioning)
         {
@@ -79,9 +104,6 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         }
 
         UpdateAttack();
-        if (targetsHit.Count > 0) Debug.Log(targetsHit.Count);
-
-        //Debug.Log($"Ticker:{Ticker.instance.CurrentTick} start:{attackStartTick} tick:{(Ticker.instance.CurrentTick - attackStartTick)} attack:{(CurrentAttack?.clip?.name ?? "null")}");
     }
 
     private void TryStartAttack()
@@ -117,7 +139,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         currentWeapon.GetComponent<Collider>().enabled = false ;
         hitTargets.Clear();
         currentWeapon.Targets.Clear();
-        TargetsToBeLaunched.Clear();
+
         attackStartTick = Ticker.instance.CurrentTick;
         //CacheAttackData(attack);
 
@@ -276,7 +298,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
             hitTargets.Add(target);
 
             if (shouldLaunchTarget)
-                startLaunch(target, currentAttack);
+                StartLaunch(target, currentAttack);
 
             if (!shouldLaunchTarget)
                 ApplyKnockBack(target, currentAttack);
@@ -285,38 +307,87 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
 
             if (health != null)
                 health.TakeDamage(currentAttack.Damage);
+
+            StartCoroutine(ApplyHitStop(currentAttack));
         }
     }
-    
-    private void startLaunch(Collider target, Attack currentAttack)
-    {
-        Vector3 startPos = target.transform.position;
-        Vector3 destination = startPos + Vector3.up * currentAttack.upwardLaunchImpulse;
 
-        TargetsToBeLaunched[target] = destination;
+    private void StartLaunch(Collider target, Attack attack)
+    {
+        Vector3 start = target.transform.position;
+
+        Vector3 end = start + Vector3.up * attack.upwardLaunchImpulse;
+
+        impacts[target] = new ImpactData
+        {
+            start = start,
+            end = end,
+            timer = 0,
+            duration = attack.attackSpeed,
+            curve = attack.lungeCurve
+        };
+    }
+    private void ApplyKnockBack(Collider target, Attack attack)
+    {
+        Vector3 start = target.transform.position;
+
+        Vector3 direction =
+            (target.transform.position - transform.position).normalized;
+
+
+        Vector3 end =
+            start + direction * attack.knockBackInflicted;
+
+
+        impacts[target] = new ImpactData
+        {
+            start = start,
+            end = end,
+            timer = 0,
+            duration = attack.attackSpeed,
+            curve = attack.lungeCurve
+        };
     }
 
-    private void ApplyKnockBack(Collider target, Attack currentAttack)
-    {
-        Vector3 startPos = target.transform.position;
-        Vector3 destination = startPos + Vector3.back * currentAttack.knockBackInflicted;
-
-        TargetsToApplyKnockBack[target] = destination;
-    }
-
-    private void ApplyHitStun(Collider target, Attack currentAttack)
+    private void ApplyHitStun(Collider target , Attack attack)
     {
 
     }
 
-    private void UpdateLaunch(Collider target , Vector3 dstVec)
+
+    private void UpdateImpact(Collider target, ImpactData data)
     {
-        target.transform.position = Vector3.Lerp(
-                target.transform.position,
-                dstVec,
-                CurrentAttack.attackAcceleration * Time.deltaTime
+        if (target == null)
+            return;
+
+
+        data.timer += Time.deltaTime;
+
+
+        float t =
+            Mathf.Clamp01(data.timer / data.duration);
+
+
+        float eased =
+            data.curve.Evaluate(t);
+
+
+        target.transform.position =
+            Vector3.Lerp(
+                data.start,
+                data.end,
+                eased
             );
+
     }
+
+    private IEnumerator ApplyHitStop(Attack attack)
+    {
+        Time.timeScale = 0f;
+        yield return new WaitForSecondsRealtime(attack.hitStopDuration);
+        Time.timeScale = 1f;
+    }
+
     private void EndAttack()
     {
         int hash = Animator.StringToHash(CurrentAttack.clip.name);
@@ -331,7 +402,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         isTargetHit = false;
         hitTargets.Clear();
         currentWeapon.Targets.Clear();
-        TargetsToBeLaunched.Clear();
     }
 
 }
+

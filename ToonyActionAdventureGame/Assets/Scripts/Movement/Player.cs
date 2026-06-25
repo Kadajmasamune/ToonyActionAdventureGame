@@ -112,10 +112,12 @@ public class Player : MonoBehaviour
 
         return dir;
     }
-
+        
 }
 public class GroundedState : State<Player>
 {
+
+    // Fix lerping through walls via Capsule cast and modify destination vector so player doesn't faze through walls 
     public override void Enter(Player p)
     {
 
@@ -322,6 +324,11 @@ public class LockOnState : State<Player>
         {
             p.playerStateMachine.SwitchStates(new JumpState());
         }
+
+        if (p.combatStateMachine.isAttacking)
+        {
+            p.playerStateMachine.SwitchStates(new AttackingState());
+        }
     }
 
     public override void Update(Player p)
@@ -406,9 +413,11 @@ public class AttackingState : State<Player>
     private Attack CurrentAttack;
 
     private Vector3 AttackDir;
-    private Vector3 targetPos;
 
 
+    private float attackTimer;
+    private Vector3 attackStart;
+    private Vector3 attackEnd;
     public override void Enter(Player p)
     {
         InitializeAttack(p);
@@ -422,10 +431,10 @@ public class AttackingState : State<Player>
         if (p.combatStateMachine.isTransitioning)
         {
             InitializeAttack(p);
-            targetPos = calculateDstVector(p.transform.position);
+            attackEnd = calculateDstVector(p.transform.position);
         }
 
-        targetPos = calculateDstVector(p.transform.position);
+        attackEnd = calculateDstVector(p.transform.position);
         if (p.combatStateMachine.CurrentAttackTick <= ActiveEnd)
         {
             MovePlayer(p);
@@ -450,20 +459,26 @@ public class AttackingState : State<Player>
 
         if (AttackDir == Vector3.zero)
             AttackDir = p.transform.forward;
+
+        attackTimer = 0;
+
+        attackStart = p.transform.position;
+        attackEnd = calculateDstVector(attackStart);
     }
 
 
     private void MovePlayer(Player p)
     {
+        attackTimer += Time.deltaTime;
+        float t = attackTimer / CurrentAttack.attackSpeed;
+        float easedT = CurrentAttack.lungeCurve.Evaluate(t);
+
         p.transform.position = Vector3.Lerp(
-            p.transform.position,
-            targetPos,
-            CurrentAttack.attackAcceleration * Time.deltaTime
+            attackStart,
+            attackEnd,
+            easedT
         );
-
-        
     }
-
 
     private Vector3 calculateDstVector(Vector3 startPos)
     {
