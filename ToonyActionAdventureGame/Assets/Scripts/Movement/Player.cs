@@ -2,6 +2,10 @@
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.Windows;
+using System.Collections.Generic;
+using Unity.VisualScripting;
+
 
 [RequireComponent(typeof(AnimatorController))]
 public class Player : MonoBehaviour , ICombatHandler
@@ -39,8 +43,27 @@ public class Player : MonoBehaviour , ICombatHandler
 
     public CameraControllerCinemachine cinCam;
 
+    public List<Weapon> weapons;
+    
+    private int currentWeaponIndex = 0;
 
+    public Weapon _Weapon { get; private set; }
 
+    [SerializeField] private LayerMask WeaponsLayer;
+    public Collider _WeaponCollider { 
+        get
+        {
+            foreach (Transform child in transform)
+            {
+                if ((1 << transform.gameObject.layer & WeaponsLayer) != 0)
+                {
+                    return child.GetComponentInChildren<Collider>();
+                }
+            }
+
+            return null;
+        }
+    }
     public Vector3 AttackDirection {
         get
         {
@@ -114,7 +137,10 @@ public class Player : MonoBehaviour , ICombatHandler
 
         JumpPressed = UnityEngine.Input.GetKeyDown(KeyCode.Space);
         SprintHeld = UnityEngine.Input.GetKey(KeyCode.LeftControl);
-
+        if (UnityEngine.Input.GetKeyDown(KeyCode.E) && weapons.Count > 1) 
+        {
+            _Weapon = SwitchWeapons();
+        }
         //if (UnityEngine.Input.GetKeyDown(KeyCode.Mouse0))
         //    inputBufferer.Buffer.Enqueue(InputBufferer.AttackInput.Light);
 
@@ -151,8 +177,18 @@ public class Player : MonoBehaviour , ICombatHandler
         return dir;
     }
     
-    
-        
+    public Weapon SwitchWeapons()
+    {
+        if (weapons.Count == 0)
+            return null;
+
+        currentWeaponIndex++;
+
+        if (currentWeaponIndex >= weapons.Count)
+            currentWeaponIndex = 0;
+
+        return weapons[currentWeaponIndex];
+    }
 }
 public class GroundedState : State<Player>
 {
