@@ -12,6 +12,8 @@ public interface ICombatHandler
     Weapon currentWeapon { get; }
 
     Attack.Context[] currentHandlerContext { get; }
+
+    bool isInAir { get; }
     //Transform Owner { get; }
 
     //WeaponInstance Weapon { get; }

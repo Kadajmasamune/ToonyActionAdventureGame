@@ -24,7 +24,7 @@ MonoBehaviour:
   hitStopDuration: 0
   cameraShakeIntensity: 0
   DirectionRequired: {x: 0, y: 0, z: 0}
-  contextRequired: 01000000
+  contextRequired: 
   AllowedAttackTransitions:
   - {fileID: 11400000, guid: 3b79e2f802136cf49a46c926fdfac7e6, type: 2}
   - {fileID: 11400000, guid: 8217f9f263d97124db75b64704d42846, type: 2}

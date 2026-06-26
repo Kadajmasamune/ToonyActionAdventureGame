@@ -9,11 +9,11 @@ public class CombatStateMachine : MonoBehaviour
     public Attack CurrentAttack;
 
     public bool isAttacking;
+    public bool isAttackingInAir => isAttacking && handler.isInAir;
     public bool isTransitioning;
     public bool hasChainedThisWindow;
 
-    public int CurrentAttackTick =>
-        execution != null ? execution.CurrentTick : 0;
+    public int CurrentAttackTick => execution != null ? execution.CurrentTick : 0;
 
 
     [Header("References")]
@@ -27,6 +27,9 @@ public class CombatStateMachine : MonoBehaviour
     private AttackExecution execution;
 
     private bool isTryingToCancel;
+
+
+
 
 
 
@@ -86,20 +89,14 @@ public class CombatStateMachine : MonoBehaviour
     {
         isAttacking = execution.IsExecuting;
 
-
         if (!isAttacking)
         {
             TryStartAttack();
             return;
         }
 
-
         HandleTransitions();
     }
-
-
-
-
 
     private void TryStartAttack()
     {
@@ -107,26 +104,15 @@ public class CombatStateMachine : MonoBehaviour
             return;
 
 
-        AttackInput input =
-            bufferer.ConsumeInput();
-
-
-        Attack attack =
-            GetAttackFromInput(input);
-
-
+        AttackInput input = bufferer.ConsumeInput();
+        Attack attack = GetAttackFromInput(input);
 
         if (attack == null)
             return;
 
 
-
         StartAttack(attack);
     }
-
-
-
-
 
 
     private Attack GetAttackFromInput(AttackInput input)
@@ -136,12 +122,8 @@ public class CombatStateMachine : MonoBehaviour
             if (attack.RequiredInput != input)
                 continue;
 
-
-
             if (!HasContext(attack))
                 continue;
-
-
 
             if (attack.DirectionRequired != Vector3.zero)
             {
@@ -167,14 +149,11 @@ public class CombatStateMachine : MonoBehaviour
 
 
 
-
-
     private bool HasContext(Attack attack)
     {
         foreach (var required in attack.contextRequired)
         {
             bool found = false;
-
 
             foreach (var current in handler.currentHandlerContext)
             {
@@ -184,7 +163,6 @@ public class CombatStateMachine : MonoBehaviour
                     break;
                 }
             }
-
 
 
             if (!found)
@@ -210,12 +188,10 @@ public class CombatStateMachine : MonoBehaviour
     }
 
 
-
     private void HandleTransitions()
     {
         if (CurrentAttack == null)
             return;
-
 
 
         if (
@@ -232,18 +208,14 @@ public class CombatStateMachine : MonoBehaviour
 
 
 
-
-
-        Attack next =
-            GetNewAttack(CurrentAttack);
-
+        Attack next = GetNewAttack(CurrentAttack);
 
 
         if (next != null)
         {
             hasChainedThisWindow = true;
-
             TransitionAttack(next);
+
         }
     }
 
@@ -308,11 +280,6 @@ public class CombatStateMachine : MonoBehaviour
 
         return null;
     }
-
-
-
-
-
 
     public void TransitionAttack(Attack next)
     {

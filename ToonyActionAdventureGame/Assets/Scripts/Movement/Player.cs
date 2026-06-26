@@ -1,10 +1,13 @@
 ﻿using EntityStateMachines;
 using System;
+using System.Collections.Generic;
+using System.Net;
+using Unity.Profiling;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.Windows;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 
 [RequireComponent(typeof(AnimatorController))]
@@ -54,6 +57,8 @@ public class Player : MonoBehaviour, ICombatHandler
         }
     }
     public bool IsLockedOn => cinCam.LockedOn;
+    public bool isInAir => !IsGrounded();
+
     public Attack.Context[] currentHandlerContext
     {
         get
@@ -88,7 +93,6 @@ public class Player : MonoBehaviour, ICombatHandler
     void Start()
     {
         entityStateMachine = new EntityStateMachine<Player>(this);
-        combatStateMachine = GetComponent<CombatStateMachine>();
         entityStateMachine.SwitchStates(new GroundedState());
     }
 
@@ -110,13 +114,6 @@ public class Player : MonoBehaviour, ICombatHandler
 
         JumpPressed = UnityEngine.Input.GetKeyDown(KeyCode.Space);
         SprintHeld = UnityEngine.Input.GetKey(KeyCode.LeftControl);
-
-        //if (UnityEngine.Input.GetKeyDown(KeyCode.Mouse0))
-        //    inputBufferer.Buffer.Enqueue(InputBufferer.AttackInput.Light);
-
-        //if (UnityEngine.Input.GetKeyDown(KeyCode.Mouse1))
-        //    inputBufferer.Buffer.Enqueue(InputBufferer.AttackInput.Heavy);
-
 
     }
     public bool IsGrounded()
@@ -244,7 +241,11 @@ public class Player : MonoBehaviour, ICombatHandler
             p.Animator.TriggerJump();
         }
 
-        public override void HandleInput(Player p) { }
+        public override void HandleInput(Player p) 
+        {
+            if (p.combatStateMachine.isAttackingInAir)
+                p.entityStateMachine.SwitchStates(new AttackingState());
+        }
 
         public override void Update(Player p)
         {
@@ -298,7 +299,11 @@ public class Player : MonoBehaviour, ICombatHandler
             p.Animator.ResetTriggerJump();
         }
 
-        public override void HandleInput(Player p) { }
+        public override void HandleInput(Player p)
+        {
+            if (p.combatStateMachine.isAttackingInAir)
+                p.entityStateMachine.SwitchStates(new AttackingState());
+        }
 
         public override void Update(Player p)
         {
@@ -391,6 +396,7 @@ public class Player : MonoBehaviour, ICombatHandler
                 return;
 
             Quaternion target = Quaternion.LookRotation(toEnemyDir);
+            Quaternion lookAtTarget = new Quaternion(target.x, 0, target.z, target.w);
             p.transform.rotation = Quaternion.Slerp(
                 p.transform.rotation,
                 target,
@@ -443,6 +449,7 @@ public class Player : MonoBehaviour, ICombatHandler
 
     public class AttackingState : State<Player>
     {
+       
         private Attack CurrentAttack;
 
         private Vector3 AttackDir;
@@ -450,6 +457,7 @@ public class Player : MonoBehaviour, ICombatHandler
         private float attackTimer;
         private Vector3 attackStart;
         private Vector3 attackEnd;
+
         public override void Enter(Player p)
         {
             InitializeAttack(p);
@@ -463,15 +471,20 @@ public class Player : MonoBehaviour, ICombatHandler
             if (p.combatStateMachine.isTransitioning)
             {
                 InitializeAttack(p);
-                attackEnd = calculateDstVector(p.transform.position);
+                attackEnd = calculateDstVector(p.transform.position );
             }
+    
+            attackEnd = calculateDstVector(p.transform.position );
 
-            attackEnd = calculateDstVector(p.transform.position);
             if (p.combatStateMachine.CurrentAttackTick <= ActiveEnd)
             {
                 MovePlayer(p);
                 UpdateRotation(p);
 
+            }
+            if (p.combatStateMachine.isAttackingInAir)
+            {
+                ApplyGravity(p);
             }
         }
 
@@ -501,18 +514,57 @@ public class Player : MonoBehaviour, ICombatHandler
         }
 
 
+
         private void MovePlayer(Player p)
         {
             attackTimer += Time.deltaTime;
-            float t = attackTimer / CurrentAttack.attackSpeed;
-            float easedT = CurrentAttack.lungeCurve.Evaluate(t);
 
-            p.transform.position = Vector3.Lerp(
-                attackStart,
-                attackEnd,
-                easedT
-            );
+
+            float t =
+                attackTimer /
+                CurrentAttack.attackSpeed;
+
+
+            float easedT =
+                CurrentAttack.lungeCurve.Evaluate(t);
+
+
+
+            Vector3 attackPosition =
+                Vector3.Lerp(
+                    attackStart,
+                    attackEnd,
+                    easedT);
+
+
+
+            // keep vertical physics
+            attackPosition.y =
+                p.transform.position.y;
+
+
+            p.transform.position =
+                attackPosition;
         }
+
+        private void ApplyGravity(Player p)
+        {
+            p.Velocity +=
+                Vector3.down *
+                p.gravity *
+                Time.deltaTime;
+
+
+            Vector3 pos = p.transform.position;
+
+
+            // preserve attack movement height
+            pos.y -= p.Velocity.y * Time.deltaTime;
+
+
+            p.transform.position = pos;
+        }
+
 
         private Vector3 calculateDstVector(Vector3 startPos)
         {
@@ -525,7 +577,6 @@ public class Player : MonoBehaviour, ICombatHandler
             {
                 const float OFFSET = 0.1f;
                 float lambda = Mathf.Clamp01((hit.distance - OFFSET) / maxDistance);
-
                 Vector3 newDestination = startPos + (lambda * movementVector);
                 return newDestination;
             }
@@ -538,6 +589,7 @@ public class Player : MonoBehaviour, ICombatHandler
                 return;
 
             Quaternion target = Quaternion.LookRotation(AttackDir);
+
             p.transform.rotation = Quaternion.Slerp(
                 p.transform.rotation,
                 target,
