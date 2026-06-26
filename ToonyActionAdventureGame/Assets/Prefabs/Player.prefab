@@ -596,6 +596,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f15ffff88523fbf499b402a04bc401f4, type: 2}
   - {fileID: 11400000, guid: 8217f9f263d97124db75b64704d42846, type: 2}
   CurrentAttack: {fileID: 0}
+  isAttacking: 0
+  isTransitioning: 0
+  hasChainedThisWindow: 0
+  isTargetHit: 0
+  currentContext: 
   bufferer: {fileID: 0}
 --- !u!114 &4946592345472122834
 MonoBehaviour:
@@ -609,8 +614,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6a6baf8d05c82741ad7c919d48732c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InputBufferer
-  attackInput: 0
-  TicksToReset: 90
+  inputBufferWindow: 10
 --- !u!1 &3285632100188612156
 GameObject:
   m_ObjectHideFlags: 0
@@ -1984,7 +1988,7 @@ PrefabInstance:
     - target: {fileID: 7129689873218882818, guid: 9a51df35c36c2464c9da4faaedc1ac76,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

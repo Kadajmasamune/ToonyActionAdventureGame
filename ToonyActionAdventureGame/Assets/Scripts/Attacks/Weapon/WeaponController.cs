@@ -1,82 +1,55 @@
-﻿//using System.Collections.Generic;
-//using UnityEngine;
-//public class WeaponController : MonoBehaviour , IWeapon
-//{
-//    private CombatStateMachine combatStateMachine;
-//    private int currentWeaponIndex = 0;
-
-//    public Weapon[] weapons;
-//    private Weapon currentWeapon; 
-
-//    public List<Collider> Targets { get; }
+﻿using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEngine;
 
 
-//    private void Start()
-//    {
-//        combatStateMachine = GetComponentInParent<CombatStateMachine>();
-//        combatStateMachine.Initialize(this);
-//    }
+public class WeaponController  : MonoBehaviour 
+{
+    private int currentWeaponIndex = 0;
+    [SerializeField] private LayerMask weaponLayer; 
+    public Weapon[] weapons;
+    public Weapon currentWeapon;
 
-//    private void Update()
-//    {
-//        if (canSwitch() && Input.GetKeyDown(KeyCode.E))
-//        {
-//            currentWeapon = switchWeapons();
-//        }
+    private void Start()
+    {
+        weapons = GetComponentsInChildren<Weapon>();
+        foreach (Weapon weapon in weapons)
+        {
+            if (1 << (weapon.gameObject.layer & weaponLayer) == 0)
+                Debug.LogError("Weapon Object is not in Weapons Layer");
+        }
+        currentWeapon = weapons[currentWeaponIndex];
+    }
 
-//        if (canDisable())
-//            currentWeapon.DisableCollider();
+    private void Update()
+    {
+        if (canSwitch())
+            currentWeapon  = SwitchWeapons();
+    }
 
-//        if (canEnable())
-//            currentWeapon.EnableCollider();
-//    }
+    private bool canSwitch()
+    {
+        return (Input.GetKeyDown(KeyCode.E));
+    }
 
-//    private bool canSwitch()
-//    {
-//        return !combatStateMachine.isAttacking;
-//    }
+    private Weapon SwitchWeapons()
+    {
+        if (weapons.Length == 1)
+        {
+            currentWeaponIndex = 0;
+            return weapons[currentWeaponIndex];
+        }
 
-//    private bool canEnable()
-//    {
-//        Attack attack = combatStateMachine.CurrentAttack;
-//        int tick = combatStateMachine.CurrentAttackTick;
-//        int ActiveEnd = attack.StartUpFrames + attack.ActiveFrames;
+        int startIndex = currentWeaponIndex;
 
-//        if (tick >= attack.StartUpFrames && tick <= ActiveEnd)
-//            return true;
+        do
+        {
+            currentWeaponIndex++;
+            if (currentWeaponIndex >= weapons.Length)
+                currentWeaponIndex = 0;
 
-//        return false;
-//    }
+        } while (weapons[currentWeaponIndex] == null && currentWeaponIndex != startIndex);
 
-//    private bool canDisable()
-//    {
-//        Attack attack = combatStateMachine.CurrentAttack;
-//        int tick = combatStateMachine.CurrentAttackTick;
-//        int startUpEnd = attack.StartUpFrames;
-//        int ActiveEnd = attack.StartUpFrames + attack.ActiveFrames;
-//        int TotalFrames = attack.StartUpFrames + attack.ActiveFrames+ attack.RecoveryFrames;
-
-//        if (tick <= startUpEnd || tick >= ActiveEnd && tick <= TotalFrames)
-//            return true;
-
-//        return false;
-//    }
-
-//    private Weapon switchWeapons()
-//    {
-//        if (weapons.Length == 1)
-//            return weapons[currentWeaponIndex];
-
-//        for (int i = 0; i < weapons.Length; i++)
-//        {
-//            if (weapons[i + 1] != null)
-//                currentWeaponIndex++;
-
-//            else
-//                currentWeaponIndex = 0;
-//        }
-
-//        return weapons[currentWeaponIndex];
-//    }
-
-//}
+        return weapons[currentWeaponIndex];
+    }
+}

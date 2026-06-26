@@ -9,14 +9,14 @@ public class Weapon : MonoBehaviour, IWeapon
 
     private WeaponHitbox hitbox;
     public IReadOnlyList<Collider> Targets => hitbox.Targets;
-    
 
+    public List<Attack> attacks; 
     private void Awake()
     {
         if (!weaponCollider)
-            weaponCollider = GetComponent<Collider>();
+            weaponCollider = GetComponentInChildren<Collider>();
 
-        hitbox = GetComponent<WeaponHitbox>();
+        hitbox = GetComponentInChildren<WeaponHitbox>();
         combatStateMachine = GetComponentInParent<CombatStateMachine>();
         combatStateMachine.Initialize(this);
         DisableHitbox();

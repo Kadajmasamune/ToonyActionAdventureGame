@@ -39,6 +39,7 @@ public class Player : MonoBehaviour, ICombatHandler
     public EntityStateMachine<Player> entityStateMachine { get; private set; }
     public CombatStateMachine combatStateMachine { get; private set; }
     public CameraControllerCinemachine cinCam;
+    private WeaponController playerWeaponControler;
 
     public Vector3 AttackDirection
     {
@@ -77,12 +78,15 @@ public class Player : MonoBehaviour, ICombatHandler
         }
     }
 
+    public Weapon currentWeapon { get { return playerWeaponControler.currentWeapon; } }
+
     void Awake()
     {
         cinCam = FindFirstObjectByType<CameraControllerCinemachine>();
         Animator = GetComponent<AnimatorController>();
         if (!cameraTransform)
             cameraTransform = Camera.main.transform;
+        playerWeaponControler = GetComponent<WeaponController>();
         combatStateMachine = GetComponent<CombatStateMachine>();
         combatStateMachine.Initialize(this);
     }

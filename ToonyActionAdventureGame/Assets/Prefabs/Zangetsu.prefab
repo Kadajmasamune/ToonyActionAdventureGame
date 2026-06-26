@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 5982810002998520}
   - component: {fileID: 3442594390996601240}
   - component: {fileID: 1570422933342471126}
-  - component: {fileID: 7564592245822947244}
   m_Layer: 0
   m_Name: weaponCollider
   m_TagString: Untagged
@@ -72,19 +71,6 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
---- !u!114 &7564592245822947244
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 644644299199203717}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9f0fec9bb411b2468b6a6fa21cfd6e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Weapon
-  weaponCollider: {fileID: 0}
 --- !u!1 &1841801321487873790
 GameObject:
   m_ObjectHideFlags: 0
@@ -420,6 +406,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6216541027309697107}
   - component: {fileID: 7228528268808531281}
+  - component: {fileID: 379218501919682477}
   m_Layer: 7
   m_Name: Zangetsu
   m_TagString: Untagged
@@ -467,6 +454,20 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &379218501919682477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4970657866011112096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9f0fec9bb411b2468b6a6fa21cfd6e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Weapon
+  weaponCollider: {fileID: 0}
+  attacks: []
 --- !u!1 &7139256791789954889
 GameObject:
   m_ObjectHideFlags: 0
