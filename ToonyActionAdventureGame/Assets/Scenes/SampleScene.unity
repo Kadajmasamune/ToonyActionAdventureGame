@@ -897,18 +897,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f718a10845157ee4da4f4604313f78e8, type: 3}
---- !u!114 &1063622517 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2051045415924739046, guid: 2f5ff0a60ffb54c4e938e67d8388efc0,
-    type: 3}
-  m_PrefabInstance: {fileID: 1145336317}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9f0fec9bb411b2468b6a6fa21cfd6e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Weapon
 --- !u!1 &1134026601
 GameObject:
   m_ObjectHideFlags: 0
@@ -1202,15 +1190,16 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1420672505}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fb20882b8a5619b47b6bf77caa42e243, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponController
-  combatStateMachine: {fileID: 0}
-  currentWeaponIndex: 0
+  weaponLayer:
+    serializedVersion: 2
+    m_Bits: 128
   weapons:
-  - {fileID: 1063622517}
+  - {fileID: 0}
   currentWeapon: {fileID: 0}
 --- !u!1 &1678279577
 GameObject:
