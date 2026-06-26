@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5982810002998520}
   - component: {fileID: 3442594390996601240}
-  - component: {fileID: 1570422933342471126}
+  - component: {fileID: 5676258558392269684}
   m_Layer: 0
   m_Name: weaponCollider
   m_TagString: Untagged
@@ -56,7 +56,7 @@ CapsuleCollider:
   m_Height: 1.78
   m_Direction: 1
   m_Center: {x: 0, y: 0.27, z: 0}
---- !u!114 &1570422933342471126
+--- !u!114 &5676258558392269684
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -65,9 +65,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 644644299199203717}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 68d5ec5378db7ad4a9d72775d3b998bd, type: 3}
+  m_Script: {fileID: 11500000, guid: 59f36e6001be418499c726eb1b60e319, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WeaponHandling
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponHitbox
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -406,7 +406,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6216541027309697107}
   - component: {fileID: 7228528268808531281}
-  - component: {fileID: 379218501919682477}
+  - component: {fileID: 8193622139268443992}
   m_Layer: 7
   m_Name: Zangetsu
   m_TagString: Untagged
@@ -454,7 +454,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &379218501919682477
+--- !u!114 &8193622139268443992
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -463,7 +463,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4970657866011112096}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9f0fec9bb411b2468b6a6fa21cfd6e7, type: 3}
+  m_Script: {fileID: 11500000, guid: f8907ec8108a3b743800205d7d90d7d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Weapon
   weaponCollider: {fileID: 0}
