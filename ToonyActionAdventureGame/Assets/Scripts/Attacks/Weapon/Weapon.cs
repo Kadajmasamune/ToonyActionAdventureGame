@@ -10,7 +10,7 @@ public class Weapon : MonoBehaviour, IWeapon
     private WeaponHitbox hitbox;
     public IReadOnlyList<Collider> Targets => hitbox.Targets;
 
-    public List<Attack> attacks; 
+    public Attack[] attacks; 
     private void Awake()
     {
         if (!weaponCollider)

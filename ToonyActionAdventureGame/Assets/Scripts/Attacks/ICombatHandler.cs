@@ -10,6 +10,8 @@ public interface ICombatHandler
     bool IsLockedOn { get; }
     
     Weapon currentWeapon { get; }
+
+    Attack.Context[] currentHandlerContext { get; }
     //Transform Owner { get; }
 
     //WeaponInstance Weapon { get; }

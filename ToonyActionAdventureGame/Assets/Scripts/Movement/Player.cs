@@ -54,27 +54,21 @@ public class Player : MonoBehaviour, ICombatHandler
         }
     }
     public bool IsLockedOn => cinCam.LockedOn;
-    public Attack.Context[] Context
+    public Attack.Context[] currentHandlerContext
     {
         get
         {
+            List<Attack.Context> contexts = new List<Attack.Context>();
+
             if (IsLockedOn)
-                return new Attack.Context[] { Attack.Context.LockedOn };
+                contexts.Add(Attack.Context.LockedOn);
 
             if (IsGrounded())
-                return new Attack.Context[] { Attack.Context.Grounded };
+                contexts.Add(Attack.Context.Grounded);
+            else
+                contexts.Add(Attack.Context.InAir);
 
-            if (!IsGrounded())
-                return new Attack.Context[] { Attack.Context.InAir };
-
-            if (IsLockedOn && IsGrounded())
-                return new Attack.Context[] { Attack.Context.LockedOn, Attack.Context.Grounded };
-
-            if (IsLockedOn && !IsGrounded())
-                return new Attack.Context[] { Attack.Context.LockedOn, Attack.Context.InAir };
-
-
-            return new Attack.Context[] { Attack.Context.Grounded };
+            return contexts.ToArray();
         }
     }
 
@@ -363,7 +357,8 @@ public class Player : MonoBehaviour, ICombatHandler
                 p.entityStateMachine.SwitchStates(new JumpState());
             }
 
-            if (p.combatStateMachine.isAttacking)
+            if (p.combatStateMachine.isAttacking &&
+     p.combatStateMachine.CurrentAttack != null)
             {
                 p.entityStateMachine.SwitchStates(new AttackingState());
             }

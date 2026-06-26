@@ -21,7 +21,7 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     // -- > Timing Between inputs Modifiers 
 
     [Header("Attack")]
-    public Attack[] PossibleAttacks;
+    //public Attack[] PossibleAttacks;
     public Attack CurrentAttack;
     public bool isAttacking = false;
     public bool isTransitioning = false;
@@ -121,25 +121,67 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
     {
 
         if (!bufferer.HasInput) return;
-        else
-        {
-            var input = GetAttackFromInput(bufferer.ConsumeInput());
-            StartAttack(input);
-        }
-     
+
+
+        var input = bufferer.ConsumeInput();
+        Attack attack = GetAttackFromInput(input);
+
+        if (attack == null)
+            return;
+
+        StartAttack(attack);
     }
 
     private Attack GetAttackFromInput(AttackInput input)
     {
-        for (int i = 0; i < PossibleAttacks.Length; i++)
+        foreach (Attack attack in handler.currentWeapon.attacks)
         {
-            if (PossibleAttacks[i].RequiredInput == input)
-                return PossibleAttacks[i];
+            if (attack.RequiredInput != input)
+                continue;
+
+
+            if (!HasContext(attack))
+                continue;
+
+
+            if (attack.DirectionRequired != Vector3.zero)
+            {
+                if (Vector3.Dot(
+                    handler.AttackDirection.normalized,
+                    attack.DirectionRequired.normalized
+                    ) < 0.9f)
+                    continue;
+            }
+
+
+            return attack;
         }
 
         return null;
     }
 
+    private bool HasContext(Attack attack)
+    {
+        foreach (Attack.Context required in attack.contextRequired)
+        {
+            bool found = false;
+
+            foreach (Attack.Context current in handler.currentHandlerContext)
+            {
+                if (current == required)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+
+            if (!found)
+                return false;
+        }
+
+        return true;
+    }
 
     private void StartAttack(Attack attack)
     {
@@ -242,14 +284,22 @@ public class CombatStateMachine : MonoBehaviour // ----> “Given state + input 
         if (currentAttack.AllowedAttackTransitions.Length == 0) return null;
 
         AttackInput input = bufferer.PeekInput();
-
+        int i = 0;
         foreach (Attack transition in currentAttack.AllowedAttackTransitions)
         {
-            if (transition.RequiredInput == input)
+            if (
+                transition.RequiredInput == input &&
+                HasContext(transition) &&
+                Vector3.Dot(
+                    handler.AttackDirection.normalized,
+                    transition.DirectionRequired.normalized
+                ) > 0.9f
+            )
             {
                 bufferer.ConsumeInput();
                 return transition;
             }
+            i++;
         }
 
         return null;

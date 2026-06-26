@@ -467,7 +467,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Weapon
   weaponCollider: {fileID: 0}
-  attacks: []
+  attacks:
+  - {fileID: 11400000, guid: f15ffff88523fbf499b402a04bc401f4, type: 2}
+  - {fileID: 11400000, guid: 8217f9f263d97124db75b64704d42846, type: 2}
 --- !u!1 &7139256791789954889
 GameObject:
   m_ObjectHideFlags: 0
