@@ -1,44 +1,41 @@
-﻿
-
-
-namespace EntityStateMachines
+﻿namespace EntityStateMachines
 {
 
-    public class EntityStateMachine<T>
+    public class EntityStateMachine
     {
-        public State<T> currentState;
-        public T context;
+        public State currentState;
+        public object context;
 
-        public EntityStateMachine(T context)
+        public EntityStateMachine(object context)
         {
             this.context = context;
         }
 
-        public void SwitchStates(State<T> newState)
+        public void SwitchStates(State newState)
         {
-            currentState?.Exit(context);
+            currentState?.Exit();
             currentState = newState;
-            currentState.Enter(context);
+            currentState.Enter();
         }
 
         public void HandleInput()
         {
-            currentState?.HandleInput(context);
+            currentState?.HandleInput();
         }
 
         public void Update()
         {
-            currentState?.Update(context);
+            currentState?.Update();
         }
     }
 
     
-    public abstract class State<T>
+    public abstract class State
     {
-        public abstract void Enter(T context);
-        public abstract void HandleInput(T context);
-        public abstract void Update(T context);
-        public abstract void Exit(T context);
+        public abstract void Enter();
+        public abstract void HandleInput();
+        public abstract void Update();
+        public abstract void Exit();
     }
 
 

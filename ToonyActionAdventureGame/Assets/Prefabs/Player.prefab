@@ -514,13 +514,12 @@ GameObject:
   m_Component:
   - component: {fileID: 837313433227689844}
   - component: {fileID: 6600440574247585827}
-  - component: {fileID: 1724367402710898822}
-  - component: {fileID: 597188348560457399}
   - component: {fileID: 1859373656576493748}
+  - component: {fileID: 1724367402710898822}
   - component: {fileID: 8609857648569382422}
   - component: {fileID: 4946592345472122834}
-  - component: {fileID: 4047676732378379432}
   - component: {fileID: 3704232194177905138}
+  - component: {fileID: 4047676732378379432}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -568,47 +567,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1724367402710898822
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3192441450695204820}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 09f4feea9244c7a47b930594605c8db8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AnimatorController
-  animator: {fileID: 0}
-  walkSpeed: 2.2
-  sprintSpeed: 4.8
---- !u!114 &597188348560457399
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3192441450695204820}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84040a1230041404d84911e7e0adedf8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  walkSpeed: 3.4
-  sprintSpeed: 34
-  strafingSpeed: 5
-  accel: 175
-  airControl: 0.1
-  jumpForce: 18
-  gravity: -58
-  groundCheckDistance: 0.2
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  rotationSharpness: 25
-  cameraTransform: {fileID: 0}
-  cinCam: {fileID: 0}
 --- !u!320 &1859373656576493748
 PlayableDirector:
   m_ObjectHideFlags: 0
@@ -630,7 +588,7 @@ PlayableDirector:
     value: {fileID: 6600440574247585827}
   m_ExposedReferences:
     m_References: []
---- !u!114 &8609857648569382422
+--- !u!114 &1724367402710898822
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -638,6 +596,21 @@ MonoBehaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3192441450695204820}
   m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09f4feea9244c7a47b930594605c8db8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimatorController
+  animator: {fileID: 0}
+  walkSpeed: 2.2
+  sprintSpeed: 4.8
+--- !u!114 &8609857648569382422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3192441450695204820}
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1843dd8b0eedd934db94668593ba15fb, type: 3}
   m_Name: 
@@ -654,12 +627,29 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3192441450695204820}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c6a6baf8d05c82741ad7c919d48732c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InputBufferer
   inputBufferWindow: 10
+--- !u!114 &3704232194177905138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3192441450695204820}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79e2b7b5df5786540bc36852768677d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponController
+  weaponLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  weapons: []
+  currentWeapon: {fileID: 0}
 --- !u!114 &4047676732378379432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -734,23 +724,6 @@ MonoBehaviour:
   - {fileID: 356694675727830177}
   - {fileID: 8001192063450565198}
   - {fileID: 7831679758195608571}
---- !u!114 &3704232194177905138
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3192441450695204820}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79e2b7b5df5786540bc36852768677d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WeaponController
-  weaponLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  weapons: []
-  currentWeapon: {fileID: 0}
 --- !u!1 &3285632100188612156
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,12 +15,13 @@ public class CameraControllerCinemachine : MonoBehaviour
     [Header("Target Tracking Settings")]
     public bool LockedOn;
     public CinemachineTargetGroup.Target Enemy; 
-    private Player player;
+    private GameObject player;
     private bool hasCameraReset = false;
     [SerializeField] private float LockOnRadius;
     [SerializeField] private LayerMask enemyLayer;
 
     private List<Collider> availableEnemies;
+
     void Start()
     {
 
@@ -29,7 +30,7 @@ public class CameraControllerCinemachine : MonoBehaviour
         _cam_RotComposer = GetComponent <CinemachineRotationComposer>();
         _cam_GroupFraming = GetComponent<CinemachineGroupFraming>();
 
-        player = FindFirstObjectByType<Player>();
+        player = FindFirstObjectByType<GameObject>();
         if (_cam == null)
             Debug.LogError("Cinemachine Camera Not Found...");
         
