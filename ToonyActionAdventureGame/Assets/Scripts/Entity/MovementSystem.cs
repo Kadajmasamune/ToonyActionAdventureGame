@@ -1,7 +1,7 @@
 using UnityEngine;
 using EntityStateMachines;
 
-public class MovementSystem : IEntitySystem 
+public class MovementSystem : MonoBehaviour , IEntitySystem 
 {
     private EntityStateMachine movementFSM;
 
@@ -13,12 +13,8 @@ public class MovementSystem : IEntitySystem
 
     public void Update() 
     {
-        movementFSM.currentState.Enter();
         movementFSM.currentState.HandleInput();
         movementFSM.currentState.Update();
-        movementFSM.currentState.Exit();
-
-
     }
 
 
