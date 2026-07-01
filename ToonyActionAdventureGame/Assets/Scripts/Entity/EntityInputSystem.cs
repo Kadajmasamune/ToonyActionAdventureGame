@@ -2,27 +2,39 @@
 using UnityEngine; 
 
 
-public class PlayerInput : MonoBehaviour
+public class EntityInputSystem : MonoBehaviour , IEntitySystem
 {
     public Vector2 Input { get; private set; }
     public bool JumpPressed { get; private set; }
     public bool SprintHeld { get; private set; }
 
+    public bool isAI;
+    public void Init()
+    {
+        
+    }
 
-    private void Update()
+    public void Update()
     {
         ReadInput();
     }
 
     void ReadInput()
     {
-        Input = new Vector2(
-            UnityEngine.Input.GetAxisRaw("Horizontal"),
-            UnityEngine.Input.GetAxisRaw("Vertical")
-        );
+        if (!isAI)
+        {
+            Input = new Vector2(
+                UnityEngine.Input.GetAxisRaw("Horizontal"),
+                UnityEngine.Input.GetAxisRaw("Vertical")
+            );
 
-        JumpPressed = UnityEngine.Input.GetKeyDown(KeyCode.Space);
-        SprintHeld = UnityEngine.Input.GetKey(KeyCode.LeftControl);
+            JumpPressed = UnityEngine.Input.GetKeyDown(KeyCode.Space);
+            SprintHeld = UnityEngine.Input.GetKey(KeyCode.LeftControl);
+        }
+        else
+        {
+
+        }
     }
 
     public Vector3 GetCameraRelativeInput(Transform cameraTransform)
