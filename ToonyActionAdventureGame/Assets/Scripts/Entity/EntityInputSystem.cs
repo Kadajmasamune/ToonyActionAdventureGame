@@ -23,6 +23,9 @@ public class EntityInputSystem : MonoBehaviour , IEntitySystem
     {
         if (!isAI)
         {
+
+            //Implement New action maps 
+            
             Input = new Vector2(
                 UnityEngine.Input.GetAxisRaw("Horizontal"),
                 UnityEngine.Input.GetAxisRaw("Vertical")
@@ -33,7 +36,7 @@ public class EntityInputSystem : MonoBehaviour , IEntitySystem
         }
         else
         {
-
+            //Implement AI input 
         }
     }
 

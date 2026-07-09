@@ -28,11 +28,6 @@ public class CombatStateMachine : MonoBehaviour
 
     private bool isTryingToCancel;
 
-
-
-
-
-
     public void Initialize(ICombatHandler handler)
     {
         this.handler = handler;

@@ -34,6 +34,15 @@ public class MovementSystem : MonoBehaviour , IEntitySystem
         public override void Exit() { }
     }
 
+    private class SideStep : State
+    {
+        public override void Enter() { }
+        public override void HandleInput() { }
+        public override void Update() { }
+        public override void Exit() { }
+ 
+    }
+    
     private class Sprint : State 
     {
         public override void Enter() { }
