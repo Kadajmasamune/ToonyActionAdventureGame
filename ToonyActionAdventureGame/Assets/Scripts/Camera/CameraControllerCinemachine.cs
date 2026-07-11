@@ -15,12 +15,14 @@ public class CameraControllerCinemachine : MonoBehaviour
     [Header("Target Tracking Settings")]
     public bool LockedOn;
     public CinemachineTargetGroup.Target Enemy; 
-    private GameObject player;
+    public GameObject player;
     private bool hasCameraReset = false;
     [SerializeField] private float LockOnRadius;
     [SerializeField] private LayerMask enemyLayer;
 
     private List<Collider> availableEnemies;
+
+    private ICameraInput _cameraInput; 
 
     void Start()
     {
@@ -29,8 +31,7 @@ public class CameraControllerCinemachine : MonoBehaviour
         _cam_OrbitalFollow = GetComponent <CinemachineOrbitalFollow>();
         _cam_RotComposer = GetComponent <CinemachineRotationComposer>();
         _cam_GroupFraming = GetComponent<CinemachineGroupFraming>();
-
-        player = FindFirstObjectByType<GameObject>();
+        _cameraInput = player.GetComponent<EntityInputSystem>();
         if (_cam == null)
             Debug.LogError("Cinemachine Camera Not Found...");
         
@@ -42,7 +43,10 @@ public class CameraControllerCinemachine : MonoBehaviour
         HandleInput();
 
         if (LockedOn)
+        {
             LockOn();
+            
+        }
 
         else if(!LockedOn && !hasCameraReset)
             ResetCamera(Enemy);
@@ -55,10 +59,9 @@ public class CameraControllerCinemachine : MonoBehaviour
             Recenter();
         }
 
-        if(Input.GetKeyDown(KeyCode.Q) && canLockOn())
-        {
+        if(_cameraInput.LockOn.IsPressed() && canLockOn())
             LockedOn = !LockedOn;
-        }
+        
     }
 
     private void Recenter()
@@ -105,7 +108,7 @@ public class CameraControllerCinemachine : MonoBehaviour
 
         Enemy = target;
 
-        //Debug.Log($"Best Lock On Target : -- > {target.gameObject.name}");
+        // Debug.Log($"Best Lock On Target : -- > ");
         // --> Cinemachine Camera Motion Update
         // --> Player movement Update ------------> Feed Request into Statemachine to introduce strafin 
 

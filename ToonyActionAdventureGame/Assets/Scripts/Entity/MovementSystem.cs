@@ -17,42 +17,20 @@ public class MovementSystem : MonoBehaviour , IEntitySystem
         movementFSM.currentState.Update();
     }
 
-
-    private class Idle : State 
-    {
-        public override void Enter() { }
-        public override void HandleInput() { }
-        public override void Update() { }
-        public override void Exit() { }
-    }
-
-    private class Walk : State 
-    {
-        public override void Enter() { }
-        public override void HandleInput() { }
-        public override void Update() { }
-        public override void Exit() { }
-    }
-
-    private class SideStep : State
-    {
-        public override void Enter() { }
-        public override void HandleInput() { }
-        public override void Update() { }
-        public override void Exit() { }
- 
-    }
     
-    private class Sprint : State 
+    private class Grounded : State
     {
+        //idle , walk , sprint 
         public override void Enter() { }
         public override void HandleInput() { }
         public override void Update() { }
-        public override void Exit() { }
+        public override void Exit() { }  
     }
 
     private class Jump : State
     {
+        //Handle Double Jumps 
+
         public override void Enter() { }
         public override void HandleInput() { }
         public override void Update() { }
@@ -61,9 +39,46 @@ public class MovementSystem : MonoBehaviour , IEntitySystem
 
     private class Fall : State
     {
+        //Handle fast fall 
         public override void Enter() { }
         public override void HandleInput() { }
         public override void Update() { }
         public override void Exit() { }
     }
+    private class SideStep : State
+    {
+        public override void Enter() { }
+        public override void HandleInput() { }
+        public override void Update() { }
+        public override void Exit() { }
+ 
+    }
+
+
+    private class Dash : State
+    {
+        // Forward , backward , and diagonal dashes 
+        // Jump Dashes too
+        public override void Enter() { }
+        public override void HandleInput() { }
+        public override void Update() { }
+        public override void Exit() { }
+    }
+
+    private class Quick180 : State
+    {
+        public override void Enter() { }
+        public override void HandleInput() { }
+        public override void Update() { }
+        public override void Exit() { }
+    }    
+
+    private class BackFlip : State
+    {
+        public override void Enter() { }
+        public override void HandleInput() { }
+        public override void Update() { }
+        public override void Exit() { }
+    }
+    
 }

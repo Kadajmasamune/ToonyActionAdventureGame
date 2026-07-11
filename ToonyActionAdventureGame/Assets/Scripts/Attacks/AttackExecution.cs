@@ -6,7 +6,6 @@ using static FrameData;
 public class AttackExecution : MonoBehaviour
 {
     private Attack currentAttack;
-
     private IWeapon weaponHandler;
     private AnimatorController animator;
 
@@ -79,19 +78,10 @@ public class AttackExecution : MonoBehaviour
         weaponHandler.DisableHitbox();
         weaponHandler.ClearTargets();
 
+        int hash = Animator.StringToHash(attack.clip.name );
 
-        int hash = Animator.StringToHash(
-            attack.clip.name
-        );
-
-
-        animator.PlayAttack(
-            hash,
-            attack.AttackIndexLayer,
-            transition
-        );
+        animator.PlayAttack(hash, attack.AttackIndexLayer, transition );
     }
-
 
 
     private void Tick()
@@ -101,15 +91,11 @@ public class AttackExecution : MonoBehaviour
 
 
         UpdateImpacts();
-
-
         int tick = CurrentTick;
 
 
         UpdateWeapon(tick);
-
         ProcessHits();
-
 
         if (tick >= TotalFrames())
         {
@@ -128,17 +114,10 @@ public class AttackExecution : MonoBehaviour
     }
 
 
-
     private void UpdateWeapon(int tick)
     {
-        int start =
-            currentAttack.StartUpFrames;
-
-
-        int end =
-            start + currentAttack.ActiveFrames;
-
-
+        int start = currentAttack.StartUpFrames;
+        int end = start + currentAttack.ActiveFrames;
 
         if (tick >= start && tick <= end)
             weaponHandler.EnableHitbox();
@@ -156,18 +135,12 @@ public class AttackExecution : MonoBehaviour
             if (hitTargets.Contains(target))
                 continue;
 
-
             hitTargets.Add(target);
 
 
-            Health health =
-                target.GetComponent<Health>();
-
-
+            Health health =  target.GetComponent<Health>();
             if (health)
-                health.TakeDamage(
-                    currentAttack.Damage
-                );
+                health.TakeDamage(currentAttack.Damage);
 
 
             if (currentAttack.upwardLaunchImpulse > 0)
@@ -175,29 +148,16 @@ public class AttackExecution : MonoBehaviour
             else
                 KnockBack(target);
 
-
-
-            StartCoroutine(
-                HitStop()
-            );
+            StartCoroutine(HitStop());
         }
     }
 
 
 
-
-
     private void Launch(Collider target)
     {
-        Vector3 start =
-            target.transform.position;
-
-
-        Vector3 end =
-            start +
-            Vector3.up *
-            currentAttack.upwardLaunchImpulse;
-
+        Vector3 start = target.transform.position;
+        Vector3 end = start + Vector3.up * currentAttack.upwardLaunchImpulse;
 
         impacts[target] = new ImpactData
         {
@@ -213,29 +173,15 @@ public class AttackExecution : MonoBehaviour
 
     private void KnockBack(Collider target)
     {
-        Vector3 start =
-            target.transform.position;
-
-
-        Vector3 dir =
-            (target.transform.position -
-             transform.position).normalized;
-
-
+        Vector3 start = target.transform.position;
+        Vector3 dir = (target.transform.position - transform.position).normalized;
 
         impacts[target] = new ImpactData
         {
             start = start,
-            end =
-                start +
-                dir *
-                currentAttack.knockBackInflicted,
-
-            duration =
-                currentAttack.attackSpeed,
-
-            curve =
-                currentAttack.lungeCurve
+            end = start + dir * currentAttack.knockBackInflicted,
+            duration =currentAttack.attackSpeed,
+            curve = currentAttack.lungeCurve
         };
     }
 
@@ -264,32 +210,19 @@ public class AttackExecution : MonoBehaviour
     {
         finishedImpacts.Clear();
 
-
         foreach (var pair in impacts)
         {
             pair.Value.timer += Time.deltaTime;
 
+            float t = Mathf.Clamp01(pair.Value.timer / pair.Value.duration );
 
-            float t =
-                Mathf.Clamp01(
-                    pair.Value.timer /
-                    pair.Value.duration
-                );
-
-
-            float eased =
-                pair.Value.curve.Evaluate(t);
-
+            float eased = pair.Value.curve.Evaluate(t);
 
 
             if (pair.Key)
             {
                 pair.Key.transform.position =
-                    Vector3.Lerp(
-                        pair.Value.start,
-                        pair.Value.end,
-                        eased
-                    );
+                    Vector3.Lerp( pair.Value.start, pair.Value.end, eased);
             }
 
 
@@ -297,48 +230,30 @@ public class AttackExecution : MonoBehaviour
                 finishedImpacts.Add(pair.Key);
         }
 
-
-
         foreach (var c in finishedImpacts)
             impacts.Remove(c);
     }
 
 
 
-
-
     private IEnumerator HitStop()
     {
         Time.timeScale = 0f;
-
-        yield return new WaitForSecondsRealtime(
-            currentAttack.hitStopDuration
-        );
-
+        yield return new WaitForSecondsRealtime(currentAttack.hitStopDuration);
         Time.timeScale = 1f;
     }
 
 
-
-
-
     public void End()
     {
-        int hash =
-            Animator.StringToHash(
-                currentAttack.clip.name
-            );
-
+        int hash =Animator.StringToHash(currentAttack.clip.name);
 
         animator.StopAttack(hash);
-
 
         weaponHandler.DisableHitbox();
         weaponHandler.ClearTargets();
 
-
         hitTargets.Clear();
-
 
         currentAttack = null;
 

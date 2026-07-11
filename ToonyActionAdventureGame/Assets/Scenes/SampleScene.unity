@@ -182,6 +182,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: HollowDummy
       objectReference: {fileID: 0}
+    - target: {fileID: 1491020889868071723, guid: 206e742077fdaf84ab9a03046dccda3d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -252,8 +257,68 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2516392186779767395, guid: 263d1d6d118ca2849830fe538d2d315e,
         type: 3}
+      propertyPath: VelocityModule.enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2516392186779767395, guid: 263d1d6d118ca2849830fe538d2d315e,
+        type: 3}
       propertyPath: InitialModule.startSize.scalar
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2516392186779767395, guid: 263d1d6d118ca2849830fe538d2d315e,
+        type: 3}
+      propertyPath: VelocityModule.orbitalX.scalar
+      value: 9.64
+      objectReference: {fileID: 0}
+    - target: {fileID: 2516392186779767395, guid: 263d1d6d118ca2849830fe538d2d315e,
+        type: 3}
+      propertyPath: VelocityModule.orbitalY.scalar
+      value: 14.82
+      objectReference: {fileID: 0}
+    - target: {fileID: 2516392186779767395, guid: 263d1d6d118ca2849830fe538d2d315e,
+        type: 3}
+      propertyPath: VelocityModule.orbitalOffsetX.scalar
+      value: 2.89
+      objectReference: {fileID: 0}
+    - target: {fileID: 2516392186779767395, guid: 263d1d6d118ca2849830fe538d2d315e,
+        type: 3}
+      propertyPath: SizeModule.curve.maxCurve.m_Curve.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2516392186779767395, guid: 263d1d6d118ca2849830fe538d2d315e,
+        type: 3}
+      propertyPath: SizeModule.curve.maxCurve.m_Curve.Array.data[4].time
+      value: 0.8633278
+      objectReference: {fileID: 0}
+    - target: {fileID: 2516392186779767395, guid: 263d1d6d118ca2849830fe538d2d315e,
+        type: 3}
+      propertyPath: SizeModule.curve.maxCurve.m_Curve.Array.data[5].time
+      value: 0.9723511
+      objectReference: {fileID: 0}
+    - target: {fileID: 2516392186779767395, guid: 263d1d6d118ca2849830fe538d2d315e,
+        type: 3}
+      propertyPath: SizeModule.curve.maxCurve.m_Curve.Array.data[4].value
+      value: 0.61658025
+      objectReference: {fileID: 0}
+    - target: {fileID: 2516392186779767395, guid: 263d1d6d118ca2849830fe538d2d315e,
+        type: 3}
+      propertyPath: SizeModule.curve.maxCurve.m_Curve.Array.data[4].inSlope
+      value: -1.6893678
+      objectReference: {fileID: 0}
+    - target: {fileID: 2516392186779767395, guid: 263d1d6d118ca2849830fe538d2d315e,
+        type: 3}
+      propertyPath: SizeModule.curve.maxCurve.m_Curve.Array.data[4].inWeight
+      value: 0.33333334
+      objectReference: {fileID: 0}
+    - target: {fileID: 2516392186779767395, guid: 263d1d6d118ca2849830fe538d2d315e,
+        type: 3}
+      propertyPath: SizeModule.curve.maxCurve.m_Curve.Array.data[4].outSlope
+      value: -1.6893678
+      objectReference: {fileID: 0}
+    - target: {fileID: 2516392186779767395, guid: 263d1d6d118ca2849830fe538d2d315e,
+        type: 3}
+      propertyPath: SizeModule.curve.maxCurve.m_Curve.Array.data[4].outWeight
+      value: 0.33333334
       objectReference: {fileID: 0}
     - target: {fileID: 6048483516014950068, guid: 263d1d6d118ca2849830fe538d2d315e,
         type: 3}
@@ -1738,6 +1803,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: 'Player '
+      objectReference: {fileID: 0}
+    - target: {fileID: 3192441450695204820, guid: 2f5ff0a60ffb54c4e938e67d8388efc0,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3406033995649854958, guid: 2f5ff0a60ffb54c4e938e67d8388efc0,
         type: 3}

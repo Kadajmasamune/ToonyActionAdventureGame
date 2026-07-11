@@ -57,13 +57,8 @@ public class CombatStateMachine : MonoBehaviour
 
     private void Start()
     {
-        execution.Initialize(
-            weaponHandler,
-            animator
-        );
+        execution.Initialize( weaponHandler,animator);
     }
-
-
 
 
     private void OnEnable()
@@ -76,7 +71,6 @@ public class CombatStateMachine : MonoBehaviour
     {
         Ticker.OnTick -= Tick;
     }
-
 
 
 
@@ -122,22 +116,14 @@ public class CombatStateMachine : MonoBehaviour
 
             if (attack.DirectionRequired != Vector3.zero)
             {
-                float dot =
-                    Vector3.Dot(
-                        handler.AttackDirection.normalized,
-                        attack.DirectionRequired.normalized
-                    );
-
+                float dot = Vector3.Dot( handler.AttackDirection.normalized, attack.DirectionRequired.normalized);
 
                 if (dot < 0.9f)
                     continue;
             }
 
-
-
             return attack;
         }
-
 
         return null;
     }
@@ -176,10 +162,7 @@ public class CombatStateMachine : MonoBehaviour
         isTransitioning = false;
         hasChainedThisWindow = false;
 
-
-        execution.StartAttack(
-            attack
-        );
+        execution.StartAttack(attack);
     }
 
 
@@ -188,23 +171,13 @@ public class CombatStateMachine : MonoBehaviour
         if (CurrentAttack == null)
             return;
 
-
-        if (
-            execution.DeduceCurrentWindow(
-                execution.CurrentTick,
-                CurrentAttack
-            )
-            != WindowType.Interrupt
-        )
+        if (execution.DeduceCurrentWindow(execution.CurrentTick, CurrentAttack) != WindowType.Interrupt )
         {
             hasChainedThisWindow = false;
             return;
         }
 
-
-
         Attack next = GetNewAttack(CurrentAttack);
-
 
         if (next != null)
         {
@@ -221,81 +194,52 @@ public class CombatStateMachine : MonoBehaviour
         if (hasChainedThisWindow)
             return null;
 
-
         if (currentAttack == null)
             return null;
-
-
 
         if (currentAttack.AllowedAttackTransitions.Length == 0)
             return null;
 
 
-
-
-        AttackInput input =
-            bufferer.PeekInput();
-
-
-
+        AttackInput input = bufferer.PeekInput();
 
         foreach (Attack transition in currentAttack.AllowedAttackTransitions)
         {
 
-            if (
-                transition.RequiredInput == input &&
-                HasContext(transition)
-            )
+            if ( transition.RequiredInput == input && HasContext(transition) )
             {
-
                 if (transition.DirectionRequired != Vector3.zero)
                 {
-
-                    float dot =
-                        Vector3.Dot(
-                        handler.AttackDirection.normalized,
-                        transition.DirectionRequired.normalized
-                        );
-
+                    float dot = Vector3.Dot( handler.AttackDirection.normalized, transition.DirectionRequired.normalized );
 
                     if (dot < 0.9f)
                         continue;
                 }
 
-
-
                 bufferer.ConsumeInput();
-
                 return transition;
             }
 
         }
 
 
-
         return null;
     }
+
+
 
     public void TransitionAttack(Attack next)
     {
         if (next == null)
             return;
 
-
-
         CurrentAttack = next;
 
         isTransitioning = true;
 
 
-        execution.StartAttack(
-            next,
-            true
-        );
+        execution.StartAttack( next, transition:true);
     }
-
-
-
 
     public void CancelAttack()
     {
