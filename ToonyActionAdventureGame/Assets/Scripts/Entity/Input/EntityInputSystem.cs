@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class EntityInputSystem : MonoBehaviour, IEntitySystem, ICameraInput
+public class EntityInputSystem : MonoBehaviour, IEntitySystem, ICameraInput , IMovementInput
 {
     public InputAction jumpAction { get; private set; }
     public InputAction sprintAction { get; private set; }
     public InputAction moveAction { get; private set; }
     public InputAction LockOn { get; private set; }
-
 
     public void Init()
     {
@@ -17,14 +16,14 @@ public class EntityInputSystem : MonoBehaviour, IEntitySystem, ICameraInput
         sprintAction = InputSystem.actions.FindAction("Sprint");
         moveAction = InputSystem.actions.FindAction("Move");
         LockOn = InputSystem.actions.FindAction("LockOn");
+        
     }
 
     public void Update()
     {
         
+        return ;    
     }
-
-
 
     public Vector3 GetCameraRelativeInput(Transform cameraTransform)
     {

@@ -433,6 +433,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Camera(New)
       objectReference: {fileID: 0}
+    - target: {fileID: 1104345543051235081, guid: d3485c81fe7af25499d352261d8e1ba6,
+        type: 3}
+      propertyPath: UpdateMethod
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1207056085700998283, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_Enabled
@@ -483,6 +488,21 @@ PrefabInstance:
       propertyPath: Target.TrackingTarget
       value: 
       objectReference: {fileID: 693238654}
+    - target: {fileID: 5441716355630405840, guid: d3485c81fe7af25499d352261d8e1ba6,
+        type: 3}
+      propertyPath: Damping.x
+      value: 1.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5441716355630405840, guid: d3485c81fe7af25499d352261d8e1ba6,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5441716355630405840, guid: d3485c81fe7af25499d352261d8e1ba6,
+        type: 3}
+      propertyPath: Composition.HardLimits.Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5595397380921550790, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -538,6 +558,11 @@ PrefabInstance:
       propertyPath: m_projectionMatrixMode
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7131393463668744093, guid: d3485c81fe7af25499d352261d8e1ba6,
+        type: 3}
+      propertyPath: RecenteringTarget
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7611526858534121410, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -558,6 +583,38 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 693238650}
+    - target: {fileID: 8432781565130462061, guid: d3485c81fe7af25499d352261d8e1ba6,
+        type: 3}
+      propertyPath: m_ControllerManager.Controllers.Array.data[0].Input.Gain
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 8432781565130462061, guid: d3485c81fe7af25499d352261d8e1ba6,
+        type: 3}
+      propertyPath: m_ControllerManager.Controllers.Array.data[1].Input.Gain
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 8432781565130462061, guid: d3485c81fe7af25499d352261d8e1ba6,
+        type: 3}
+      propertyPath: m_ControllerManager.Controllers.Array.data[0].Input.InputAction
+      value: 
+      objectReference: {fileID: 6884384310349649107, guid: 222850f5dd8a24c42adfb43ad3b22746,
+        type: 3}
+    - target: {fileID: 8432781565130462061, guid: d3485c81fe7af25499d352261d8e1ba6,
+        type: 3}
+      propertyPath: m_ControllerManager.Controllers.Array.data[0].Input.LegacyInput
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8432781565130462061, guid: d3485c81fe7af25499d352261d8e1ba6,
+        type: 3}
+      propertyPath: m_ControllerManager.Controllers.Array.data[1].Input.InputAction
+      value: 
+      objectReference: {fileID: 6884384310349649107, guid: 222850f5dd8a24c42adfb43ad3b22746,
+        type: 3}
+    - target: {fileID: 8432781565130462061, guid: d3485c81fe7af25499d352261d8e1ba6,
+        type: 3}
+      propertyPath: m_ControllerManager.Controllers.Array.data[1].Input.LegacyInput
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8568329654712042914, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -694,6 +751,7 @@ GameObject:
   - component: {fileID: 693238651}
   - component: {fileID: 693238655}
   - component: {fileID: 693238656}
+  - component: {fileID: 693238657}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -821,6 +879,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26eca8d8a3fe0174094c93f2133aa52f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntityInputSystem
+--- !u!114 &693238657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693238650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bbbcc5a909cae347ba9666570bc437c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MovementSystem
+  maxWalkSpeed: 31.28
+  maxSprintSpeed: 0
+  Acceleration: 83.12
 --- !u!1 &1164618189
 GameObject:
   m_ObjectHideFlags: 0

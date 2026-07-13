@@ -20,10 +20,10 @@ public class GameController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.G))
-        {
+        // if (Input.GetKeyDown(KeyCode.G))
+        // {
             //player.transform.position = new Vector3(-4.61999989f, 8.06999969f, 67.1800003f);
-        }
+        // }
     }
     
 }
