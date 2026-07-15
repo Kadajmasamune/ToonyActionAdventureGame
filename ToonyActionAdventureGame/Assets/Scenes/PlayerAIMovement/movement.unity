@@ -456,7 +456,7 @@ PrefabInstance:
     - target: {fileID: 2580869457810601412, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -4.89687
+      value: -5.58687
       objectReference: {fileID: 0}
     - target: {fileID: 2580869457810601412, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
@@ -511,7 +511,7 @@ PrefabInstance:
     - target: {fileID: 5595397380921550790, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -4.89687
+      value: -5.58687
       objectReference: {fileID: 0}
     - target: {fileID: 5595397380921550790, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
@@ -571,7 +571,7 @@ PrefabInstance:
     - target: {fileID: 7611526858534121410, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -6.99026
+      value: -7.68026
       objectReference: {fileID: 0}
     - target: {fileID: 7611526858534121410, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
@@ -849,7 +849,7 @@ Transform:
   m_GameObject: {fileID: 693238650}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.44848, y: 1.17, z: 64.00908}
+  m_LocalPosition: {x: 0.44848, y: 0.48, z: 64.00908}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -891,9 +891,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bbbcc5a909cae347ba9666570bc437c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovementSystem
-  maxWalkSpeed: 31.28
-  maxSprintSpeed: 0
-  Acceleration: 83.12
+  GroundedData:
+    maxVelocity: 17
+    maxSprintVelocity: 30
+    acceleration: 120
+  jumpData:
+    maxJumpVelocity: 30
+    maxJumpDisplacement: 40
+    acceleration: 120
+  fallData:
+    Gravity: 40
+    rayDistanceCheck: 2
+    GroundLayer:
+      serializedVersion: 2
+      m_Bits: 8
 --- !u!1 &1164618189
 GameObject:
   m_ObjectHideFlags: 0

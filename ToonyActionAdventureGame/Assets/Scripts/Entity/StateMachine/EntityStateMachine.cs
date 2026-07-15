@@ -1,4 +1,9 @@
-﻿namespace EntityStateMachines
+﻿using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace EntityStateMachines
 {
 
     public class EntityStateMachine
@@ -32,6 +37,13 @@
     
     public abstract class State
     {
+        public GameObject gameObj;
+        public Collider Collider;
+        public EntityStateMachine Emachine;
+
+        public IMovementInput movementInput;
+        public Camera cam;
+
         public abstract void Enter();
         public abstract void HandleInput();
         public abstract void Update();

@@ -12,7 +12,7 @@
                     "id": "cfe02123-bdc1-4b61-91a4-e97c3e6ae3fe",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "Press",
+                    "interactions": "Hold",
                     "initialStateCheck": false
                 },
                 {
@@ -79,6 +79,17 @@
                     "name": "",
                     "id": "38d03c33-72a1-4b91-b25e-62a62c1d77f8",
                     "path": "<Keyboard>/leftCtrl",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Sprint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cb09a463-631c-44f5-b04c-07789fcb7875",
+                    "path": "<Gamepad>/leftTrigger",
                     "interactions": "Hold",
                     "processors": "",
                     "groups": "",
