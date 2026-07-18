@@ -10,15 +10,12 @@ public class MovementSystem : MonoBehaviour, IEntitySystem
 
     private EntityStateMachine movementFSM;
 
-    [Header("Movement")]
-    [SerializeField] private GroundedSettings GroundedData;
-    [SerializeField] private JumpSettings jumpData;
-    [SerializeField] private FallSettings fallData;
+    
 
     [Header("States")]
-    private Grounded groundedState;
-    private Jump jumpState;
-    private Fall fallState;
+    [SerializeField] private Grounded groundedState;
+    [SerializeField] private Jump jumpState;
+    [SerializeField] private Fall fallState;
 
     private List<State> states;
 
@@ -26,12 +23,6 @@ public class MovementSystem : MonoBehaviour, IEntitySystem
     {
         movementFSM = new EntityStateMachine(this);
         states = new List<State>();
-
-
-        groundedState = new Grounded(GroundedData);
-        jumpState = new Jump(jumpData);
-        fallState = new Fall(fallData);
-
 
         groundedState.jumpState = jumpState;
         jumpState.fallState = fallState;

@@ -1,73 +1,101 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using EntityStateMachines;
+using System;
+
+
+[System.Serializable]
 public class Jump : State
 {
-    //Handle Double Jumps 
-    //use CalculateDistance and make the jump feel normal
 
-
-
-    private float jumpProgress;
-    private float currentVel;
-    private bool isJumping = false;
+    //Coyote jumps Impl 
 
     [SerializeField] private JumpSettings data;
-    public Fall fallState;
 
-    public Jump(JumpSettings @data)
+    [NonSerialized] public Fall fallState;
+
+    private float verticalVelocity;
+
+
+    CapsuleCollider collider;
+
+    public Jump()
     {
-        this.data = @data;
-
+        collider = (CapsuleCollider)Collider;
     }
 
-    public override void Enter() { }
+    public override void Enter()
+    {
+        // Instant launch
+        if (collider == null)
+            collider = (CapsuleCollider)Collider;
+        verticalVelocity = data.jumpVelocity;
+    }
 
     public override void HandleInput()
     {
-        if (movementInput.jumpAction.phase == InputActionPhase.Started)
+        // Variable jump height.
+        // Releasing the button early kills some upward momentum.
+        if (movementInput.jumpAction.phase == InputActionPhase.Canceled &&
+            verticalVelocity > 0f)
         {
-            jumpProgress = movementInput.jumpAction.GetTimeoutCompletionPercentage();
-            isJumping = true;
+            verticalVelocity *= data.jumpCutMultiplier;
         }
     }
 
     public override void Update()
     {
-        if (isJumping)
-        {
-            updateMovement();
-            updateVelocity();
-        }
-    }
+        ApplyGravity();
+        Move();
 
-    private float calculateDistanceToTravel()
-    {
-        float distance = data.maxJumpDisplacement * jumpProgress;
-        if (distance >= data.maxJumpDisplacement)
-            distance = data.maxJumpDisplacement;
-
-        return distance;
-    }
-
-    private void updateVelocity()
-    {
-        currentVel = Mathf.MoveTowards(currentVel, data.maxJumpVelocity, data.acceleration * Time.deltaTime);
-    }
-
-    private void updateMovement()
-    {
-        Vector3 startPos = gameObj.transform.position;
-        Vector3 dst = startPos + Vector3.up * data.maxJumpDisplacement;
-        gameObj.transform.position = Vector3.MoveTowards(startPos, dst, currentVel * Time.deltaTime);
-
-        if (startPos.y >= data.maxJumpDisplacement)
+        if (verticalVelocity <= 0f)
             Emachine.SwitchStates(fallState);
+    }
+
+    private void ApplyGravity()
+    {
+        verticalVelocity -= data.gravity * Time.deltaTime;
+    }
+
+    private void Move()
+    {
+        Vector3 moveDir = movementInput.GetCameraRelativeInput(cam.transform);
+
+        Vector3 horizontalVelocity = moveDir * data.airSpeed;
+        Vector3 velocity = horizontalVelocity + Vector3.up * verticalVelocity;
+
+        gameObj.transform.position = ResolveCollisions( gameObj.transform.position, velocity);
+    }
+
+    private Vector3 ResolveCollisions(Vector3 startPos, Vector3 velocity)
+    {
+        Vector3 movement = velocity * Time.deltaTime;
+        float distance = movement.magnitude;
+
+        if (distance <= 0f)
+            return startPos;
+
+        if (Physics.SphereCast( startPos, collider.radius, movement.normalized, out RaycastHit hit, distance))
+        {
+            const float skinWidth = 0.02f;
+
+            Vector3 position = startPos + movement.normalized * Mathf.Max(hit.distance - skinWidth, 0f);
+            float remainingDistance = distance - hit.distance;
+
+            if (remainingDistance > 0f)
+            {
+                Vector3 remainingMove = movement.normalized * remainingDistance;
+                Vector3 slide = Vector3.ProjectOnPlane(remainingMove, hit.normal);
+
+                position += slide;
+            }
+            return position;
+        }
+        return startPos + movement;
     }
 
     public override void Exit()
     {
-        isJumping = false;
+        verticalVelocity = 0f;
     }
-
 }

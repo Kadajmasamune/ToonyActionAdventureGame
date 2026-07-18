@@ -1,5 +1,8 @@
 using UnityEngine;
 using EntityStateMachines;
+using System;
+
+[System.Serializable]
 public class Grounded : State
 {
     //Implement Sliding while colliding against surfaces
@@ -16,20 +19,22 @@ public class Grounded : State
 
 
     private CapsuleCollider collider;
-    public Jump jumpState;
+    [NonSerialized] public Jump jumpState;
 
 
-    public Grounded(GroundedSettings @data)
+    public Grounded()
     {
-        this.data = @data;
+        // this.data = @data;
         collider = (CapsuleCollider)Collider;
     }
 
 
     public override void Enter()
     {
+        if(collider == null)
+            collider = (CapsuleCollider)Collider;
         currentVel = 0f;
-        collider = (CapsuleCollider)Collider;
+        
     }
 
     public override void HandleInput()
@@ -50,17 +55,19 @@ public class Grounded : State
         //Debug.Log($"Analog Stick Movement Progression : {analogProgression}");
 
     }
+
+   
     public override void Update()
     {
         if (isMoving)
         {
             Vector3 startPos = gameObj.transform.position;
             Vector3 dir = movementInput.GetCameraRelativeInput(cam.transform);
-            Vector3 dst = calculateDstVector(startPos, dir, data.maxVelocity);
+            Vector3 dst = resolveCollisions(startPos, dir);
 
             updateRotation(startPos, dst);
             updateMovement(startPos, dst);
-            resolveCollisions(dst.magnitude , dir);
+
             updateVelocity();
         }
         else
@@ -69,31 +76,34 @@ public class Grounded : State
         }
     }
 
-    private Vector3 calculateDstVector(Vector3 startPos, Vector3 dir, float vel)
+    private Vector3 resolveCollisions(Vector3 startPos, Vector3 dir)
     {
-        Vector3 dst = startPos + dir * vel;
-        Vector3 movementVector = dst - startPos;
+        Vector3 movement = dir * currentVel * Time.deltaTime;
+        float distance = movement.magnitude;
 
-        float maxDistance = movementVector.magnitude;
+        if (distance <= 0f)
+            return startPos;
 
-        if (Physics.SphereCast(startPos, collider.radius, movementVector.normalized, out RaycastHit hit, maxDistance))
-        {   
-            const float OFFSET = 0.1f;
-            float lambda = Mathf.Clamp01((hit.distance - OFFSET) / maxDistance);
-            Vector3 newDestination = startPos + (lambda * movementVector);
-            return newDestination;
-        }
-     
-        return dst;
-    }
-    
-    private void resolveCollisions(float maxDistance , Vector3 dir)
-    {        
-        if (Physics.SphereCast(gameObj.transform.position, collider.radius , dir , out RaycastHit hit , maxDistance))
+        if (Physics.SphereCast(startPos, collider.radius, movement.normalized, out RaycastHit hit, distance))
         {
-            Vector3 moveDir = movementInput.moveAction.ReadValue<Vector2>();
-            Debug.Log(moveDir);
+            const float skinWidth = 0.02f;
+
+
+            Vector3 position = startPos + movement.normalized * Mathf.Max(hit.distance - skinWidth, 0f);
+            float remainingDistance = distance - hit.distance;
+
+            if (remainingDistance > 0f)
+            {
+                Vector3 remainingMove = movement.normalized * remainingDistance;
+                Vector3 slide = Vector3.ProjectOnPlane(remainingMove, hit.normal);
+
+                position += slide;
+            }
+
+            return position;
         }
+
+        return startPos + movement;
     }
 
 

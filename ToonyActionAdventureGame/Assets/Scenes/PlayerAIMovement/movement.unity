@@ -891,20 +891,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bbbcc5a909cae347ba9666570bc437c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovementSystem
-  GroundedData:
-    maxVelocity: 17
-    maxSprintVelocity: 30
-    acceleration: 120
-  jumpData:
-    maxJumpVelocity: 30
-    maxJumpDisplacement: 40
-    acceleration: 120
-  fallData:
-    Gravity: 40
-    rayDistanceCheck: 2
-    GroundLayer:
-      serializedVersion: 2
-      m_Bits: 8
+  groundedState:
+    clip: {fileID: 0}
+    data:
+      maxVelocity: 10
+      maxSprintVelocity: 20
+      acceleration: 120
+  jumpState:
+    clip: {fileID: 0}
+    data:
+      jumpVelocity: 20
+      gravity: 15
+      airSpeed: 4
+      jumpCutMultiplier: 0.45
+  fallState:
+    clip: {fileID: 0}
+    data:
+      gravity: 40
+      maxFallSpeed: 40
+      airSpeed: 3
+      rayDistanceCheck: 2
+      GroundLayer:
+        serializedVersion: 2
+        m_Bits: 8
 --- !u!1 &1164618189
 GameObject:
   m_ObjectHideFlags: 0

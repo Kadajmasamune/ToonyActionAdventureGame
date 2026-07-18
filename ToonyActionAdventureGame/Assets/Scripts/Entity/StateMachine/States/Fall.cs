@@ -1,43 +1,76 @@
 ﻿using UnityEngine;
 using EntityStateMachines;
+using System;
+
+[System.Serializable]
 public class Fall : State
 {
-    //Handle fast fall
-    // Handle normal Gravitational movement 
+    //Impl sphere capsule cast across all states
+    //Make a collisions controller class to decouple 
+    //Begin Dash and side steps (mostly similar ) 
 
-    [SerializeField] private FallSettings data;
+    [SerializeField]  private FallSettings data;
 
-    public Grounded groundState;
-    public Fall(FallSettings @data)
+    [NonSerialized] public Grounded groundState;
+
+    private float verticalVelocity;
+
+    public Fall()
     {
-        this.data = @data;
+        
+    }
+
+    public override void Enter()
+    {
+        // If Jump passes us its velocity, keep it.
+        // Otherwise start at zero.
+    }
+
+    public override void HandleInput()
+    {
 
     }
 
-
-    public override void Enter() { }
-    public override void HandleInput() { }
-
     public override void Update()
     {
-        if (stopApplyingGravity())
-            Emachine.SwitchStates(groundState);
-
-
         ApplyGravity();
+        Move();
+
+        if (IsGrounded())
+            Emachine.SwitchStates(groundState);
     }
 
     private void ApplyGravity()
     {
-        gameObj.transform.position += new Vector3(0, -data.Gravity * Time.deltaTime, 0);
+        verticalVelocity += data.gravity * Time.deltaTime;
+
+        // Clamp fall speed.
+        verticalVelocity = Mathf.Min(verticalVelocity, data.maxFallSpeed);
     }
 
-    private bool stopApplyingGravity()
+    private void Move()
     {
-        if (Physics.Raycast(gameObj.transform.position, Vector3.down, data.rayDistanceCheck, data.GroundLayer))
-            return true;
-        return false;
-    }
-    public override void Exit() { }
-}
+        Vector3 moveDir = movementInput.GetCameraRelativeInput(cam.transform);
 
+        Vector3 horizontal = moveDir * data.airSpeed;
+
+        Vector3 velocity = horizontal + Vector3.down * verticalVelocity;
+
+        gameObj.transform.position += velocity * Time.deltaTime;
+    }
+
+    private bool IsGrounded()
+    {
+        return Physics.Raycast( gameObj.transform.position, Vector3.down, data.rayDistanceCheck, data.GroundLayer);
+    }
+
+    public void SetVerticalVelocity(float velocity)
+    {
+        verticalVelocity = velocity;
+    }
+
+    public override void Exit()
+    {
+        verticalVelocity = 0f;
+    }
+}
