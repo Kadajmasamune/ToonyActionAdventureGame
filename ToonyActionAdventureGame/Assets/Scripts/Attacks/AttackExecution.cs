@@ -212,7 +212,7 @@ public class AttackExecution : MonoBehaviour
 
         foreach (var pair in impacts)
         {
-            pair.Value.timer += Time.deltaTime;
+            pair.Value.timer += Ticker.deltaTick;
 
             float t = Mathf.Clamp01(pair.Value.timer / pair.Value.duration );
 
