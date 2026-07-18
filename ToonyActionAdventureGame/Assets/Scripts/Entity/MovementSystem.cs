@@ -1,8 +1,5 @@
 using UnityEngine;
 using EntityStateMachines;
-using UnityEngine.InputSystem;
-using System;
-using NUnit.Framework;
 using System.Collections.Generic;
 
 public class MovementSystem : MonoBehaviour, IEntitySystem
@@ -10,14 +7,12 @@ public class MovementSystem : MonoBehaviour, IEntitySystem
 
     private EntityStateMachine movementFSM;
 
-    
-
     [Header("States")]
     [SerializeField] private Grounded groundedState;
     [SerializeField] private Jump jumpState;
     [SerializeField] private Fall fallState;
-
     private List<State> states;
+
 
     public void Init()
     {
@@ -36,9 +31,9 @@ public class MovementSystem : MonoBehaviour, IEntitySystem
         foreach (State state in states)
         {
             state.gameObj = this.gameObject;
-            state.Collider = this.gameObject.GetComponent<Collider>();
             state.Emachine = this.movementFSM;
             state.movementInput = this.gameObject.GetComponent<IMovementInput>();
+            state.collisionHandler = GetComponent<CollisionHandlerSystem>();
             state.cam = FindFirstObjectByType<Camera>();
         }
 
@@ -46,7 +41,7 @@ public class MovementSystem : MonoBehaviour, IEntitySystem
     }
 
 
-    public void Update()
+    public void Tick()
     {
         movementFSM.currentState.HandleInput();
         movementFSM.currentState.Update();

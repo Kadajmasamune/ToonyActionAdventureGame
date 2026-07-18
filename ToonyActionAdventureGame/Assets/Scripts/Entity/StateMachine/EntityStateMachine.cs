@@ -38,14 +38,14 @@ namespace EntityStateMachines
     public abstract class State
     {
         [NonSerialized] public GameObject gameObj;
-        [NonSerialized] public Collider Collider;
-        public EntityStateMachine Emachine;
-
+        
         [NonSerialized] public IMovementInput movementInput;
         [NonSerialized] public Camera cam;
 
         public AnimationClip clip;
-        
+        public EntityStateMachine Emachine;
+
+        [NonSerialized] public CollisionHandlerSystem collisionHandler;
         public abstract void Enter();
         public abstract void HandleInput();
         public abstract void Update();

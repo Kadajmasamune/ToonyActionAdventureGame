@@ -29,10 +29,12 @@ public class Entity : MonoBehaviour
 
     public void Tick()
     {
-        Debug.Log(systems.Count);
+        //Debug.Log(systems.Count);
+
+
         foreach (IEntitySystem system in systems)
         {
-            system.Update();
+            system.Tick();
         }
     }
 

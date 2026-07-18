@@ -10,7 +10,7 @@ public class CombatControllerSystem : MonoBehaviour ,  IEntitySystem
         combatControllerFSM = new EntityStateMachine(this);
     }
 
-    public void Update()
+    public void Tick()
     {
         combatControllerFSM.currentState.HandleInput();
         combatControllerFSM.currentState.Update();

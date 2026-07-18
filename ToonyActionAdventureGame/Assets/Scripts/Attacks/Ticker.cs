@@ -12,8 +12,11 @@ public class Ticker: MonoBehaviour
 
     public static event Action OnTick;
     public int CurrentTick { get { return currentTick; } private set { currentTick = value; }  }
+
+    public static float deltaTick => (1f / 60f); 
+
     public static Ticker instance;
-     
+    
     private void Start()
     {
         instance = this; 

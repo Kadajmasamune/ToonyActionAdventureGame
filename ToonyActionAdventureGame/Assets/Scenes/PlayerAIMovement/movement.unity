@@ -749,9 +749,11 @@ GameObject:
   - component: {fileID: 693238653}
   - component: {fileID: 693238652}
   - component: {fileID: 693238651}
+  - component: {fileID: 693238658}
   - component: {fileID: 693238655}
   - component: {fileID: 693238656}
   - component: {fileID: 693238657}
+  - component: {fileID: 693238659}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -894,9 +896,9 @@ MonoBehaviour:
   groundedState:
     clip: {fileID: 0}
     data:
-      maxVelocity: 10
-      maxSprintVelocity: 20
-      acceleration: 120
+      maxVelocity: 20
+      maxSprintVelocity: 40
+      acceleration: 200
   jumpState:
     clip: {fileID: 0}
     data:
@@ -914,6 +916,45 @@ MonoBehaviour:
       GroundLayer:
         serializedVersion: 2
         m_Bits: 8
+--- !u!54 &693238658
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693238650}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0
+--- !u!114 &693238659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693238650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bb8a6cf795663c4e8babd24dddb62e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CollisionHandlerSystem
 --- !u!1 &1164618189
 GameObject:
   m_ObjectHideFlags: 0

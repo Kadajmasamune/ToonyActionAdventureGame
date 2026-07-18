@@ -19,7 +19,7 @@ public class EntityInputSystem : MonoBehaviour, IEntitySystem, ICameraInput , IM
         
     }
 
-    public void Update()
+    public void Tick()
     {
         
         return ;    

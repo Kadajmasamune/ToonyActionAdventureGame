@@ -17,18 +17,8 @@ public class Jump : State
     private float verticalVelocity;
 
 
-    CapsuleCollider collider;
-
-    public Jump()
-    {
-        collider = (CapsuleCollider)Collider;
-    }
-
     public override void Enter()
     {
-        // Instant launch
-        if (collider == null)
-            collider = (CapsuleCollider)Collider;
         verticalVelocity = data.jumpVelocity;
     }
 
@@ -36,8 +26,8 @@ public class Jump : State
     {
         // Variable jump height.
         // Releasing the button early kills some upward momentum.
-        if (movementInput.jumpAction.phase == InputActionPhase.Canceled &&
-            verticalVelocity > 0f)
+
+        if (movementInput.jumpAction.phase == InputActionPhase.Canceled && verticalVelocity > 0f)
         {
             verticalVelocity *= data.jumpCutMultiplier;
         }
@@ -54,7 +44,7 @@ public class Jump : State
 
     private void ApplyGravity()
     {
-        verticalVelocity -= data.gravity * Time.deltaTime;
+        verticalVelocity -= data.gravity * Ticker.deltaTick;
     }
 
     private void Move()
@@ -64,35 +54,13 @@ public class Jump : State
         Vector3 horizontalVelocity = moveDir * data.airSpeed;
         Vector3 velocity = horizontalVelocity + Vector3.up * verticalVelocity;
 
-        gameObj.transform.position = ResolveCollisions( gameObj.transform.position, velocity);
+        Vector3 destination = velocity * Ticker.deltaTick;
+
+        Vector3 resolvedVector = collisionHandler.ResolveCollisions(destination);
+
+        gameObj.transform.position = resolvedVector;
     }
 
-    private Vector3 ResolveCollisions(Vector3 startPos, Vector3 velocity)
-    {
-        Vector3 movement = velocity * Time.deltaTime;
-        float distance = movement.magnitude;
-
-        if (distance <= 0f)
-            return startPos;
-
-        if (Physics.SphereCast( startPos, collider.radius, movement.normalized, out RaycastHit hit, distance))
-        {
-            const float skinWidth = 0.02f;
-
-            Vector3 position = startPos + movement.normalized * Mathf.Max(hit.distance - skinWidth, 0f);
-            float remainingDistance = distance - hit.distance;
-
-            if (remainingDistance > 0f)
-            {
-                Vector3 remainingMove = movement.normalized * remainingDistance;
-                Vector3 slide = Vector3.ProjectOnPlane(remainingMove, hit.normal);
-
-                position += slide;
-            }
-            return position;
-        }
-        return startPos + movement;
-    }
 
     public override void Exit()
     {

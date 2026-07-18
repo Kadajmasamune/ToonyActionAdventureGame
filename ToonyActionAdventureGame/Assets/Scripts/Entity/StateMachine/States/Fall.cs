@@ -4,10 +4,7 @@ using System;
 
 [System.Serializable]
 public class Fall : State
-{
-    //Impl sphere capsule cast across all states
-    //Make a collisions controller class to decouple 
-    //Begin Dash and side steps (mostly similar ) 
+{ 
 
     [SerializeField]  private FallSettings data;
 
@@ -42,7 +39,7 @@ public class Fall : State
 
     private void ApplyGravity()
     {
-        verticalVelocity += data.gravity * Time.deltaTime;
+        verticalVelocity += data.gravity * Ticker.deltaTick;
 
         // Clamp fall speed.
         verticalVelocity = Mathf.Min(verticalVelocity, data.maxFallSpeed);
@@ -56,17 +53,17 @@ public class Fall : State
 
         Vector3 velocity = horizontal + Vector3.down * verticalVelocity;
 
-        gameObj.transform.position += velocity * Time.deltaTime;
+
+        Vector3 destination = velocity * Ticker.deltaTick;
+
+        Vector3 resolvedVector = collisionHandler.ResolveCollisions(destination);
+
+        gameObj.transform.position = resolvedVector;
     }
 
     private bool IsGrounded()
     {
         return Physics.Raycast( gameObj.transform.position, Vector3.down, data.rayDistanceCheck, data.GroundLayer);
-    }
-
-    public void SetVerticalVelocity(float velocity)
-    {
-        verticalVelocity = velocity;
     }
 
     public override void Exit()
