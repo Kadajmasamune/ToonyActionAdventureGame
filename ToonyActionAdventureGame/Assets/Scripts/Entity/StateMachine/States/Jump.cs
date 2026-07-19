@@ -12,24 +12,31 @@ public class Jump : State
 
     [SerializeField] private JumpSettings data;
 
-    [NonSerialized] public Fall fallState;
-
     private float verticalVelocity;
 
+
+    private int nextDashTick = 0;
+    private bool canDash => Ticker.currentTick >= nextDashTick;
 
     public override void Enter()
     {
         verticalVelocity = data.jumpVelocity;
+        
     }
 
     public override void HandleInput()
     {
-        // Variable jump height.
-        // Releasing the button early kills some upward momentum.
 
         if (movementInput.jumpAction.phase == InputActionPhase.Canceled && verticalVelocity > 0f)
         {
             verticalVelocity *= data.jumpCutMultiplier;
+        }
+
+
+        if (movementInput.dashAction.IsPressed() && canDash)
+        {
+            Emachine.SwitchState<Dash>();
+            nextDashTick = Ticker.currentTick + 50;
         }
     }
 
@@ -39,7 +46,7 @@ public class Jump : State
         Move();
 
         if (verticalVelocity <= 0f)
-            Emachine.SwitchStates(fallState);
+            Emachine.SwitchState<Fall>();
     }
 
     private void ApplyGravity()

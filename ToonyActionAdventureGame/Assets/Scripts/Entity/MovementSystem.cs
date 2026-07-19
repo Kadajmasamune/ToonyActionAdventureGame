@@ -1,43 +1,31 @@
 using UnityEngine;
 using EntityStateMachines;
 using System.Collections.Generic;
+using Autodesk.Fbx;
 
+
+[RequireComponent(typeof(CollisionHandlerSystem))]
 public class MovementSystem : MonoBehaviour, IEntitySystem
 {
 
     private EntityStateMachine movementFSM;
 
     [Header("States")]
-    [SerializeField] private Grounded groundedState;
-    [SerializeField] private Jump jumpState;
-    [SerializeField] private Fall fallState;
-    private List<State> states;
-
+    [SerializeField] private States _states;
 
     public void Init()
     {
-        movementFSM = new EntityStateMachine(this);
-        states = new List<State>();
+        movementFSM = new EntityStateMachine();
 
-        groundedState.jumpState = jumpState;
-        jumpState.fallState = fallState;
-        fallState.groundState = groundedState;
-
-        states.Add(groundedState);
-        states.Add(jumpState);
-        states.Add(fallState);
-
-
-        foreach (State state in states)
+        foreach (State state in _states.All)
         {
-            state.gameObj = this.gameObject;
-            state.Emachine = this.movementFSM;
-            state.movementInput = this.gameObject.GetComponent<IMovementInput>();
-            state.collisionHandler = GetComponent<CollisionHandlerSystem>();
-            state.cam = FindFirstObjectByType<Camera>();
+            state.Initialize(this.gameObject, movementFSM , GetComponent<IMovementInput>() , GetComponent<CollisionHandlerSystem>() , 
+                FindFirstObjectByType<Camera>());
+
+            movementFSM.Register(state);
         }
 
-        movementFSM.SwitchStates(groundedState);
+        movementFSM.SwitchStates(_states.groundedState);
     }
 
 
@@ -47,4 +35,25 @@ public class MovementSystem : MonoBehaviour, IEntitySystem
         movementFSM.currentState.Update();
     }
              
+}
+
+
+[System.Serializable]
+public class States
+{
+    public Grounded groundedState;
+    public Jump jumpState;
+    public Fall fallState;
+    public Dash dashState;
+
+    public IEnumerable<State> All
+    {
+        get
+        {
+            yield return groundedState;
+            yield return jumpState;
+            yield return fallState;
+            yield return dashState;
+        }
+    }
 }

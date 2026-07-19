@@ -5,6 +5,8 @@ using System;
 [System.Serializable]
 public class Grounded : State
 {
+    //jump dash
+
     private bool isSprinting => movementInput.sprintAction.IsPressed();
     private bool isMoving;
 
@@ -13,11 +15,9 @@ public class Grounded : State
     private float analogProgression;
 
     [SerializeField] GroundedSettings data;
-    [NonSerialized] public Jump jumpState;
-
-
-   
-
+    
+    private int nextDashTick = 0;
+    private bool canDash => Ticker.currentTick >= nextDashTick;
 
     public override void Enter()
     {
@@ -28,7 +28,8 @@ public class Grounded : State
 
     public override void HandleInput()
     {
-         
+    
+        
         if (movementInput.moveAction.ReadValue<Vector2>().magnitude > 0)
         {
             isMoving = true;
@@ -39,7 +40,13 @@ public class Grounded : State
 
 
         if (movementInput.jumpAction.IsPressed())
-            Emachine.SwitchStates(jumpState);
+            Emachine.SwitchState<Jump>() ;
+
+        if (movementInput.dashAction.IsInProgress() && canDash)
+        {
+            Emachine.SwitchState<Dash>();
+            nextDashTick = Ticker.currentTick + 60;
+        }
 
         //Debug.Log($"Analog Stick Movement Progression : {analogProgression}");
 
@@ -81,7 +88,6 @@ public class Grounded : State
 
         // Debug.Log(currentVel);
     }
-
 
 
     private void updateRotation(Vector3 startPos, Vector3 dst)

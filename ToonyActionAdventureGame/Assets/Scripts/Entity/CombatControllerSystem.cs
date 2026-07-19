@@ -7,7 +7,7 @@ public class CombatControllerSystem : MonoBehaviour ,  IEntitySystem
 
     public void Init ()
     {
-        combatControllerFSM = new EntityStateMachine(this);
+
     }
 
     public void Tick()

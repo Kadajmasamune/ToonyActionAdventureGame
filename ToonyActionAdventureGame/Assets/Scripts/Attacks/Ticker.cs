@@ -8,7 +8,7 @@ public class Ticker: MonoBehaviour
 	private const float tickRate = 1f/60f;  //How much a tick costs
 	private float accumulator = 0f; //Wallet  
 
-	private int currentTick = 0; //Total lifetime Ticks 
+	public static int currentTick = 0; //Total lifetime Ticks 
 
     public static event Action OnTick;
     public int CurrentTick { get { return currentTick; } private set { currentTick = value; }  }

@@ -9,6 +9,7 @@ public class EntityInputSystem : MonoBehaviour, IEntitySystem, ICameraInput , IM
     public InputAction sprintAction { get; private set; }
     public InputAction moveAction { get; private set; }
     public InputAction LockOn { get; private set; }
+    public InputAction dashAction { get; private set; }
 
     public void Init()
     {
@@ -16,6 +17,7 @@ public class EntityInputSystem : MonoBehaviour, IEntitySystem, ICameraInput , IM
         sprintAction = InputSystem.actions.FindAction("Sprint");
         moveAction = InputSystem.actions.FindAction("Move");
         LockOn = InputSystem.actions.FindAction("LockOn");
+        dashAction = InputSystem.actions.FindAction("Dash");    
         
     }
 

@@ -9,32 +9,37 @@ namespace EntityStateMachines
     public class EntityStateMachine
     {
         public State currentState;
-        public object context;
+        public Type lastState;
 
-        public EntityStateMachine(object context)
+        private readonly Dictionary<Type, State> states = new();
+
+        public void Register(State state)
         {
-            this.context = context;
+            states[state.GetType()] = state;
+        }
+
+        public T GetState<T>() where T : State
+        {
+            return (T)states[typeof(T)];
+        }
+
+        public void SwitchState<T>() where T : State
+        {
+            SwitchStates(GetState<T>());
         }
 
         public void SwitchStates(State newState)
         {
+            if(currentState != null)
+                lastState = currentState.GetType();
+
+
             currentState?.Exit();
             currentState = newState;
             currentState.Enter();
         }
-
-        public void HandleInput()
-        {
-            currentState?.HandleInput();
-        }
-
-        public void Update()
-        {
-            currentState?.Update();
-        }
     }
 
-    
     public abstract class State
     {
         [NonSerialized] public GameObject gameObj;
@@ -46,6 +51,20 @@ namespace EntityStateMachines
         public EntityStateMachine Emachine;
 
         [NonSerialized] public CollisionHandlerSystem collisionHandler;
+
+
+        public List<State> transitionAbleStates = new List<State>();
+
+        public virtual void Initialize( GameObject obj, EntityStateMachine machine, IMovementInput input, CollisionHandlerSystem collision, Camera cam)
+        {
+            gameObj = obj;
+            Emachine = machine;
+            movementInput = input;
+            collisionHandler = collision;
+            this.cam = cam;
+        }
+
+
         public abstract void Enter();
         public abstract void HandleInput();
         public abstract void Update();

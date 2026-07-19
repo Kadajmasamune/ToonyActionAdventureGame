@@ -8,9 +8,12 @@ public class Fall : State
 
     [SerializeField]  private FallSettings data;
 
-    [NonSerialized] public Grounded groundState;
-
     private float verticalVelocity;
+
+
+    private int nextDashTick = 0;
+    private bool canDash => Ticker.currentTick >= nextDashTick;
+
 
     public Fall()
     {
@@ -25,7 +28,11 @@ public class Fall : State
 
     public override void HandleInput()
     {
-
+        if (movementInput.dashAction.IsInProgress() && canDash)
+        {
+            Emachine.SwitchState<Dash>();
+            nextDashTick = Ticker.currentTick + 60;
+        }
     }
 
     public override void Update()
@@ -34,7 +41,7 @@ public class Fall : State
         Move();
 
         if (IsGrounded())
-            Emachine.SwitchStates(groundState);
+            Emachine.SwitchState<Grounded>();
     }
 
     private void ApplyGravity()
