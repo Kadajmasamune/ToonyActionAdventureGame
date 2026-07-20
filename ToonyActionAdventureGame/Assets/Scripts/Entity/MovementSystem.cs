@@ -1,14 +1,17 @@
-using UnityEngine;
+
 using EntityStateMachines;
+using System;
 using System.Collections.Generic;
-using Autodesk.Fbx;
+using UnityEngine;
 
 
 [RequireComponent(typeof(CollisionHandlerSystem))]
+[RequireComponent(typeof(RotationComposerSystem))]
 public class MovementSystem : MonoBehaviour, IEntitySystem
 {
 
-    private EntityStateMachine movementFSM;
+    public EntityStateMachine movementFSM { get; private set; }
+
 
     [Header("States")]
     [SerializeField] private States _states;
@@ -45,6 +48,7 @@ public class States
     public Jump jumpState;
     public Fall fallState;
     public Dash dashState;
+    public Quick180 quick180State;
 
     public IEnumerable<State> All
     {
@@ -54,6 +58,7 @@ public class States
             yield return jumpState;
             yield return fallState;
             yield return dashState;
+            yield return quick180State;
         }
     }
 }

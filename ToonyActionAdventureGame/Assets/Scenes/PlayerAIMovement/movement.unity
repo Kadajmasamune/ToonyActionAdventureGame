@@ -407,37 +407,37 @@ PrefabInstance:
     - target: {fileID: 2580869457810601412, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 13.148904
+      value: 12.949474
       objectReference: {fileID: 0}
     - target: {fileID: 2580869457810601412, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5.58687
+      value: -4.919117
       objectReference: {fileID: 0}
     - target: {fileID: 2580869457810601412, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 19.09541
+      value: 16.611313
       objectReference: {fileID: 0}
     - target: {fileID: 2580869457810601412, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9970301
+      value: 0.9986857
       objectReference: {fileID: 0}
     - target: {fileID: 2580869457810601412, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.038566634
+      value: 0.044890273
       objectReference: {fileID: 0}
     - target: {fileID: 2580869457810601412, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.06661149
+      value: -0.024709629
       objectReference: {fileID: 0}
     - target: {fileID: 2580869457810601412, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0025766466
+      value: 0.0011106817
       objectReference: {fileID: 0}
     - target: {fileID: 2870194385922126706, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
@@ -456,43 +456,48 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5441716355630405840, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
+      propertyPath: Composition.DeadZone.Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5441716355630405840, guid: d3485c81fe7af25499d352261d8e1ba6,
+        type: 3}
       propertyPath: Composition.HardLimits.Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5595397380921550790, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 13.148904
+      value: 12.949474
       objectReference: {fileID: 0}
     - target: {fileID: 5595397380921550790, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5.58687
+      value: -4.919117
       objectReference: {fileID: 0}
     - target: {fileID: 5595397380921550790, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 19.09541
+      value: 16.611313
       objectReference: {fileID: 0}
     - target: {fileID: 5595397380921550790, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9970301
+      value: 0.9986857
       objectReference: {fileID: 0}
     - target: {fileID: 5595397380921550790, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.03856664
+      value: 0.044890277
       objectReference: {fileID: 0}
     - target: {fileID: 5595397380921550790, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.0666115
+      value: -0.024709633
       objectReference: {fileID: 0}
     - target: {fileID: 5595397380921550790, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0025766338
+      value: 0.0011106819
       objectReference: {fileID: 0}
     - target: {fileID: 7045117351286818766, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
@@ -518,6 +523,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_projectionMatrixMode
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7131393463668744093, guid: d3485c81fe7af25499d352261d8e1ba6,
+        type: 3}
+      propertyPath: Radius
+      value: 7.5
       objectReference: {fileID: 0}
     - target: {fileID: 7131393463668744093, guid: d3485c81fe7af25499d352261d8e1ba6,
         type: 3}
@@ -639,6 +649,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 475477036}
+    - targetCorrespondingSourceObject: {fileID: 1686472274575356556, guid: d3485c81fe7af25499d352261d8e1ba6,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1975443989}
   m_SourcePrefab: {fileID: 100100000, guid: d3485c81fe7af25499d352261d8e1ba6, type: 3}
 --- !u!1 &475477035 stripped
 GameObject:
@@ -714,6 +728,7 @@ GameObject:
   - component: {fileID: 693238656}
   - component: {fileID: 693238657}
   - component: {fileID: 693238659}
+  - component: {fileID: 693238660}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -854,63 +869,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bbbcc5a909cae347ba9666570bc437c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovementSystem
-  groundedState:
-    clip: {fileID: 0}
-    data:
-      maxVelocity: 20
-      maxSprintVelocity: 40
-      acceleration: 200
-  jumpState:
-    clip: {fileID: 0}
-    data:
-      jumpVelocity: 35
-      gravity: 50
-      airSpeed: 8
-      jumpCutMultiplier: 0.45
-  fallState:
-    clip: {fileID: 0}
-    data:
-      gravity: 90
-      maxFallSpeed: 90
-      airSpeed: 5
-      rayDistanceCheck: 2
-      GroundLayer:
-        serializedVersion: 2
-        m_Bits: 8
-  dashState:
-    clip: {fileID: 0}
-    data:
-      dashVelocity: 60
-      maxDashDisplacement: 15
   _states:
     groundedState:
       clip: {fileID: 0}
       data:
-        maxVelocity: 20
-        maxSprintVelocity: 40
-        acceleration: 200
+        rotationSharpness: 0
+        maxVelocity: 0
+        maxSprintVelocity: 0
+        acceleration: 0
+        deceleration: 0
+      quick180Clip: {fileID: 0}
     jumpState:
       clip: {fileID: 0}
       data:
-        jumpVelocity: 35
-        gravity: 50
-        airSpeed: 8
+        jumpVelocity: 8
+        gravity: 25
+        airSpeed: 6
         jumpCutMultiplier: 0.45
     fallState:
       clip: {fileID: 0}
       data:
-        gravity: 90
-        maxFallSpeed: 90
-        airSpeed: 5
-        rayDistanceCheck: 2
+        gravity: 30
+        maxFallSpeed: 25
+        airSpeed: 6
+        rayDistanceCheck: 0.25
         GroundLayer:
           serializedVersion: 2
           m_Bits: 8
     dashState:
       clip: {fileID: 0}
       data:
-        dashVelocity: 60
-        maxDashDisplacement: 15
+        dashVelocity: 0
+        maxDashDisplacement: 0
 --- !u!54 &693238658
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -950,6 +940,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bb8a6cf795663c4e8babd24dddb62e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CollisionHandlerSystem
+--- !u!114 &693238660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693238650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 535d1123a11f349428b95ec1cd73a725, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RotationComposerSystem
 --- !u!1 &1164618189
 GameObject:
   m_ObjectHideFlags: 0
@@ -1420,6 +1422,29 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!1 &1975443981 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1686472274575356556, guid: d3485c81fe7af25499d352261d8e1ba6,
+    type: 3}
+  m_PrefabInstance: {fileID: 475477034}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1975443989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1975443981}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68bb026fafb42b14791938953eaace77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineBasicMultiChannelPerlin
+  NoiseProfile: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
+  PivotOffset: {x: 0, y: 0, z: 0}
+  AmplitudeGain: 1
+  FrequencyGain: 1
+  m_NoiseOffsets: {x: 133.0625, y: 615.86237, z: -57.238922}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

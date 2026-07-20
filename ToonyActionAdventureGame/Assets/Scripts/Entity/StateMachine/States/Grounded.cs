@@ -1,29 +1,29 @@
-using UnityEngine;
 using EntityStateMachines;
 using System;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 [System.Serializable]
 public class Grounded : State
 {
-    //jump dash
 
+    [Header("Data")]
+    [SerializeField] GroundedSettings data;
     private bool isSprinting => movementInput.sprintAction.IsPressed();
     private bool isMoving;
-
-
     private float currentVel;
     private float analogProgression;
 
-    [SerializeField] GroundedSettings data;
-    
+
+    [Header("Dash config")]    
     private int nextDashTick = 0;
     private bool canDash => Ticker.currentTick >= nextDashTick;
 
+ 
+
     public override void Enter()
-    {
-        
+    {        
         currentVel = 0f;
-        
     }
 
     public override void HandleInput()
@@ -63,10 +63,17 @@ public class Grounded : State
 
             dst = collisionHandler.ResolveCollisions(dst);
 
-            updateRotation(startPos, dst);
-            updateMovement(startPos, dst);
+            rotationInfo.startpos = startPos; rotationInfo.dst = dst;
 
+            updateMovement(startPos, dst);            
             updateVelocity();
+
+            if (can180(startPos, dst))
+                Emachine.SwitchState<Quick180>();                
+            
+
+
+            Debug.Log($"Player's current velocity : {currentVel}");
         }
         else
         {
@@ -88,25 +95,12 @@ public class Grounded : State
 
         // Debug.Log(currentVel);
     }
-
-
-    private void updateRotation(Vector3 startPos, Vector3 dst)
+    
+    private bool can180(Vector3 startPos , Vector3 dst)
     {
         Vector3 movementDirection = (dst - startPos).normalized;
-        //Debug.Log($"Movement Vector : {movementDirection}");
-
-        if (movementDirection.sqrMagnitude < 0.0001f)
-            return;
-
-        Quaternion targetRotation = Quaternion.LookRotation(movementDirection);
-        //Debug.Log($"Target rot : {targetRotation.eulerAngles}");
-
-
-        gameObj.transform.rotation = Quaternion.RotateTowards(
-            gameObj.transform.rotation,
-            targetRotation,
-            1f - Mathf.Exp(50f * Ticker.deltaTick)
-        );
+        float angle = Vector3.Angle(gameObj.transform.forward, movementDirection);
+        return angle >= 150;
     }
 
     public override void Exit()

@@ -48,14 +48,19 @@ namespace EntityStateMachines
         [NonSerialized] public Camera cam;
 
         public AnimationClip clip;
-        public EntityStateMachine Emachine;
+        protected EntityStateMachine Emachine;
 
         [NonSerialized] public CollisionHandlerSystem collisionHandler;
 
+        public struct RotationInfo
+        {
+            public Vector3 startpos;
+            public Vector3 dst;
+        }
 
-        public List<State> transitionAbleStates = new List<State>();
+        public RotationInfo rotationInfo;
 
-        public virtual void Initialize( GameObject obj, EntityStateMachine machine, IMovementInput input, CollisionHandlerSystem collision, Camera cam)
+        public virtual void Initialize(GameObject obj, EntityStateMachine machine, IMovementInput input, CollisionHandlerSystem collision, Camera cam)
         {
             gameObj = obj;
             Emachine = machine;

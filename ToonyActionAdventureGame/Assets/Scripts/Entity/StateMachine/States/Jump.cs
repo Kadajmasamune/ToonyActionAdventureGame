@@ -36,7 +36,7 @@ public class Jump : State
         if (movementInput.dashAction.IsPressed() && canDash)
         {
             Emachine.SwitchState<Dash>();
-            nextDashTick = Ticker.currentTick + 50;
+            nextDashTick = Ticker.currentTick + 70;
         }
     }
 
